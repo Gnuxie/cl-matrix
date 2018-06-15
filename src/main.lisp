@@ -1,189 +1,129 @@
 (in-package :cl-matrix)
 
+(defun matrix-post-request (url post-pairlis &optional (access-token nil) (content-type "application/json"))
+  "Make a POST request to a Matrix homeserver, for API calls."
+
+  (let ((url (concatenate `string
+                          "http://" *homeserver* url
+                          (if access-token
+                            (format nil "?access_token=~A" *access-token*)))))
+  (json:decode-json-from-string
+    (s-http-client:do-http-request
+      (concatenate `string "http://" *homeserver* url)
+      :method :post
+      :content
+      (json:encode-json-alist-to-string
+        post-partlis)
+      :content-type content-type))))
+
+
+(defun matrix-get-request (url &optional (access-token))
+  "Make a GET request to a Matrix homeserver, for API calls."
+
+  (let ((url (concatenate `string
+                          "http://" *homeserver* url
+                          (if access-token
+                            (format nil "?access_token=~A" *access-token*)))))
+    (json:decode-json-from-string
+      (s-http-client:do-http-request
+        url
+        :method get))))
+
+
+
 (defun account-log-in (username password)
-	(let ((access-token "")
-		(error "")
-		(result (json:decode-json-from-string
-			(s-http-client:do-http-request
-				(concatenate `string "http://" *homeserver* "/_matrix/client/r0/login")
-				:method :post
-				:content
-				(json:encode-json-alist-to-string
-					(pairlis
-						(list `type `user `password)
-						(list "m.login.password" username password)))
-				:content-type "application/json"))))
+  "'Log in' by fetching the access-token of an account."
 
-	(setq access-token (cdr (assoc `:access--token result))	)
-	(setq error (cdr (assoc `:errcode result)))
+  (cdr (assoc `:access--token
+              (matrix-post-request "/_matrix/client/r0/login"
+                                   (pairlis
+                                     (list `type `user `password)
+                                     (list "m.login.password" username password))))))
 
-	(if access-token
-		access-token)))
 
 
 (defun room-create (room-name)
-	(let
-		((result (json:decode-json-from-string
-			(s-http-client:do-http-request
-				(concatenate `string "http://"
-						*homeserver*
-						"/_matrix/client/r0/createRoom?access_token="
-						*access-token*)
-				:method :post
-				:content
-				(json:encode-json-alist-to-string
-					(pairlis
-						(list `room_alias_name)
-						(list room-name)))
-				:content-type "application/json"))))
-	result))
-;;	(if result
-;;		(cdr (assoc `:room--id result)))))
+  "Create a Matrix room."
+
+  (matrix-post-request "/_matrix/client/r0/createRoom" `T
+                       (pairlis
+                         (list `room_alias_name)
+                         (list room-name))
+                       `T))
 
 
 (defun msg-send (msg room-id)
-	(let
-		((result (json:decode-json-from-string
-			(s-http-client:do-http-request
-				(concatenate `string "http://"
-						*homeserver*
-						"/_matrix/client/r0/rooms/"
-						room-id
-						"/send/m.room.message?access_token="
-						*access-token*)
-				:method :post
-				:content
-				(json:encode-json-alist-to-string
-					(pairlis
-						(list `msgtype `body)
-						(list "m.text" msg)))
-				:content-type "application/json"))))
-	(if result
-		(cdr (assoc `:event--id result)))))
+  "Send a text message to a specific room."
+
+  (matrix-post-request (concatenate `string "/_matrix/client/r0/rooms/" room-id)
+                       (pairlis
+                         (list `msgtype `body)
+                         (list "m.text" msg))
+                       `T))
+
 
 (defun user-invite (user-id room-id)
-	(let
-		((result (json:decode-json-from-string
-			(s-http-client:do-http-request
-				(concatenate `string "http://"
-						*homeserver*
-						"/_matrix/client/r0/rooms/"
-						room-id
-						"/invite?access_token="
-						*access-token*)
-				:method :post
-				:content
-				(json:encode-json-alist-to-string
-					(pairlis
-						(list `user_id)
-						(list user-id)))
-				:content-type "application/json"))))
-	result))
+  "Invite a user to a chat-room."
 
-;; non-working `o`
+  (matrix-post-request (concatenate `string "/_matrix/client/r0/rooms/" room-id "/invite")
+                         (pairlis
+                           (list `user_id)
+                           (list user-id))
+                         `T))
+
+
 (defun room-join (room-id)
-	(let
-		((result (json:decode-json-from-string
-			(s-http-client:do-http-request
-				(concatenate `string "http://"
-						*homeserver*
-						"/_matrix/client/r0/rooms/"
-						(s-http-client:uri-encode-for-query room-id)
-						"/join?access_token="
-						*access-token*)
-				:method :get))))
-	result))
+  "Join a Matrix room-- currently NOT WORKING."
+
+  (matrix-get-request (concatenate `string "/_matrix/client/r0/rooms/"
+                                    (s-http-client:uri-encode-for-query room-id)
+                                    "/join")
+                       `T))
 
 
 (defun account-sync ()
-	(let
-		((result (json:decode-json-from-string
-			(s-http-client:do-http-request
-				(concatenate `string "http://"
-						*homeserver*
-						"/_matrix/client/r0/sync?access_token="
-						*access-token*)
-				:method :get))))
-	result))
+  "Fetch all of the data of a Matrix account."
+
+  (matrix-get-request "/_matrix/client/r0/sync" `T))
+
 
 (defun account-sync-since (since-value)
-	(let
-		((result (json:decode-json-from-string
-			(s-http-client:do-http-request
-				(concatenate `string "http://"
-						*homeserver*
-						"/_matrix/client/r0/sync?access_token="
-						*access-token*
-						"&since="
-						since-value)
-				:method :get))))
-	result))
+  "Sync the account data since a certain special time-stamp."
+
+  (matrix-get-request (concatenate `string
+                                   "/_matrix/client/r0/sync?access_token="
+                                   *access-token*
+                                   "&since="
+                                   since-value)
+                      nil))
+
 
 (defun get-room-data (sync-data)
-	(cdr (nth 2 (nth 7 sync-data))))
+  "Single out room data from data of :account-sync or :account-sync-since."
+
+  (cdr (nth 2 (nth 7 sync-data))))
 
 	
 (defun room-messages (sync-data)
-	(let ((rooms (get-room-data sync-data))
-		(x 0))
-	
-	(mapcar (lambda (x) (nth 2 x)) rooms)))
+  "Single out lists messages by room from data of :account-sync or :account-sync-since."
+
+  (let ((rooms (get-room-data sync-data)))
+    (mapcar (lambda (x) (nth 2 x)) rooms)))
 
 
 (defun room-sync-to-intern-id (sync-id)
-	(string-downcase (cl-strings:replace-all (cl-strings:replace-all sync-id "-" "") "+" "")))
+  "Convert malformed room IDs from sync data to 'internal ID'. Since in the JSON sync
+  data, room-names are stored in all caps, while the actual room-names are in mixed-caps,
+  cl-matrix converts both sync-data and actual room-names into all downcase for internal
+  use."
 
-(defun room-sync-to-room-id (sync-id)
-;;	(!S-N-BCO-OBNVE-+NV+-RVB-CY-T:MATRIX.ORG
-	(loop
-		:for x
-		:from 0
-		:to (- (length sync-id) 1)
-		:do 
-
-		(setq char (char sync-id x))
-
-		(if (not (or (eq char #\-) (eq char #\+)))
-			(if (eq upcase-state 1)
-				(setq char-list (append char-list (list (char (string-upcase (string char)) 0))))
-				(setq char-list (append char-list (list (char (string-downcase (string char)) 0))))))
-
-		(if (eq upcase-state 1)
-			(if (eq super-upcase 0)
-				(setq upcase-state 0)
-				(setq super-upcase 0)))
-
-		(if (eq upcase-state 1)
-			(setq upcase-state 0))
-
-		(if (eq char #\-)
-			(setq upcase-state 1)))
-
-		(if (eq char #\+)
-			(setq upcase-state 1))
-		(if (eq char #\+)
-			(setq super-upcase 1))
-
-
-		(list-to-string char-list))
-
-(defun list-to-string (list)
-   "Converts a list of characters to a string."
-        (reduce `string-concat
-                (mapcar `string list)))
+  (string-downcase
+    (cl-strings:replace-all
+      (cl-strings:replace-all sync-id "-" "") "+" "")))
 
 
 (defun user-joined-rooms ()
-	(let
-		((result (json:decode-json-from-string
-			(s-http-client:do-http-request
-				(concatenate `string "http://"
-						*homeserver*
-						"/_matrix/client/r0/joined_rooms?access_token="
-						*access-token*)
-				:method :get))))
-	(setq result
-		(mapcar #'string-downcase (cdr (car result))))
+  "Fetch rooms joined by the user."
 
-	result))
-	
+  (mapcar #`string-downcare
+          (cdr (car (matrix-get-request "/_matrix/client/r0/joined_rooms" `T)))))
