@@ -1,23 +1,27 @@
 (in-package :cl-matrix)
 
-(defun matrix-post-request (url post-pairlis &optional (access-token nil) (content-type "application/json"))
+(defparameter *homeserver* "matrix.org")
+(defparameter *access-token* "")
+
+(defun matrix-post-request (url post-pairlis &optional (access-token nil) (content-type "application/json") put)
   "Make a POST request to a Matrix homeserver, for API calls."
 
   (let ((url (concatenate `string
                           "http://" *homeserver* url
                           (if access-token
-                            (format nil "?access_token=~A" *access-token*)))))
+                              (format nil "?access_token=~A" *access-token*)))))
+    (format t url)
   (json:decode-json-from-string
     (s-http-client:do-http-request
-      (concatenate `string "http://" *homeserver* url)
-      :method :post
+      url
+      :method (if put :put :post)
       :content
       (json:encode-json-alist-to-string
-        post-partlis)
+        post-pairlis)
       :content-type content-type))))
 
 
-(defun matrix-get-request (url &optional (access-token))
+(defun matrix-get-request (url &optional (access-token nil))
   "Make a GET request to a Matrix homeserver, for API calls."
 
   (let ((url (concatenate `string
@@ -27,18 +31,19 @@
     (json:decode-json-from-string
       (s-http-client:do-http-request
         url
-        :method get))))
+        :method :get))))
 
 
 
 (defun account-log-in (username password)
   "'Log in' by fetching the access-token of an account."
 
-  (cdr (assoc `:access--token
-              (matrix-post-request "/_matrix/client/r0/login"
-                                   (pairlis
-                                     (list `type `user `password)
-                                     (list "m.login.password" username password))))))
+  (let ((response (matrix-post-request "/_matrix/client/r0/login"
+				       (pairlis
+					(list `type `user `password)
+					(list "m.login.password" username password)))))
+    (cond ((assoc :error response) (error (concatenate 'string (cdr (assoc :errcode response)) ":" (cdr (assoc :error response)))))
+	  (t (setf *access-token* (cdr (assoc ':access--token response)))))))
 
 
 
@@ -55,11 +60,11 @@
 (defun msg-send (msg room-id)
   "Send a text message to a specific room."
 
-  (matrix-post-request (concatenate `string "/_matrix/client/r0/rooms/" room-id)
+  (matrix-post-request (concatenate `string "/_matrix/client/r0/rooms/" room-id "/send/m.room.message/35")
                        (pairlis
                          (list `msgtype `body)
                          (list "m.text" msg))
-                       `T))
+                       `T t))
 
 
 (defun user-invite (user-id room-id)
@@ -125,5 +130,20 @@
 (defun user-joined-rooms ()
   "Fetch rooms joined by the user."
 
-  (mapcar #`string-downcare
-          (cdr (car (matrix-get-request "/_matrix/client/r0/joined_rooms" `T)))))
+  (cdr (car (matrix-get-request "/_matrix/client/r0/joined_rooms" `T))))
+
+(defun room-joined-members (room)
+  "Fetch a list of joined members for a room"
+  (matrix-get-request (concatenate 'string "/_matrix/client/r0/rooms/" room "/joined_members") `T))
+
+(defun rooms-joined-members (rooms)
+  "Fetch the members information for all the supplied rooms"
+  (mapcar #'room-joined-members rooms))
+
+(defun rooms-joined-members-ids (rooms)
+  "Fetch the joined members as user-ids"
+  (mapcar #'(lambda (room-id users) (cons (intern room-id "KEYWORD") (list users)))
+	  rooms
+	  (mapcar #'(lambda (x)
+		      (mapcar #'car (cdr (assoc :joined x))))
+		  (rooms-joined-members rooms))))

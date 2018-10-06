@@ -9,6 +9,9 @@
 	:account-sync
 	:account-sync-since
 	:user-joined-rooms
+	:room-joined-members
+	:rooms-joined-members
+	:rooms-joined-members-ids
 	
 	*access-token*
 	*homeserver*
