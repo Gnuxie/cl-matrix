@@ -3,35 +3,37 @@
 (defparameter *homeserver* "matrix.org")
 (defparameter *access-token* "")
 
-(defun matrix-post-request (url post-pairlis &optional (access-token nil) (content-type "application/json") put)
-  "Make a POST request to a Matrix homeserver, for API calls."
+(defmacro define-matrix-send-request (name type)
+  `(defun ,name (url post-pairlis &key (access-token *access-token*) (content-type "application/json"))
+  "Make a request to a Matrix homeserver, for API calls."
 
   (let ((url (concatenate `string
-                          "http://" *homeserver* url
+                          "https://" *homeserver* url
                           (if access-token
                               (format nil "?access_token=~A" *access-token*)))))
-    (format t url)
-  (json:decode-json-from-string
-    (s-http-client:do-http-request
-      url
-      :method (if put :put :post)
-      :content
-      (json:encode-json-alist-to-string
-        post-pairlis)
-      :content-type content-type))))
+    (json:decode-json-from-source (flexi-streams:octets-to-string 
+				   (drakma:http-request
+				    url
+				    :method ,type
+				    :content
+				    (json:encode-json-alist-to-string
+				     post-pairlis)
+				    :content-type content-type))))))
 
+(define-matrix-send-request matrix-post-request :post)
+(define-matrix-send-request matrix-put-request :put)
 
-(defun matrix-get-request (url &optional (access-token nil))
+(defun matrix-get-request (url &key (access-token *access-token*))
   "Make a GET request to a Matrix homeserver, for API calls."
 
   (let ((url (concatenate `string
-                          "http://" *homeserver* url
+                          "https://" *homeserver* url
                           (if access-token
                             (format nil "?access_token=~A" *access-token*)))))
-    (json:decode-json-from-string
-      (s-http-client:do-http-request
-        url
-        :method :get))))
+    (json:decode-json-from-string (flexi-streams:octets-to-string
+				   (drakma:http-request
+				    url
+				    :method :get)))))
 
 
 
@@ -50,21 +52,19 @@
 (defun room-create (room-name)
   "Create a Matrix room."
 
-  (matrix-post-request "/_matrix/client/r0/createRoom" `T
+  (matrix-post-request "/_matrix/client/r0/createRoom"
                        (pairlis
                          (list `room_alias_name)
-                         (list room-name))
-                       `T))
+                         (list room-name))))
 
 
-(defun msg-send (msg room-id)
+(defun msg-send (msg room-id txid)
   "Send a text message to a specific room."
 
-  (matrix-post-request (concatenate `string "/_matrix/client/r0/rooms/" room-id "/send/m.room.message/35")
+  (matrix-put-request (concatenate `string "/_matrix/client/r0/rooms/" room-id "/send/m.room.message/" txid)
                        (pairlis
                          (list `msgtype `body)
-                         (list "m.text" msg))
-                       `T t))
+                         (list "m.text" msg))))
 
 
 (defun user-invite (user-id room-id)
@@ -73,23 +73,20 @@
   (matrix-post-request (concatenate `string "/_matrix/client/r0/rooms/" room-id "/invite")
                          (pairlis
                            (list `user_id)
-                           (list user-id))
-                         `T))
+                           (list user-id))))
 
 
 (defun room-join (room-id)
   "Join a Matrix room-- currently NOT WORKING."
 
   (matrix-get-request (concatenate `string "/_matrix/client/r0/rooms/"
-                                    (s-http-client:uri-encode-for-query room-id)
-                                    "/join")
-                       `T))
-
+                                    room-id
+                                    "/join")))
 
 (defun account-sync ()
   "Fetch all of the data of a Matrix account."
 
-  (matrix-get-request "/_matrix/client/r0/sync" `T))
+  (matrix-get-request "/_matrix/client/r0/sync"))
 
 
 (defun account-sync-since (since-value)
@@ -99,8 +96,7 @@
                                    "/_matrix/client/r0/sync?access_token="
                                    *access-token*
                                    "&since="
-                                   since-value)
-                      nil))
+                                   since-value)))
 
 
 (defun get-room-data (sync-data)
@@ -134,7 +130,7 @@
 
 (defun room-joined-members (room)
   "Fetch a list of joined members for a room"
-  (matrix-get-request (concatenate 'string "/_matrix/client/r0/rooms/" room "/joined_members") `T))
+  (matrix-get-request (concatenate 'string "/_matrix/client/r0/rooms/" room "/joined_members")))
 
 (defun rooms-joined-members (rooms)
   "Fetch the members information for all the supplied rooms"
@@ -142,8 +138,8 @@
 
 (defun rooms-joined-members-ids (rooms)
   "Fetch the joined members as user-ids"
-  (mapcar #'(lambda (room-id users) (cons (intern room-id "KEYWORD") (list users)))
-	  rooms
-	  (mapcar #'(lambda (x)
-		      (mapcar #'car (cdr (assoc :joined x))))
-		  (rooms-joined-members rooms))))
+  (pairlis
+      rooms
+      (mapcar #'(lambda (x)
+		  (list (mapcar #'car (cdr (assoc :joined x)))))
+	      (rooms-joined-members rooms))))

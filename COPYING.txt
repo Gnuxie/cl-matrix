@@ -1,4 +1,5 @@
 cl-matrix
+Copyright Gnuxie 2018
 Copyright Jaidyn Lev. 2018
 
 COOPERATIVE SOFTWARE LICENSE

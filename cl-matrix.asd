@@ -1,8 +1,8 @@
 (defsystem "cl-matrix"
   :version "0.0"
-  :author "Jaidyn Lev <jadedctrl@teknik.io>"
+  :author "Gnuxie <Gnuxie@protonmail.com> Jaidyn Lev <jadedctrl@teknik.io>"
   :license "CSL v1+"
-  :depends-on ("cl-json" "cl-strings" "s-http-client")
+  :depends-on ("cl-json" "cl-strings" "drakma")
   :components ((:module "src"
                 :components
 		((:file "package")
