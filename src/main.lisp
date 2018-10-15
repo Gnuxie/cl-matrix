@@ -3,6 +3,8 @@
 (defparameter *homeserver* "matrix.org")
 (defparameter *access-token* "")
 
+(push '("application" . "json") drakma:*text-content-types*)
+
 (defmacro define-matrix-send-request (name type)
   `(defun ,name (url post-pairlis &key (access-token *access-token*) (content-type "application/json"))
   "Make a request to a Matrix homeserver, for API calls."
@@ -12,13 +14,13 @@
                           (if access-token
                               (format nil "?access_token=~A" *access-token*)))))
     (json:decode-json-from-source (flexi-streams:octets-to-string 
-				   (drakma:http-request
-				    url
-				    :method ,type
-				    :content
-				    (json:encode-json-alist-to-string
-				     post-pairlis)
-				    :content-type content-type))))))
+                                   (drakma:http-request
+                                    url
+                                    :method ,type
+                                    :content
+                                    (json:encode-json-alist-to-string
+                                     post-pairlis)
+                                    :content-type content-type))))))
 
 (define-matrix-send-request matrix-post-request :post)
 (define-matrix-send-request matrix-put-request :put)
@@ -30,10 +32,9 @@
                           "https://" *homeserver* url
                           (if access-token
                             (format nil "?access_token=~A" *access-token*)))))
-    (json:decode-json-from-string (flexi-streams:octets-to-string
-				   (drakma:http-request
-				    url
-				    :method :get)))))
+    (json:decode-json-from-string (drakma:http-request
+                                   url
+                                   :method :get))))
 
 
 
@@ -41,11 +42,11 @@
   "'Log in' by fetching the access-token of an account."
 
   (let ((response (matrix-post-request "/_matrix/client/r0/login"
-				       (pairlis
-					(list `type `user `password)
-					(list "m.login.password" username password)))))
-    (cond ((assoc :error response) (error (concatenate 'string (cdr (assoc :errcode response)) ":" (cdr (assoc :error response)))))
-	  (t (setf *access-token* (cdr (assoc ':access--token response)))))))
+                                       (pairlis
+                                        (list `type `user `password)
+                                        (list "m.login.password" username password)))))
+    (cond ((assoc :error response) (error (concatenate 'string (cdr (assoc :errcode response)) " : " (cdr (assoc :error response)))))
+          (t (setf *access-token* (cdr (assoc ':access--token response)))))))
 
 
 
@@ -104,7 +105,6 @@
 
   (cdr (nth 2 (nth 7 sync-data))))
 
-	
 (defun room-messages (sync-data)
   "Single out lists messages by room from data of :account-sync or :account-sync-since."
 
@@ -141,5 +141,5 @@
   (pairlis
       rooms
       (mapcar #'(lambda (x)
-		  (list (mapcar #'car (cdr (assoc :joined x)))))
-	      (rooms-joined-members rooms))))
+                  (list (mapcar #'car (cdr (assoc :joined x)))))
+              (rooms-joined-members rooms))))
