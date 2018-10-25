@@ -126,7 +126,7 @@
 (defun user-joined-rooms ()
   "Fetch rooms joined by the user."
 
-  (cdr (car (matrix-get-request "/_matrix/client/r0/joined_rooms" `T))))
+  (cdr (car (matrix-get-request "/_matrix/client/r0/joined_rooms"))))
 
 (defun room-joined-members (room)
   "Fetch a list of joined members for a room"
@@ -143,3 +143,14 @@
       (mapcar #'(lambda (x)
                   (list (mapcar #'car (cdr (assoc :joined x)))))
               (rooms-joined-members rooms))))
+
+(defun room-power-levels (room)
+  (matrix-get-request (concatenate 'string
+                                   "/_matrix/client/r0/rooms/"
+                                   room
+                                   "/state/m.room.power_levels")))
+
+(defun rooms-power-levels (rooms)
+  (pairlis
+   rooms
+   (mapcar #'list (mapcar #'room-power-levels rooms))))
