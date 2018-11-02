@@ -9,18 +9,16 @@
   `(defun ,name (url post-pairlis &key (access-token *access-token*) (content-type "application/json"))
   "Make a request to a Matrix homeserver, for API calls."
 
-  (let ((url (concatenate `string
+  (let ((url (concatenate 'string
                           "https://" *homeserver* url
                           (if access-token
                               (format nil "?access_token=~A" *access-token*)))))
-    (json:decode-json-from-source (flexi-streams:octets-to-string 
-                                   (drakma:http-request
-                                    url
-                                    :method ,type
-                                    :content
-                                    (json:encode-json-alist-to-string
-                                     post-pairlis)
-                                    :content-type content-type))))))
+    (jsown:parse (drakma:http-request
+                                   url
+                                   :method ,type
+                                   :content
+                                   (jsown:to-json post-pairlis)
+                                   :content-type content-type)))))
 
 (define-matrix-send-request matrix-post-request :post)
 (define-matrix-send-request matrix-put-request :put)
@@ -28,11 +26,11 @@
 (defun matrix-get-request (url &key (access-token *access-token*))
   "Make a GET request to a Matrix homeserver, for API calls."
 
-  (let ((url (concatenate `string
+  (let ((url (concatenate 'string
                           "https://" *homeserver* url
                           (if access-token
                             (format nil "?access_token=~A" *access-token*)))))
-    (json:decode-json-from-string (drakma:http-request
+    (jsown:parse (drakma:http-request
                                    url
                                    :method :get))))
 
@@ -42,11 +40,10 @@
   "'Log in' by fetching the access-token of an account."
 
   (let ((response (matrix-post-request "/_matrix/client/r0/login"
-                                       (pairlis
-                                        (list `type `user `password)
-                                        (list "m.login.password" username password)))))
-    (cond ((assoc :error response) (error (concatenate 'string (cdr (assoc :errcode response)) " : " (cdr (assoc :error response)))))
-          (t (setf *access-token* (cdr (assoc ':access--token response)))))))
+                                       (cons ':obj (pairlis
+                                                    (list "type" "user" "password")
+                                                    (list "m.login.password" username password))))))
+    (setf *access-token* (jsown:val response "access_token"))))
 
 
 
@@ -54,33 +51,33 @@
   "Create a Matrix room."
 
   (matrix-post-request "/_matrix/client/r0/createRoom"
-                       (pairlis
-                         (list `room_alias_name)
-                         (list room-name))))
+                       (push ':obj (pairlis
+                                    (list "room_alias_name")
+                                    (list room-name)))))
 
 
 (defun msg-send (msg room-id txid)
   "Send a text message to a specific room."
 
-  (matrix-put-request (concatenate `string "/_matrix/client/r0/rooms/" room-id "/send/m.room.message/" txid)
-                       (pairlis
-                         (list `msgtype `body)
-                         (list "m.text" msg))))
+  (matrix-put-request (concatenate 'string "/_matrix/client/r0/rooms/" room-id "/send/m.room.message/" txid)
+                      (push ':obj (pairlis
+                                   (list "msgtype" "body")
+                                   (list "m.text" msg)))))
 
 
 (defun user-invite (user-id room-id)
   "Invite a user to a chat-room."
 
-  (matrix-post-request (concatenate `string "/_matrix/client/r0/rooms/" room-id "/invite")
-                         (pairlis
-                           (list `user_id)
-                           (list user-id))))
+  (matrix-post-request (concatenate 'string "/_matrix/client/r0/rooms/" room-id "/invite")
+                       (push ':obj (pairlis
+                                     (list "user_id")
+                                     (list user-id)))))
 
 
 (defun room-join (room-id)
   "Join a Matrix room-- currently NOT WORKING."
 
-  (matrix-get-request (concatenate `string "/_matrix/client/r0/rooms/"
+  (matrix-get-request (concatenate 'string "/_matrix/client/r0/rooms/"
                                     room-id
                                     "/join")))
 
@@ -126,23 +123,39 @@
 (defun user-joined-rooms ()
   "Fetch rooms joined by the user."
 
-  (cdr (car (matrix-get-request "/_matrix/client/r0/joined_rooms"))))
+  (jsown:val (matrix-get-request "/_matrix/client/r0/joined_rooms")
+             "joined_rooms"))
 
 (defun room-joined-members (room)
   "Fetch a list of joined members for a room"
-  (matrix-get-request (concatenate 'string "/_matrix/client/r0/rooms/" room "/joined_members")))
+  (let ((members
+         (matrix-get-request (concatenate 'string "/_matrix/client/r0/rooms/"
+                                          room
+                                          "/joined_members"))))
+    (push room members)))
 
 (defun rooms-joined-members (rooms)
   "Fetch the members information for all the supplied rooms"
-  (mapcar #'room-joined-members rooms))
+  (let ((members (mapcar #'room-joined-members rooms)))
+    (push ':obj members)))
 
 (defun rooms-joined-members-ids (rooms)
-  "Fetch the joined members as user-ids"
-  (pairlis
+  "Fetch the joined members as user-ids
+  \"(pairlis
       rooms
       (mapcar #'(lambda (x)
                   (list (mapcar #'car (cdr (assoc :joined x)))))
-              (rooms-joined-members rooms))))
+              (rooms-joined-members rooms)))\""
+
+  (let ((members (rooms-joined-members rooms)))
+
+    
+    (cons ':obj (pairlis rooms
+                         (mapcar #'(lambda (x)
+                                     (list (jsown:keywords (jsown:val
+                                                            (cdr x)
+                                                            "joined"))))
+                                 (cdr members))))))
 
 (defun room-power-levels (room)
   (matrix-get-request (concatenate 'string
@@ -151,6 +164,20 @@
                                    "/state/m.room.power_levels")))
 
 (defun rooms-power-levels (rooms)
-  (pairlis
-   rooms
-   (mapcar #'list (mapcar #'room-power-levels rooms))))
+  (cons ':obj (pairlis
+               rooms
+               (mapcar #'list (mapcar #'room-power-levels rooms)))))
+
+(defun change-power-level (room user-id power)
+  (let* ((current-levels (room-power-levels room))
+         (current-users (jsown:val current-levels "users")))
+    (setf (jsown:val current-users user-id) power)
+    (setf (jsown:val current-levels "users") current-users)
+    (matrix-put-request (concatenate 'string
+                                     "/_matrix/client/r0/rooms/"
+                                     room
+                                     "/state/m.room.power_levels")
+                        current-levels)))
+
+
+

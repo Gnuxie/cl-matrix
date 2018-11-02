@@ -2,10 +2,10 @@
   :version "0.0"
   :author "Gnuxie <Gnuxie@protonmail.com> Jaidyn Lev <jadedctrl@teknik.io>"
   :license "CSL v1+"
-  :depends-on ("cl-json" "cl-strings" "drakma")
+  :depends-on ("jsown" "cl-strings" "drakma")
   :components ((:module "src"
                 :components
-		((:file "package")
-		(:file "main"))))
+                ((:file "package")
+                (:file "main"))))
   :description
-	"A WIP Matrix library for Common Lisp.")
+        "A WIP Matrix library for Common Lisp.")
