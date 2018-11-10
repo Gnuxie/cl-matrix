@@ -2,17 +2,21 @@
 
 (defparameter *homeserver* "matrix.org")
 (defparameter *access-token* "")
+(defparameter *sync-next-batch* nil)
+(defparameter *invitations-filter* nil)
 
 (push '("application" . "json") drakma:*text-content-types*)
 
 (defmacro define-matrix-send-request (name type)
-  `(defun ,name (url post-pairlis &key (access-token *access-token*) (content-type "application/json"))
+  `(defun ,name (url post-pairlis &key (parameters nil) (access-token *access-token*) (content-type "application/json"))
   "Make a request to a Matrix homeserver, for API calls."
 
   (let ((url (concatenate 'string
                           "https://" *homeserver* url
-                          (if access-token
-                              (format nil "?access_token=~A" *access-token*)))))
+                          (when access-token
+                            (format nil "?access_token=~A" *access-token*))
+                          (when parameters parameters))))
+    
     (jsown:parse (drakma:http-request
                                    url
                                    :method ,type
@@ -23,13 +27,15 @@
 (define-matrix-send-request matrix-post-request :post)
 (define-matrix-send-request matrix-put-request :put)
 
-(defun matrix-get-request (url &key (access-token *access-token*))
+(defun matrix-get-request (url &key (parameters nil) (access-token *access-token*))
   "Make a GET request to a Matrix homeserver, for API calls."
 
   (let ((url (concatenate 'string
                           "https://" *homeserver* url
-                          (if access-token
-                            (format nil "?access_token=~A" *access-token*)))))
+                          (when access-token
+                            (format nil "?access_token=~A" *access-token*))
+                          (when parameters parameters))))
+    
     (jsown:parse (drakma:http-request
                                    url
                                    :method :get))))
@@ -73,6 +79,27 @@
                                      (list "user_id")
                                      (list user-id)))))
 
+(defun invitations (&optional (since *sync-next-batch*))
+  ;; see filters in the spec /_matrix/client/r0/user/{userId}/filter
+  ;;(jsown:val (jsown:val (account-sync :filter "{\"event\":{\"types\":\"invite\"}}") "rooms") "invites")
+
+  (unless *invitations-filter* (setf *invitations-filter*
+                                     (cdr (car (cdr (post-filter
+                                                     "@richardstallman:matrix.org"
+                                                     (jsown:parse "{\"event_fields\":[\"m.room.member\"]}")))))))
+
+  (let ((invitations (jsown:val (jsown:val (account-sync :filter *invitations-filter*
+                                                         :since since) "rooms") "invite")))
+    invitations))
+
+(defun post-filter (user-id filter)
+  (let ((response (matrix-post-request
+                   (concatenate 'string
+                                "/_matrix/client/r0/user/"
+                                user-id
+                                "/filter")
+                   filter)))
+    response))
 
 (defun room-join (room-id)
   "Join a Matrix room-- currently NOT WORKING."
@@ -81,21 +108,24 @@
                                     room-id
                                     "/join")))
 
-(defun account-sync ()
-  "Fetch all of the data of a Matrix account."
+(defun account-sync (&key (since *sync-next-batch*) filter)
+  "Fetch all of the data of a Matrix account.
+  Updates *sync-next-batch*"
 
-  (matrix-get-request "/_matrix/client/r0/sync"))
-
-
-(defun account-sync-since (since-value)
-  "Sync the account data since a certain special time-stamp."
-
-  (matrix-get-request (concatenate `string
-                                   "/_matrix/client/r0/sync?access_token="
-                                   *access-token*
-                                   "&since="
-                                   since-value)))
-
+  (let ((response (matrix-get-request "/_matrix/client/r0/sync"
+                                      :parameters
+                                      (concatenate 'string
+                                                   (when since
+                                                     (concatenate 'string
+                                                                  "&since="
+                                                                  since))
+                                                   (when filter
+                                                     (concatenate 'string
+                                                                  "&filter="
+                                                                  filter))))))
+    
+    (setf *sync-next-batch* (jsown:val response "next_batch"))
+    response))
 
 (defun get-room-data (sync-data)
   "Single out room data from data of :account-sync or :account-sync-since."
@@ -140,12 +170,7 @@
     (push ':obj members)))
 
 (defun rooms-joined-members-ids (rooms)
-  "Fetch the joined members as user-ids
-  \"(pairlis
-      rooms
-      (mapcar #'(lambda (x)
-                  (list (mapcar #'car (cdr (assoc :joined x)))))
-              (rooms-joined-members rooms)))\""
+  "Fetch the joined members as user-ids"
 
   (let ((members (rooms-joined-members rooms)))
 
@@ -158,17 +183,20 @@
                                  (cdr members))))))
 
 (defun room-power-levels (room)
+  "Fetch the power levels for the room"
   (matrix-get-request (concatenate 'string
                                    "/_matrix/client/r0/rooms/"
                                    room
                                    "/state/m.room.power_levels")))
 
 (defun rooms-power-levels (rooms)
+  "Fetch the power levels for all the rooms"
   (cons ':obj (pairlis
                rooms
                (mapcar #'list (mapcar #'room-power-levels rooms)))))
 
 (defun change-power-level (room user-id power)
+  "change the power level of a user"
   (let* ((current-levels (room-power-levels room))
          (current-users (jsown:val current-levels "users")))
     (setf (jsown:val current-users user-id) power)

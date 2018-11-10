@@ -14,6 +14,7 @@
         :rooms-joined-members-ids
         :room-power-levels
         :rooms-power-levels
+        :change-power-level
         
         *access-token*
         *homeserver*
