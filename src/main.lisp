@@ -8,7 +8,7 @@
 (push '("application" . "json") drakma:*text-content-types*)
 
 (defmacro define-matrix-send-request (name type)
-  `(defun ,name (url post-pairlis &key (parameters nil) (access-token *access-token*) (content-type "application/json"))
+  `(defun ,name (url the-json &key (parameters nil) (access-token *access-token*) (content-type "application/json"))
   "Make a request to a Matrix homeserver, for API calls."
 
   (let ((url (concatenate 'string
@@ -16,13 +16,14 @@
                           (when access-token
                             (format nil "?access_token=~A" *access-token*))
                           (when parameters parameters))))
-    
-    (jsown:parse (drakma:http-request
-                                   url
-                                   :method ,type
-                                   :content
-                                   (jsown:to-json post-pairlis)
-                                   :content-type content-type)))))
+
+    (let ((response (drakma:http-request
+                     url
+                     :method ,type
+                     :content
+                     the-json
+                     :content-type content-type)))
+      (jsown:parse response)))))
 
 (define-matrix-send-request matrix-post-request :post)
 (define-matrix-send-request matrix-put-request :put)
@@ -36,9 +37,11 @@
                             (format nil "?access_token=~A" *access-token*))
                           (when parameters parameters))))
     
-    (jsown:parse (drakma:http-request
-                                   url
-                                   :method :get))))
+    (let ((response (drakma:http-request
+                     url
+                     :method :get)))
+
+      (jsown:parse response))))
 
 
 
@@ -46,47 +49,65 @@
   "'Log in' by fetching the access-token of an account."
 
   (let ((response (matrix-post-request "/_matrix/client/r0/login"
-                                       (cons ':obj (pairlis
-                                                    (list "type" "user" "password")
-                                                    (list "m.login.password" username password))))))
+                                       (jsown:to-json (cons ':obj (pairlis
+                                                                   (list "type" "user" "password")
+                                                                   (list "m.login.password" username password)))))))
     (setf *access-token* (jsown:val response "access_token"))))
 
+(defun account-log-out ()
+  (matrix-post-request "/_matrix/client/r0/logout"
+                       "{}")
 
+  (setf *access-token* nil))
 
-(defun room-create (room-name)
-  "Create a Matrix room."
-
-  (matrix-post-request "/_matrix/client/r0/createRoom"
-                       (push ':obj (pairlis
-                                    (list "room_alias_name")
-                                    (list room-name)))))
+(defun room-create (&key
+                    (room-alias nil room-alias-p)
+                    (visibility "private" visibility-p)
+                    (name nil room-name-p)
+                    (topic nil topic-p)
+                    (invite nil invite-p)
+                    (preset nil preset-p)
+                      (is-direct nil is-direct-p))
+  "Create a Matrix room. Please refer to the specification to see what should be given in the keyword args."
+  
+  (let ((json-to-submit (jsown:to-json
+                         (cons ':obj (alist-without-nulls
+                                      "room_alias_name" room-alias room-alias-p
+                                      "visibility" visibility visibility-p
+                                      "name" name room-name-p
+                                      "topic" topic topic-p
+                                      "invite" invite invite-p
+                                      "preset" preset preset-p
+                                      "is_direct" is-direct is-direct-p)))))
+    
+    (matrix-post-request "/_matrix/client/r0/createRoom"
+                         json-to-submit)))
 
 
 (defun msg-send (msg room-id txid)
   "Send a text message to a specific room."
 
   (matrix-put-request (concatenate 'string "/_matrix/client/r0/rooms/" room-id "/send/m.room.message/" txid)
-                      (push ':obj (pairlis
-                                   (list "msgtype" "body")
-                                   (list "m.text" msg)))))
+                      (jsown:to-json (push ':obj (pairlis
+                                                  (list "msgtype" "body")
+                                                  (list "m.text" msg))))))
 
 
 (defun user-invite (user-id room-id)
   "Invite a user to a chat-room."
 
   (matrix-post-request (concatenate 'string "/_matrix/client/r0/rooms/" room-id "/invite")
-                       (push ':obj (pairlis
-                                     (list "user_id")
-                                     (list user-id)))))
+                       (jsown:to-json (push ':obj (pairlis
+                                                   (list "user_id")
+                                                   (list user-id))))))
 
-(defun invitations (&optional (since *sync-next-batch*))
+(defun invitations (user-name &optional (since *sync-next-batch*))
   ;; see filters in the spec /_matrix/client/r0/user/{userId}/filter
-  ;;(jsown:val (jsown:val (account-sync :filter "{\"event\":{\"types\":\"invite\"}}") "rooms") "invites")
 
   (unless *invitations-filter* (setf *invitations-filter*
                                      (cdr (car (cdr (post-filter
-                                                     "@richardstallman:matrix.org"
-                                                     (jsown:parse "{\"event_fields\":[\"m.room.member\"]}")))))))
+                                                     user-name
+                                                     "{\"event_fields\":[\"m.room.member\"]}"))))))
 
   (let ((invitations (jsown:val (jsown:val (account-sync :filter *invitations-filter*
                                                          :since since) "rooms") "invite")))
@@ -102,11 +123,12 @@
     response))
 
 (defun room-join (room-id)
-  "Join a Matrix room-- currently NOT WORKING."
+  "Join a Matrix room by id, not the same as alias, see the spec."
 
-  (matrix-get-request (concatenate 'string "/_matrix/client/r0/rooms/"
+  (matrix-post-request (concatenate 'string "/_matrix/client/r0/rooms/"
                                     room-id
-                                    "/join")))
+                                    "/join")
+                       "{}"))
 
 (defun account-sync (&key (since *sync-next-batch*) filter)
   "Fetch all of the data of a Matrix account.
@@ -209,3 +231,18 @@
 
 
 
+(defun room-forget (room-id)
+  "forget a room"
+  (matrix-post-request (concatenate 'string
+                                    "/_matrix/client/r0/rooms/"
+                                    room-id
+                                    "/forget")
+                       "{}"))
+
+(defun room-leave (room-id)
+  "leave a room"
+  (matrix-post-request (concatenate 'string
+                                    "/_matrix/client/r0/rooms/"
+                                    room-id
+                                    "/leave")
+                       "{}"))

@@ -6,6 +6,7 @@
   :components ((:module "src"
                 :components
                 ((:file "package")
-                (:file "main"))))
+                 (:file "main")
+                 (:file "utils"))))
   :description
         "A WIP Matrix library for Common Lisp.")
