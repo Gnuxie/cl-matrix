@@ -88,7 +88,7 @@
   "Send a text message to a specific room."
 
   (matrix-put-request (concatenate 'string "/_matrix/client/r0/rooms/" room-id "/send/m.room.message/" txid)
-                      (jsown:to-json (push ':obj (pairlis
+                      (jsown:to-json (cons ':obj (pairlis
                                                   (list "msgtype" "body")
                                                   (list "m.text" msg))))))
 
@@ -150,30 +150,20 @@
     response))
 
 (defun get-room-data (sync-data)
-  "Single out room data from data of :account-sync or :account-sync-since."
+  "deprecated
+Single out room data from data of :account-sync or :account-sync-since."
 
   (cdr (nth 2 (nth 7 sync-data))))
 
 (defun room-messages (sync-data)
-  "Single out lists messages by room from data of :account-sync or :account-sync-since."
+  "deprecated
+Single out lists messages by room from data of :account-sync or :account-sync-since."
 
   (let ((rooms (get-room-data sync-data)))
     (mapcar (lambda (x) (nth 2 x)) rooms)))
 
-
-(defun room-sync-to-intern-id (sync-id)
-  "Convert malformed room IDs from sync data to 'internal ID'. Since in the JSON sync
-  data, room-names are stored in all caps, while the actual room-names are in mixed-caps,
-  cl-matrix converts both sync-data and actual room-names into all downcase for internal
-  use."
-
-  (string-downcase
-    (cl-strings:replace-all
-      (cl-strings:replace-all sync-id "-" "") "+" "")))
-
-
 (defun user-joined-rooms ()
-  "Fetch rooms joined by the user."
+  "Fetch rooms joined by the user. This is not filtered from sync, it's an actual api call."
 
   (jsown:val (matrix-get-request "/_matrix/client/r0/joined_rooms")
              "joined_rooms"))
@@ -227,9 +217,7 @@
                                      "/_matrix/client/r0/rooms/"
                                      room
                                      "/state/m.room.power_levels")
-                        current-levels)))
-
-
+                        (jsown:to-json current-levels))))
 
 (defun room-forget (room-id)
   "forget a room"

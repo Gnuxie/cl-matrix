@@ -19,6 +19,7 @@
          :room-forget
          :room-leave
          :invitations
+         :post-filter
 
          *access-token*
          *homeserver*

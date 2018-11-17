@@ -13,6 +13,9 @@ imo this is really bad work from the jsown people, it should return something el
 ## how to handle the access token, what if someone needs to use multiple accounts?
 the since value will mess up here also
 
+## maybe have access tokens in a plist or something
+e.g. you give the user-id with each event to use a valid access token for that id.
+
 # Done
 
 ## sort out testing this thing because i don't think the password can be here.

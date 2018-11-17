@@ -13,6 +13,8 @@
 (defvar *user-one* nil)
 (defvar *user-two* nil)
 
+(defmacro detect-matrix-error (form)
+  `(isnt string= "errcode" (caadr ,form)))
 
 (defun load-config ()
   (with-open-file (in "../test/test.config")
@@ -60,10 +62,9 @@
   (setf cl-matrix:*sync-next-batch* nil) ;; change this so that the invitations accepts a since
   (let ((the-invitations (cl-matrix:invitations *username2*)))
     (format t "~s~%" the-invitations)
-    (isnt string= "errcode" (caadr the-invitations))
+    (detect-matrix-error the-invitations)
     
     (define-test invitations
-      :parent direct-chat
 
       ;; verify that the chat is direct and that the invite was sent
       (let ((the-invite (find-if #'(lambda (x)
@@ -73,7 +74,27 @@
                                        (jsown:filter the-invitations *direct-chat* "invite_state" "events"))))
         (true the-invite))
       
-      (is string= *direct-chat* (jsown:val (cl-matrix:room-join *direct-chat*) "room_id")))))
+      (is string= *direct-chat* (jsown:val (cl-matrix:room-join *direct-chat*) "room_id"))))
+
+  (define-test room-events
+    :serial nil
+
+    (define-test msg-send
+
+      (setf cl-matrix:*access-token* *user-one*)
+      ;; should probably introduce some random data here.
+      (let ((send-response (cl-matrix:msg-send "the is the test message" *direct-chat* "1")))
+        (detect-matrix-error send-response)
+        (is string= "event_id" (caadr send-response))))
+
+    (define-test power-levels
+      (setf cl-matrix:*access-token* *user-one*)
+      (let ((power-change-response (cl-matrix:change-power-level *direct-chat* *username2* "90")))
+        (detect-matrix-error power-change-response)
+        (is string= "event_id" (caadr power-change-response))
+
+        (let ((direct-chat-levels (cl-matrix:room-power-levels *direct-chat*)))
+          (is string= "90" (jsown:filter direct-chat-levels "users" *username2*) "verify that the power level changed"))))))
 
 (test 'cl-matrix-test)
 
