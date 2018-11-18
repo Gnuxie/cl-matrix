@@ -1,7 +1,5 @@
 # todo
 
-## json should be encoded to string before it is passed to the matrix-send-request
-
 ## account-log-in is a really bad name
 
 ## sort out the errors and allow people to handle them
@@ -10,13 +8,22 @@
 so we can handle the case when there is no key e.g. when matrix returns an error instead,
 imo this is really bad work from the jsown people, it should return something else than an error
 
+## change the since value to only have the side effect on different filters, or just not have it
+maybe we could do some lazy psuedo magic to do hide the since completly?
+
+## keep names for filters, keep track of the ids for each one ?
+
 ## how to handle the access token, what if someone needs to use multiple accounts?
 the since value will mess up here also
 
 ## maybe have access tokens in a plist or something
 e.g. you give the user-id with each event to use a valid access token for that id.
 
+## there is a pathname issue with the test config
+
 # Done
 
 ## sort out testing this thing because i don't think the password can be here.
 passwords are now loaded from a property list.
+
+## json should be encoded to string before it is passed to the matrix-send-request

@@ -59,8 +59,7 @@
   :depends-on (room-create)
 
   (setf cl-matrix:*access-token* *user-two*)
-  (setf cl-matrix:*sync-next-batch* nil) ;; change this so that the invitations accepts a since
-  (let ((the-invitations (cl-matrix:invitations *username2*)))
+  (let ((the-invitations (cl-matrix:invitations *username2* :since nil :from *username*)))
     (format t "~s~%" the-invitations)
     (detect-matrix-error the-invitations)
     
@@ -73,8 +72,9 @@
                                                 (string= *username* (jsown:val x "sender"))))
                                        (jsown:filter the-invitations *direct-chat* "invite_state" "events"))))
         (true the-invite))
-      
-      (is string= *direct-chat* (jsown:val (cl-matrix:room-join *direct-chat*) "room_id"))))
+      (is string= *direct-chat* (jsown:val (cl-matrix:room-join *direct-chat*) "room_id"))
+
+))
 
   (define-test room-events
     :serial nil

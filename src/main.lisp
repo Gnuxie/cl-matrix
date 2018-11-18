@@ -3,7 +3,6 @@
 (defparameter *homeserver* "matrix.org")
 (defparameter *access-token* "")
 (defparameter *sync-next-batch* nil)
-(defparameter *invitations-filter* nil)
 
 (push '("application" . "json") drakma:*text-content-types*)
 
@@ -97,21 +96,26 @@
   "Invite a user to a chat-room."
 
   (matrix-post-request (concatenate 'string "/_matrix/client/r0/rooms/" room-id "/invite")
-                       (jsown:to-json (push ':obj (pairlis
+                       (jsown:to-json (cons ':obj (pairlis
                                                    (list "user_id")
                                                    (list user-id))))))
 
-(defun invitations (user-name &optional (since *sync-next-batch*))
+(defun invitations (user-name &key (since *sync-next-batch*) (from nil from-p))
   ;; see filters in the spec /_matrix/client/r0/user/{userId}/filter
 
-  (unless *invitations-filter* (setf *invitations-filter*
-                                     (cdr (car (cdr (post-filter
-                                                     user-name
-                                                     "{\"event_fields\":[\"m.room.member\"]}"))))))
+  (let ((invitations-filter (cdadr (post-filter
+                                    user-name
+                                    (if from-p
+                                        (format nil
+                                                "{\"event_fields\":[\"m.room.member\"], \"account_data\":{\"limit\":0, \"not_types\":[\"*\"]},\"room\":{\"account_data\":{\"senders\":[~s]}}}"
+                                                from)
+                                        "{\"event_fields\":[\"m.room.member\"]}")))))
 
-  (let ((invitations (jsown:val (jsown:val (account-sync :filter *invitations-filter*
-                                                         :since since) "rooms") "invite")))
-    invitations))
+    (let ((invitations (jsown:filter (account-sync :filter invitations-filter
+                                                   :since since)
+                                     
+                                     "rooms" "invite")))
+      invitations)))
 
 (defun post-filter (user-id filter)
   (let ((response (matrix-post-request
