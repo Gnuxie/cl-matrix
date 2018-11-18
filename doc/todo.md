@@ -19,7 +19,6 @@ the since value will mess up here also
 ## maybe have access tokens in a plist or something
 e.g. you give the user-id with each event to use a valid access token for that id.
 
-## there is a pathname issue with the test config
 
 # Done
 
@@ -27,3 +26,5 @@ e.g. you give the user-id with each event to use a valid access token for that i
 passwords are now loaded from a property list.
 
 ## json should be encoded to string before it is passed to the matrix-send-request
+
+## there is a pathname issue with the test config

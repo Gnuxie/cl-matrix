@@ -17,7 +17,7 @@
   `(isnt string= "errcode" (caadr ,form)))
 
 (defun load-config ()
-  (with-open-file (in "../test/test.config")
+  (with-open-file (in (merge-pathnames "test/test.config" (asdf:system-source-directory :cl-matrix)))
     (with-standard-io-syntax
         (let ((config (read in)))
           (setf *username* (getf config :username))
