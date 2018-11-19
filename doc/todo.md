@@ -19,6 +19,30 @@ the since value will mess up here also
 ## maybe have access tokens in a plist or something
 e.g. you give the user-id with each event to use a valid access token for that id.
 
+## make tx-id unix stimestamp
+
+/dev/ponies
+Encrypted by an unverified device
+txid is used to track messages
+
+Encrypted by an unverified device
+either make it a unix timestamp or random data
+22:26Encrypted by an unverified device
+and by unix timestamp i mean in microseconds
+Sourcerer Gnuxie 🐝💜
+Encrypted by a verified device
+ohhhhhhhh
+
+/dev/ponies
+Encrypted by an unverified device
+riot uses m+unixtimestamp.milisecondsextra
+
+Sourcerer Gnuxie 🐝💜
+Encrypted by a verified device
+cool, thankies devie
+
+## power levels need to be handled internally as float
+they can be string on synapse too so watch out
 
 # Done
 
@@ -28,3 +52,4 @@ passwords are now loaded from a property list.
 ## json should be encoded to string before it is passed to the matrix-send-request
 
 ## there is a pathname issue with the test config
+

@@ -83,13 +83,13 @@
                          json-to-submit)))
 
 
-(defun msg-send (msg room-id txid)
+(defun msg-send (msg room-id txid &key (type "m.text"))
   "Send a text message to a specific room."
 
   (matrix-put-request (concatenate 'string "/_matrix/client/r0/rooms/" room-id "/send/m.room.message/" txid)
                       (jsown:to-json (cons ':obj (pairlis
                                                   (list "msgtype" "body")
-                                                  (list "m.text" msg))))))
+                                                  (list type msg))))))
 
 
 (defun user-invite (user-id room-id)
