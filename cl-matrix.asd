@@ -7,6 +7,7 @@
                 :components
                 ((:file "package")
                  (:file "main")
-                 (:file "utils"))))
+                 (:file "utils")
+                 (:file "account"))))
   :description
         "A WIP Matrix library for Common Lisp.")

@@ -13,13 +13,8 @@ maybe we could do some lazy psuedo magic to do hide the since completly?
 
 ## keep names for filters, keep track of the ids for each one ?
 
-## how to handle the access token, what if someone needs to use multiple accounts?
-the since value will mess up here also
-
 ## maybe have access tokens in a plist or something
 e.g. you give the user-id with each event to use a valid access token for that id.
-
-
 
 ## power levels internally as int but should expect float or string because synapse isn't spec conforming :anger:
 they can be string on synapse too so watch out
@@ -38,3 +33,6 @@ tx-id is now (+ (* 10000 (get-universal-time)) (random 10000))
 (see (random-timestamp))
 as without an external library there is no way to get milliseconds
 this could be better or worse.
+
+## how to handle the access token, what if someone needs to use multiple accounts?
+account class and with-account macro added

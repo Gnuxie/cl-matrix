@@ -21,6 +21,16 @@
          :invitations
          :post-filter
 
+         account
+         :get-hostname
+         :make-account
+         :change-account
+         :with-account
+         :access-token
+         :username
+         :password
+         :homeserver
+
          *access-token*
          *homeserver*
          *sync-next-batch*
