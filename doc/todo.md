@@ -19,29 +19,9 @@ the since value will mess up here also
 ## maybe have access tokens in a plist or something
 e.g. you give the user-id with each event to use a valid access token for that id.
 
-## make tx-id unix stimestamp
 
-/dev/ponies
-Encrypted by an unverified device
-txid is used to track messages
 
-Encrypted by an unverified device
-either make it a unix timestamp or random data
-22:26Encrypted by an unverified device
-and by unix timestamp i mean in microseconds
-Sourcerer Gnuxie 🐝💜
-Encrypted by a verified device
-ohhhhhhhh
-
-/dev/ponies
-Encrypted by an unverified device
-riot uses m+unixtimestamp.milisecondsextra
-
-Sourcerer Gnuxie 🐝💜
-Encrypted by a verified device
-cool, thankies devie
-
-## power levels need to be handled internally as float
+## power levels internally as int but should expect float or string because synapse isn't spec conforming :anger:
 they can be string on synapse too so watch out
 
 # Done
@@ -53,3 +33,8 @@ passwords are now loaded from a property list.
 
 ## there is a pathname issue with the test config
 
+## make tx-id unix timestamp
+tx-id is now (+ (* 10000 (get-universal-time)) (random 10000))
+(see (random-timestamp))
+as without an external library there is no way to get milliseconds
+this could be better or worse.

@@ -83,7 +83,7 @@
 
       (setf cl-matrix:*access-token* *user-one*)
       ;; should probably introduce some random data here.
-      (let ((send-response (cl-matrix:msg-send "the is the test message" *direct-chat* "1")))
+      (let ((send-response (cl-matrix:msg-send "the is the test message" *direct-chat*)))
         (detect-matrix-error send-response)
         (is string= "event_id" (caadr send-response))))
 

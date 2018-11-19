@@ -83,10 +83,10 @@
                          json-to-submit)))
 
 
-(defun msg-send (msg room-id txid &key (type "m.text"))
+(defun msg-send (msg room-id &key (txid (random-timestamp)) (type "m.text"))
   "Send a text message to a specific room."
 
-  (matrix-put-request (concatenate 'string "/_matrix/client/r0/rooms/" room-id "/send/m.room.message/" txid)
+  (matrix-put-request (concatenate 'string "/_matrix/client/r0/rooms/" room-id "/send/m.room.message/" (princ-to-string txid))
                       (jsown:to-json (cons ':obj (pairlis
                                                   (list "msgtype" "body")
                                                   (list type msg))))))
@@ -238,3 +238,6 @@ Single out lists messages by room from data of :account-sync or :account-sync-si
                                     room-id
                                     "/leave")
                        "{}"))
+
+(defun random-timestamp ()
+  (+ (* 100000 (get-universal-time)) (random 100000)))
