@@ -11,7 +11,7 @@
              :initarg :username
              :initform ""
              :type string
-             :documentation "The username for the account")
+             :documentation "The username for the account should be in the format \"@<username>:<homeserver>\"")
 
    (password :accessor password
              :initarg :password
@@ -42,6 +42,14 @@
     (setf (access-token this-account) (account-log-in (username this-account) (password this-account)))))
 
 (defmacro with-account ((this-account &optional logout-p) &body body)
-  `(unwind-protect (progn (change-account ,this-account)
-                          ,@body)
-     ,(when logout-p '(account-log-out))))
+  (let ((old-token (gensym))
+        (old-home (gensym)))
+
+    `(let ((,old-home *homeserver*)
+           (,old-token *access-token*))
+
+       (unwind-protect (progn (change-account ,this-account)
+                              ,@body)
+         ,(when logout-p '(account-log-out))
+         (setf *homeserver* ,old-home)
+         (setf *access-token* ,old-token)))))

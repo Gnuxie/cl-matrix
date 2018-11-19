@@ -1,5 +1,10 @@
 # todo
 
+## \*sync-next-batch\*
+this needs updating to work with our new account class
+
+## test that nesting with-account works
+
 ## account-log-in is a really bad name
 
 ## sort out the errors and allow people to handle them
