@@ -29,7 +29,13 @@
   (cl-matrix:change-account *user-one*)
   (true (< 0 (length (cl-matrix:access-token *user-one*))))
   (cl-matrix:change-account *user-two*)
-  (true (< 0 (length (cl-matrix:access-token *user-two*)))))
+  (true (< 0 (length (cl-matrix:access-token *user-two*))))
+
+  (define-test loging-out
+      (let ((a-token (cl-matrix:account-log-in (cl-matrix:username *user-one*) (cl-matrix:password *user-one*))))
+        (cl-matrix:account-log-out)
+        (setf cl-matrix:*access-token* a-token)
+        (is string= "M_UNKNOWN_TOKEN" (cdadr (cl-matrix:room-join "!QtykxKocfZaZOUrTwp:matrix.org"))))))
 
 (define-test room-create
   :parent cl-matrix-test

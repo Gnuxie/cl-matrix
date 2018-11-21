@@ -50,6 +50,6 @@
 
        (unwind-protect (progn (change-account ,this-account)
                               ,@body)
-         ,(when logout-p '(account-log-out))
+         ,(when logout-p '(account-log-out) `(setf (access-token ,this-account) ""))
          (setf *homeserver* ,old-home)
          (setf *access-token* ,old-token)))))

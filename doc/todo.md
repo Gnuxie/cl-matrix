@@ -18,9 +18,6 @@ maybe we could do some lazy psuedo magic to do hide the since completly?
 
 ## keep names for filters, keep track of the ids for each one ?
 
-## maybe have access tokens in a plist or something
-e.g. you give the user-id with each event to use a valid access token for that id.
-
 ## power levels internally as int but should expect float or string because synapse isn't spec conforming :anger:
 they can be string on synapse too so watch out
 
