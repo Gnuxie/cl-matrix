@@ -1,61 +1,20 @@
 (in-package :cl-matrix)
 
-(defparameter *homeserver* "matrix.org")
-(defparameter *access-token* "")
 (defparameter *sync-next-batch* nil)
 
 (push '("application" . "json") drakma:*text-content-types*)
 
-(defmacro define-matrix-send-request (name type)
-  `(defun ,name (url the-json &key (parameters nil) (access-token *access-token*) (content-type "application/json"))
-  "Make a request to a Matrix homeserver, for API calls."
-
-  (let ((url (concatenate 'string
-                          "https://" *homeserver* url
-                          (when access-token
-                            (format nil "?access_token=~A" *access-token*))
-                          (when parameters parameters))))
-
-    (let ((response (drakma:http-request
-                     url
-                     :method ,type
-                     :content
-                     the-json
-                     :content-type content-type)))
-      (jsown:parse response)))))
-
-(define-matrix-send-request matrix-post-request :post)
-(define-matrix-send-request matrix-put-request :put)
-
-(defun matrix-get-request (url &key (parameters nil) (access-token *access-token*))
-  "Make a GET request to a Matrix homeserver, for API calls."
-
-  (let ((url (concatenate 'string
-                          "https://" *homeserver* url
-                          (when access-token
-                            (format nil "?access_token=~A" *access-token*))
-                          (when parameters parameters))))
-    
-    (let ((response (drakma:http-request
-                     url
-                     :method :get)))
-
-      (jsown:parse response))))
-
-
-
 (defun account-log-in (username password)
   "'Log in' by fetching the access-token of an account."
 
-  (let ((response (matrix-post-request "/_matrix/client/r0/login"
-                                       (jsown:to-json (cons ':obj (pairlis
-                                                                   (list "type" "user" "password")
-                                                                   (list "m.login.password" username password)))))))
+  (let ((response (jsown:parse (post-login
+                                (jsown:to-json (cons ':obj (pairlis
+                                                            (list "type" "user" "password")
+                                                            (list "m.login.password" username password))))))))
     (setf *access-token* (jsown:val response "access_token"))))
 
 (defun account-log-out ()
-  (matrix-post-request "/_matrix/client/r0/logout"
-                       "{}")
+  (post-logout "{}")
 
   (setf *access-token* nil))
 
@@ -79,31 +38,30 @@
                                       "preset" preset preset-p
                                       "is_direct" is-direct is-direct-p)))))
     
-    (matrix-post-request "/_matrix/client/r0/createRoom"
-                         json-to-submit)))
+    (jsown:parse (post-create-room json-to-submit))))
 
 
 (defun msg-send (msg room-id &key (txid (random-timestamp)) (type "m.text"))
   "Send a text message to a specific room."
 
-  (matrix-put-request (concatenate 'string "/_matrix/client/r0/rooms/" room-id "/send/m.room.message/" (princ-to-string txid))
-                      (jsown:to-json (cons ':obj (pairlis
-                                                  (list "msgtype" "body")
-                                                  (list type msg))))))
+  (jsown:parse (put-room-send-event room-id "m.room.message" (princ-to-string txid)
+                                    (jsown:to-json (cons ':obj (pairlis
+                                                                (list "msgtype" "body")
+                                                                (list type msg)))))))
 
 
 (defun user-invite (user-id room-id)
   "Invite a user to a chat-room."
 
-  (matrix-post-request (concatenate 'string "/_matrix/client/r0/rooms/" room-id "/invite")
-                       (jsown:to-json (cons ':obj (pairlis
-                                                   (list "user_id")
-                                                   (list user-id))))))
+  (jsown:parse (post-room-invite room-id
+                                 (jsown:to-json (cons ':obj (pairlis
+                                                             (list "user_id")
+                                                             (list user-id)))))))
 
 (defun invitations (user-name &key (since *sync-next-batch*) (from nil from-p))
   ;; see filters in the spec /_matrix/client/r0/user/{userId}/filter
 
-  (let ((invitations-filter (cdadr (post-filter
+  (let ((invitations-filter (cdadr (upload-filter
                                     user-name
                                     (if from-p
                                         (format nil
@@ -117,67 +75,45 @@
                                      "rooms" "invite")))
       invitations)))
 
-(defun post-filter (user-id filter)
-  (let ((response (matrix-post-request
-                   (concatenate 'string
-                                "/_matrix/client/r0/user/"
-                                user-id
-                                "/filter")
-                   filter)))
-    response))
+(defun upload-filter (user-id filter)
+  (jsown:parse (post-user-filter
+                user-id
+                filter)))
 
 (defun room-join (room-id)
   "Join a Matrix room by id, not the same as alias, see the spec."
 
-  (matrix-post-request (concatenate 'string "/_matrix/client/r0/rooms/"
-                                    room-id
-                                    "/join")
-                       "{}"))
+  (jsown:parse (post-room-join room-id "{}")))
 
 (defun account-sync (&key (since *sync-next-batch*) filter)
   "Fetch all of the data of a Matrix account.
   Updates *sync-next-batch*"
 
-  (let ((response (matrix-get-request "/_matrix/client/r0/sync"
-                                      :parameters
-                                      (concatenate 'string
-                                                   (when since
-                                                     (concatenate 'string
-                                                                  "&since="
-                                                                  since))
-                                                   (when filter
-                                                     (concatenate 'string
-                                                                  "&filter="
-                                                                  filter))))))
+  (let ((response (jsown:parse (matrix-get-request "/_matrix/client/r0/sync"
+                                                   :parameters
+                                                   (concatenate 'string
+                                                                (when since
+                                                                  (concatenate 'string
+                                                                               "&since="
+                                                                               since))
+                                                                (when filter
+                                                                  (concatenate 'string
+                                                                               "&filter="
+                                                                               filter)))))))
     
     (setf *sync-next-batch* (jsown:val response "next_batch"))
     response))
 
-(defun get-room-data (sync-data)
-  "deprecated
-Single out room data from data of :account-sync or :account-sync-since."
-
-  (cdr (nth 2 (nth 7 sync-data))))
-
-(defun room-messages (sync-data)
-  "deprecated
-Single out lists messages by room from data of :account-sync or :account-sync-since."
-
-  (let ((rooms (get-room-data sync-data)))
-    (mapcar (lambda (x) (nth 2 x)) rooms)))
-
 (defun user-joined-rooms ()
   "Fetch rooms joined by the user. This is not filtered from sync, it's an actual api call."
 
-  (jsown:val (matrix-get-request "/_matrix/client/r0/joined_rooms")
+  (jsown:val (jsown:parse (get-joined-rooms))
              "joined_rooms"))
 
 (defun room-joined-members (room)
   "Fetch a list of joined members for a room"
   (let ((members
-         (matrix-get-request (concatenate 'string "/_matrix/client/r0/rooms/"
-                                          room
-                                          "/joined_members"))))
+         (jsown:parse (get-room-joined-members room))))
     (push room members)))
 
 (defun rooms-joined-members (rooms)
@@ -198,15 +134,26 @@ Single out lists messages by room from data of :account-sync or :account-sync-si
                                                             "joined"))))
                                  (cdr members))))))
 
+(defun room-state (room-id &optional event-type state-key)
+  "Get the state events for the current state of a room."
+  (jsown:parse
+   (cond ((and event-type state-key) (get-room-state-key room-id
+                                                         event-type
+                                                         state-key))
+
+         (event-type (get-room-state-event room-id event-type))
+         (t (get-room-state room-id)))))
+
+(defun rooms-state (rooms &optional event-type state-key)
+  (cons ':obj (pairlis rooms
+                       (mapcar #'(lambda (x) (room-state x (when event-type event-type) (when state-key state-key))) rooms))))
+
 (defun room-power-levels (room)
-  "Fetch the power levels for the room"
-  (matrix-get-request (concatenate 'string
-                                   "/_matrix/client/r0/rooms/"
-                                   room
-                                   "/state/m.room.power_levels")))
+  "Get the power levels for the room. Maybe this should be deprecated for room-state"
+  (room-state room "m.room.power_levels"))
 
 (defun rooms-power-levels (rooms)
-  "Fetch the power levels for all the rooms"
+  "Get the power levels for all the rooms. Maybe this should be deprecated for rooms-state"
   (cons ':obj (pairlis
                rooms
                (mapcar #'list (mapcar #'room-power-levels rooms)))))
@@ -217,27 +164,19 @@ Single out lists messages by room from data of :account-sync or :account-sync-si
          (current-users (jsown:val current-levels "users")))
     (setf (jsown:val current-users user-id) power)
     (setf (jsown:val current-levels "users") current-users)
-    (matrix-put-request (concatenate 'string
-                                     "/_matrix/client/r0/rooms/"
-                                     room
-                                     "/state/m.room.power_levels")
-                        (jsown:to-json current-levels))))
+    (jsown:parse (put-room-state room
+                                 "m.room.power_levels"
+                                 (jsown:to-json current-levels)))))
 
 (defun room-forget (room-id)
   "forget a room"
-  (matrix-post-request (concatenate 'string
-                                    "/_matrix/client/r0/rooms/"
-                                    room-id
-                                    "/forget")
-                       "{}"))
+  (jsown:parse (post-room-forget room-id
+                                 "{}")))
 
 (defun room-leave (room-id)
   "leave a room"
-  (matrix-post-request (concatenate 'string
-                                    "/_matrix/client/r0/rooms/"
-                                    room-id
-                                    "/leave")
-                       "{}"))
+  (jsown:parse (post-room-leave room-id
+                                    "{}")))
 
 (defun random-timestamp ()
   (+ (* 100000 (get-universal-time)) (random 100000)))

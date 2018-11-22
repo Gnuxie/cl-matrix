@@ -52,6 +52,7 @@
 
       ;; set up inchat test
       (setf *direct-chat* (jsown:val (cl-matrix:room-create :name "test direct"
+                                                            :preset "private_chat"
                                                             :is-direct t
                                                             :invite (list (cl-matrix:username *user-two*))) "room_id")))))
 
