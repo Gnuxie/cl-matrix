@@ -66,6 +66,7 @@
 (define-matrix-request matrix-get-request :get)
 
 (flet ((endpoint-seperation (endpoint)
+         ;; splits the endpoint arguments with slashes
          (let ((x endpoint)
                (new-endpoint nil))
            (loop
@@ -78,6 +79,7 @@
            (reverse new-endpoint)))
 
        (handler-of-type (name type arguments new-concat-list &key (documentation nil documentation-p))
+         ;; creates a function for the endpoint with the http method given in type
          (let ((request `(,(cond ((equal type :post) 'matrix-post-request)
                                  ((equal type :put) 'matrix-put-request)
                                  ((equal type :get) 'matrix-get-request))
@@ -92,8 +94,10 @@
            (unless (equal type :get)
              (setf request (append request '(content))))
 
+           (setf request (append request '(:parameters parameters)))
+
            `(; idk how this works (proclaim '(inline ,new-name))
-             (defun ,new-name (,@(remove-if #'null `(,@arguments ,(unless (equal type :get) 'content))))
+             (defun ,new-name (,@(remove-if #'null `(,@arguments ,(unless (equal type :get) 'content) &key parameters)))
                ,(when documentation-p documentation)
                ,request)))))
 

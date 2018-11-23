@@ -1,7 +1,5 @@
 (in-package :cl-matrix)
 
-(defparameter *sync-next-batch* nil)
-
 (push '("application" . "json") drakma:*text-content-types*)
 
 (defun account-log-in (username password)
@@ -86,23 +84,20 @@
   (jsown:parse (post-room-join room-id "{}")))
 
 (defun account-sync (&key (since *sync-next-batch*) filter)
-  "Fetch all of the data of a Matrix account.
-  Updates *sync-next-batch*"
+  "see the spec, read 8.2 syncing to understand how this works."
 
-  (let ((response (jsown:parse (matrix-get-request "/_matrix/client/r0/sync"
-                                                   :parameters
-                                                   (concatenate 'string
-                                                                (when since
-                                                                  (concatenate 'string
-                                                                               "&since="
-                                                                               since))
-                                                                (when filter
-                                                                  (concatenate 'string
-                                                                               "&filter="
-                                                                               filter)))))))
+  (let ((response (jsown:parse (get-sync :parameters
+                                         (concatenate 'string
+                                                      (when since
+                                                        (concatenate 'string
+                                                                     "&since="
+                                                                     since))
+                                                      (when filter
+                                                        (concatenate 'string
+                                                                     "&filter="
+                                                                     filter)))))))
     
-    (setf *sync-next-batch* (jsown:val response "next_batch"))
-    response))
+    (values response (jsown:val response "next_batch"))))
 
 (defun user-joined-rooms ()
   "Fetch rooms joined by the user. This is not filtered from sync, it's an actual api call."

@@ -34,8 +34,6 @@
          :homeserver
 
          *access-token*
-         *homeserver*
-         *sync-next-batch*
-         ))
+         *homeserver*))
 
 (in-package :cl-matrix)
