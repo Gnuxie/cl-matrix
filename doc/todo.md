@@ -21,6 +21,11 @@ maybe we could do some lazy psuedo magic to do hide the since completly?
 ## power levels internally as int but should expect float or string because synapse isn't spec conforming :anger:
 they can be string on synapse too so watch out
 
+## endpoint handler macro
+some work has been attempted on the handlermacro branch to make an end point handler macro
+might need to try this again but without trying to add extra functionality ie default values
+for end point arguments.
+
 # Done
 
 ## sort out testing this thing because i don't think the password can be here.

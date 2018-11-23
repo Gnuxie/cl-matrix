@@ -1,5 +1,5 @@
 (defpackage :cl-matrix
-        (:use :cl)
+        (:use :cl :matrix-handlers)
         (:export 
          :account-log-in
          :account-log-out
@@ -13,13 +13,15 @@
          :room-joined-members
          :rooms-joined-members
          :rooms-joined-members-ids
+         :room-state
+         :rooms-state
          :room-power-levels
          :rooms-power-levels
          :change-power-level
          :room-forget
          :room-leave
          :invitations
-         :post-filter
+         :upload-filter
 
          account
          :get-hostname
