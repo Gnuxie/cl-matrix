@@ -9,6 +9,7 @@
                 ((:file "package")
                  (:file "main")
                  (:file "utils")
-                 (:file "account"))))
+                 (:file "account")
+                 (:file "room"))))
   :description
         "A WIP Matrix library for Common Lisp.")

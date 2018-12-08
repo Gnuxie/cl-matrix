@@ -1,9 +1,7 @@
 # todo
 
-## \*sync-next-batch\*
-this needs updating to work with our new account class
-
 ## test that nesting with-account works
+matrix-migrate does this, so we know it works, it just needs a test.
 
 ## account-log-in is a really bad name
 
@@ -13,18 +11,14 @@ this needs updating to work with our new account class
 so we can handle the case when there is no key e.g. when matrix returns an error instead,
 imo this is really bad work from the jsown people, it should return something else than an error
 
-## change the since value to only have the side effect on different filters, or just not have it
-maybe we could do some lazy psuedo magic to do hide the since completly?
-
 ## keep names for filters, keep track of the ids for each one ?
 
 ## power levels internally as int but should expect float or string because synapse isn't spec conforming :anger:
 they can be string on synapse too so watch out
 
-## endpoint handler macro
-some work has been attempted on the handlermacro branch to make an end point handler macro
-might need to try this again but without trying to add extra functionality ie default values
-for end point arguments.
+## add query parameters to handlers
+
+## add struct for events holding type and id
 
 # Done
 
@@ -43,3 +37,8 @@ this could be better or worse.
 
 ## how to handle the access token, what if someone needs to use multiple accounts?
 account class and with-account macro added
+
+## endpoint handler macro
+see handler.lisp
+
+## internal room representation

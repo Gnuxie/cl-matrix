@@ -1,5 +1,6 @@
 (defpackage :cl-matrix
-        (:use :cl :matrix-handlers)
+  (:use :cl :matrix-handlers)
+  (:shadow "ROOM")
         (:export 
          :account-log-in
          :account-log-out
@@ -22,8 +23,20 @@
          :room-leave
          :invitations
          :upload-filter
+         :room-messages
 
+         room
+         :id
+         :events
+         :front
+         :back
+         :limit
+         :startup-sync
+         
          account
+         :get-room
+         :add-room
+         
          :get-hostname
          :make-account
          :change-account
@@ -34,6 +47,7 @@
          :homeserver
 
          *access-token*
-         *homeserver*))
+         *homeserver*
+         *account*))
 
 (in-package :cl-matrix)

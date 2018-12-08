@@ -1,6 +1,7 @@
 (in-package :cl-matrix)
 
 (push '("application" . "json") drakma:*text-content-types*)
+(defparameter *account* nil)
 
 (defun account-log-in (username password)
   "'Log in' by fetching the access-token of an account."
@@ -83,7 +84,7 @@
 
   (jsown:parse (post-room-join room-id "{}")))
 
-(defun account-sync (&key (since *sync-next-batch*) filter)
+(defun account-sync (&key since filter)
   "see the spec, read 8.2 syncing to understand how this works."
 
   (let ((response (jsown:parse (get-sync :parameters
@@ -171,7 +172,36 @@
 (defun room-leave (room-id)
   "leave a room"
   (jsown:parse (post-room-leave room-id
-                                    "{}")))
+                                "{}")))
+
+(defun %room-messages (room-id from dir &key to limit filter)
+  "see the spec for this one.
+returns the response, the start token and then the end token"
+  (let ((response
+         (jsown:parse (get-room-messages room-id :parameters
+                                         (concatenate 'string
+                                                      "&from="
+                                                      from
+                                                      "&dir="
+                                                      dir
+                                                      (when to
+                                                        (concatenate 'string
+                                                                     "&to="
+                                                                     to))
+                                                      (when filter
+                                                        (concatenate 'string
+                                                                     "&filter="
+                                                                     filter))
+
+                                                      (when limit
+                                                        (concatenate 'string
+                                                                     "&limit"
+                                                                     limit)))))))
+
+    (values response (jsown:val response "start") (jsown:val response "end"))))
+
+(defun room-messages (room-id dir)
+  (messages (get-room room-id) dir))
 
 (defun random-timestamp ()
   (+ (* 100000 (get-universal-time)) (random 100000)))
