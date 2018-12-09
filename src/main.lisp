@@ -43,10 +43,16 @@
 (defun msg-send (msg room-id &key (txid (random-timestamp)) (type "m.text"))
   "Send a text message to a specific room."
 
-  (jsown:parse (put-room-send-event room-id "m.room.message" (princ-to-string txid)
-                                    (jsown:to-json (cons ':obj (pairlis
-                                                                (list "msgtype" "body")
-                                                                (list type msg)))))))
+  (let ((response
+         (jsown:parse (put-room-send-event room-id "m.room.message" (princ-to-string txid)
+                                                    (jsown:to-json (cons ':obj (pairlis
+                                                                                (list "msgtype" "body")
+                                                                                (list type msg))))))))
+
+    (when (string= "M_LIMIT_EXCEEDED" (cdadr response))
+      (sleep (/ (jsown:val response "retry_after_ms") 1000))
+      (msg-send msg room-id :txid txid :type type))
+    response))
 
 
 (defun user-invite (user-id room-id)

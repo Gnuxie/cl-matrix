@@ -1,5 +1,12 @@
 # todo
 
+## paginate until predicate method for rooms messages, maybe even use this as the default
+maybe some kind of take 20 messages system too
+
+## rate limiting for all methods
+
+see msg-send
+
 ## test that nesting with-account works
 matrix-migrate does this, so we know it works, it just needs a test.
 

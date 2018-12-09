@@ -32,6 +32,10 @@
          :back
          :limit
          :startup-sync
+         :filter
+         :messages
+
+         :event-type
          
          account
          :get-room

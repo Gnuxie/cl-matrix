@@ -10,6 +10,7 @@
                  (:file "main")
                  (:file "utils")
                  (:file "account")
-                 (:file "room"))))
+                 (:file "room")
+                 (:file "events"))))
   :description
         "A WIP Matrix library for Common Lisp.")

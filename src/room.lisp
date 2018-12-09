@@ -45,31 +45,40 @@
     (:documentation "fetch more messages for the room in direction"))
 
   (defmethod messages ((this-room room) direction)
+    "Fetches messages from a room in the given direction by updating the events list for the room.
+
+it sould be noted that the chunk blocks are most recent first in order for both directions"
     (let* ((dir (format-direction direction))
            (from (if dir (front this-room) (back this-room))))
 
       (multiple-value-bind (response start end) (%room-messages (id this-room) from (if dir "f" "b"))
 
         (if dir
-            (progn ;; forwards
+            (progn ; forwards
               (unless (string= (front this-room) end)
-                (setf (events this-room) (append (jsown:val response "chunk") (events this-room)))
-                (setf (back this-room) end)))
-            (progn ;;backwards
+                (setf (events this-room) (append (reverse (jsown:val response "chunk")) (events this-room)))
+                (setf (front this-room) end)))
+            (progn ; backwards
               (unless (string= (back this-room) end)
                 (when (jsown:val response "chunk")
-                  (setf (events this-room) (append (events this-room) (reverse (jsown:val response "chunk")))))
-                (setf (front this-room) start))))))))
+                  (setf (events this-room) (append (events this-room) (jsown:val response "chunk"))))
+                (setf (back this-room) start))))))))
+
+(defmethod messages ((this-room string) direction)
+  (messages (get-room this-room) direction))
 
 (defmethod print-object ((this-room room) stream)
   (print-unreadable-object (this-room stream :type t :identity t)
     (format stream "~a" (id this-room))))
 
 (defun startup-sync ()
+  "Initialises the rooms the user has joined by using the sync endpoint"
   (let* ((sync-data (account-sync))
          (front-token (jsown:val sync-data "next_batch"))
          (joined-room-data (jsown:filter sync-data "rooms" "join"))
          (joined-rooms (user-joined-rooms)))
+
+    (setf (%rooms *account*) (make-hash-table :test 'equal :size 200))
 
     (loop :for id in joined-rooms
        :do
@@ -78,3 +87,18 @@
                                         :front front-token
                                         :back (jsown:filter joined-room-data id "timeline" "prev_batch"))))
            (add-room id new-room)))))
+
+(defgeneric filter (predicate sequence &key key start  end)
+  (:documentation "filter a cl-matrix sequence"))
+
+(defmethod filter (predicate (sequence room) &key key (start 0) end)
+  (remove-if-not predicate (events sequence) :start start :key key :end end))
+
+(defmethod filter (predicate (sequence string) &key key (start 0) end)
+  (filter predicate (get-room sequence) :key key :start start :end end))
+
+(defmethod filter (predicate (sequence list) &key key (start 0) end)
+  (remove-if-not predicate sequence :start start :key key :end end))
+
+(defmethod events ((room-id string))
+  (events (get-room room-id)))

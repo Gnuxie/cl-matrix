@@ -6,8 +6,14 @@
 (in-package :cl-matrix-test)
 
 (defvar *direct-chat* nil)
+(defvar *pagination-chat* nil)
 (defvar *user-one* nil)
 (defvar *user-two* nil)
+(defvar *logging-stream* t)
+
+;;; we could have a list of rooms in a property list or something so we can do the
+;;; clean up properly
+;;; maybe have who is in them too stored
 
 (defmacro detect-matrix-error (form)
   `(isnt string= "errcode" (caadr ,form)))
@@ -96,15 +102,75 @@
           (let ((direct-chat-levels (cl-matrix:room-power-levels *direct-chat*)))
             (is string= "90" (jsown:filter direct-chat-levels "users" (cl-matrix:username *user-two*)) "verify that the power level changed")))))))
 
-(test 'cl-matrix-test)
+(defun send-lots-of-test-messages (room &key (amount 30) (start 0))
+  (let ((i start)
+        (end (+ start amount)))
+    
+    (loop :while (< i end)
+       :do
+         (cl-matrix:msg-send (format nil "~d" i) room)
+         (incf i))))
 
+(defun setup-room-pagination-test ()
+  (format t "setting up pagination test~%")
+  (cl-matrix:with-account (*user-one*)
+    (setf *pagination-chat* (jsown:val (cl-matrix:room-create :name "pagination test"
+                                                              :preset "private_chat"
+                                                              :is-direct t
+                                                              :invite (list (cl-matrix:username *user-two*)))
+                                       "room_id"))
 
+    (cl-matrix:with-account (*user-two*)
+      (cl-matrix:room-join *pagination-chat*))
+
+    (format t "sending lots of messages...~%")
+    (send-lots-of-test-messages *pagination-chat* :amount 20)
+    (format t "done~%")
+    
+
+    (cl-matrix:startup-sync)
+    (format t "pagination test setup complete~%")))
+
+(define-test pagination-chat
+  :parent cl-matrix-test
+  :depends-on (direct-chat)
+
+  (setup-room-pagination-test)
+
+  (format t "collecting events before...~%")
+  (cl-matrix:with-account (*user-one*)
+    (let ((events-before (cl-matrix:events *pagination-chat*)))
+      (format t "done~%sedning new messages~%")
+      (send-lots-of-test-messages *pagination-chat* :amount 10 :start 20)
+      (format t "done~%fetching new messages~%")
+      (cl-matrix:messages *pagination-chat* "f")
+      (let ((events-after-forwards (cl-matrix:events *pagination-chat*)))
+        (format t "events differance~%~s" (set-difference events-after-forwards events-before))
+        (format t "~%end of events differance~%")
+        (format t "events after forward~%~s" events-after-forwards)
+        (format t "~%end~%")
+        (sleep 2)
+
+        (is string= "29" (jsown:filter (first (cl-matrix:filter #'(lambda (x) (string= "m.room.message" x))
+                                                           events-after-forwards :key #'cl-matrix:event-type))
+                                       "content" "body")))
+
+      (format t "fetching old messages~%")
+      (cl-matrix:messages *pagination-chat* "b")
+      (format t "done~%")
+      (let ((events-after-backwards (cl-matrix:events *pagination-chat*)))
+        (format t "events-after-backwards~%~s~%" events-after-backwards)
+        (is string= "0" (jsown:filter (car (last (cl-matrix:filter #'(lambda (x) (string= "m.room.message" x))
+                                                                   events-after-backwards :key #'cl-matrix:event-type)))
+                                      "content" "body"))))))
 
 ;; clean up direct chat test.
 (defun cleanup-logout (&rest accounts)
   (dolist (account accounts)
     (cl-matrix:with-account (account t)
       (cl-matrix:room-leave *direct-chat*)
+      (cl-matrix:room-leave *pagination-chat*)
       (cl-matrix:room-forget *direct-chat*))))
 
+(test 'cl-matrix-test)
 (cleanup-logout *user-one* *user-two*)
