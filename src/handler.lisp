@@ -65,55 +65,58 @@
 (define-matrix-request matrix-put-request :put)
 (define-matrix-request matrix-get-request :get)
 
-(flet ((endpoint-seperation (endpoint)
-         ;; splits the endpoint arguments with slashes
-         (let ((x endpoint)
-               (new-endpoint nil))
-           (loop
-              :while (not (null (cdr x)))
-              :do
-                (push (car x) new-endpoint)
-                (push "/" new-endpoint)
-                (setf x (cdr x)))
-           (push (car x) new-endpoint)
-           (reverse new-endpoint)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (flet ((endpoint-seperation (endpoint)
+           ;; splits the endpoint arguments with slashes
+           (let ((x endpoint)
+                 (new-endpoint nil))
+             (loop
+                :while (not (null (cdr x)))
+                :do
+                  (push (car x) new-endpoint)
+                  (push "/" new-endpoint)
+                  (setf x (cdr x)))
+             (push (car x) new-endpoint)
+             (reverse new-endpoint)))
 
-       (handler-of-type (name type arguments new-concat-list &key (documentation nil documentation-p))
-         ;; creates a function for the endpoint with the http method given in type
-         (let ((request `(,(cond ((equal type :post) 'matrix-post-request)
-                                 ((equal type :put) 'matrix-put-request)
-                                 ((equal type :get) 'matrix-get-request))
-                           (concatenate 'string "/_matrix/client/r0/"
-                                        ,@new-concat-list)))
+         (handler-of-type (name type arguments new-concat-list &key (documentation nil documentation-p))
+           ;; creates a function for the endpoint with the http method given in type
+           (let ((request `(,(cond ((equal type :post) 'matrix-post-request)
+                                   ((equal type :put) 'matrix-put-request)
+                                   ((equal type :get) 'matrix-get-request))
+                             (concatenate 'string "/_matrix/client/r0/"
+                                          ,@new-concat-list)))
 
-               (new-name (intern (concatenate 'string (cond ((equal type :put) "PUT-")
-                                                            ((equal type :post) "POST-")
-                                                            ((equal type :get) "GET-"))
-                                              (symbol-name name)))))
+                 (new-name (intern (concatenate 'string (cond ((equal type :put) "PUT-")
+                                                              ((equal type :post) "POST-")
+                                                              ((equal type :get) "GET-"))
+                                                (symbol-name name)))))
 
-           (unless (equal type :get)
-             (setf request (append request '(content))))
+             (unless (equal type :get)
+               (setf request (append request '(content))))
 
-           (setf request (append request '(:parameters parameters)))
+             (setf request (append request '(:parameters parameters)))
 
-           `(; idk how this works (proclaim '(inline ,new-name))
-             (defun ,new-name (,@(remove-if #'null `(,@arguments ,(unless (equal type :get) 'content) &key parameters)))
-               ,(when documentation-p documentation)
-               ,request)))))
+             `(; idk how this works (proclaim '(inline ,new-name))
+               (defun ,new-name (,@(remove-if #'null `(,@arguments ,(unless (equal type :get) 'content) &key parameters callback)))
+                 ,(when documentation-p documentation)
+                 (if callback
+                     (funcall callback ,request)
+                     ,request))))))
 
-  (defmacro define-matrix-handler (name accepted-methods endpoint &key (documentation nil))
-    (let ((arguments (loop
-                        :for item in endpoint
-                        :collect (when (symbolp item) item)))
+    (defmacro define-matrix-handler (name accepted-methods endpoint &key (documentation nil))
+      (let ((arguments (loop
+                          :for item in endpoint
+                          :collect (when (symbolp item) item)))
 
-          (new-concat-list (endpoint-seperation endpoint)))
-      
-      `(progn
-         ,@ (let ((handlers nil))
-              (loop :for method in accepted-methods
-                 :do
-                   (setf handlers (append handlers (handler-of-type name method arguments new-concat-list :documentation documentation))))
-              handlers)))))
+            (new-concat-list (endpoint-seperation endpoint)))
+        
+        `(progn
+           ,@ (let ((handlers nil))
+                (loop :for method in accepted-methods
+                   :do
+                     (setf handlers (append handlers (handler-of-type name method arguments new-concat-list :documentation documentation))))
+                handlers))))))
 
 ;;; some methods (sync) will need access to paramaters and other keywords in matrix-request
 ;;; so we might want to add keyword arguments to let them through.
@@ -195,5 +198,14 @@
 (define-matrix-handler room-forget (:post)
   ("rooms" room-id "forget"))
 
-(let ((pack (find-package :matrix-handlers)))
-  (do-all-symbols (sym pack) (when (eql (symbol-package sym) pack) (format t ":~a~%" (string-downcase (symbol-name sym))))))
+(flet ((handler-p (sym)
+         (let ((pack (find-package :matrix-handlers)))
+           (and (eql (symbol-package sym) pack)
+                (or (search "GET" (symbol-name sym))
+                    (search "PUT"(symbol-name sym))
+                    (search "POST"(symbol-name sym)))))))
+
+  (let ((pack (find-package :matrix-handlers)))
+    (do-all-symbols (sym pack)
+      (when (handler-p sym)
+        (format t ":~a~%" (string-downcase (symbol-name sym)))))))
