@@ -3,6 +3,14 @@
 (push '("application" . "json") drakma:*text-content-types*)
 (defparameter *account* nil)
 
+(defun generate-generic-callback (callee &rest args)
+  (lambda (response)
+      (let ((response (jsown:parse response)))
+        (when (string= "M_LIMIT_EXCEEDED" (cdadr response))
+          (sleep (/ (jsown:val response "retry_after_ms") 1000))
+          (apply callee args))
+        response)))
+
 (defun account-log-in (username password)
   "'Log in' by fetching the access-token of an account."
 
@@ -43,16 +51,11 @@
 (defun msg-send (msg room-id &key (txid (random-timestamp)) (type "m.text"))
   "Send a text message to a specific room."
 
-  (let ((response
-         (jsown:parse (put-room-send-event room-id "m.room.message" (princ-to-string txid)
-                                                    (jsown:to-json (cons ':obj (pairlis
-                                                                                (list "msgtype" "body")
-                                                                                (list type msg))))))))
-
-    (when (string= "M_LIMIT_EXCEEDED" (cdadr response))
-      (sleep (/ (jsown:val response "retry_after_ms") 1000))
-      (msg-send msg room-id :txid txid :type type))
-    response))
+  (put-room-send-event room-id "m.room.message" (princ-to-string txid)
+                       (jsown:to-json (cons ':obj (pairlis
+                                                   (list "msgtype" "body")
+                                                   (list type msg))))
+                       :callback (generate-generic-callback #'msg-send msg room-id :txid txid :type type)))
 
 
 (defun user-invite (user-id room-id)
