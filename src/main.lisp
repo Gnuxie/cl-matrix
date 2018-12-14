@@ -3,14 +3,6 @@
 (push '("application" . "json") drakma:*text-content-types*)
 (defparameter *account* nil)
 
-(defun generate-generic-callback (callee &rest args)
-  (lambda (response)
-      (let ((response (jsown:parse response)))
-        (when (string= "M_LIMIT_EXCEEDED" (cdadr response))
-          (sleep (/ (jsown:val response "retry_after_ms") 1000))
-          (apply callee args))
-        response)))
-
 (defun account-log-in (username password)
   "'Log in' by fetching the access-token of an account."
 

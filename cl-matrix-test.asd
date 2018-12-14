@@ -4,5 +4,6 @@
   :license "CSL v1+"
   :depends-on ("cl-matrix" "parachute" "jsown")
   :components ((:module "test"
-			 :components
-			 ((:file "test")))))
+                        :components
+                        ((:file "profile")
+                         (:file "test")))))

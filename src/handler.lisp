@@ -1,6 +1,7 @@
 (defpackage :matrix-handlers
   (:use :cl)
   (:export
+   :get-login
    :get-room-state-event
    :post-room-leave
    :get-sync
@@ -97,7 +98,7 @@
 
              (setf request (append request '(:parameters parameters)))
 
-             `(; idk how this works (proclaim '(inline ,new-name))
+             `((declaim '(inline ,new-name))
                (defun ,new-name (,@(remove-if #'null `(,@arguments ,(unless (equal type :get) 'content) &key parameters callback)))
                  ,(when documentation-p documentation)
                  (if callback

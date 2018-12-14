@@ -7,6 +7,8 @@
   :components ((:module "src"
                 :components
                 ((:file "package")
+                 (:file "conditions")
+                 (:file "callback")
                  (:file "main")
                  (:file "utils")
                  (:file "account")

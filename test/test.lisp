@@ -172,5 +172,9 @@
       (cl-matrix:room-leave *pagination-chat*)
       (cl-matrix:room-forget *direct-chat*))))
 
+(reset)
+(profiling)
 (test 'cl-matrix-test)
+(report)
+(reset)
 (cleanup-logout *user-one* *user-two*)
