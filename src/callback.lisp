@@ -22,7 +22,7 @@
                ,response)))))
 
 (define-callback generate-generic-callback (callee &rest args) ()
-  ("M_LIMIT_EXCEEDED"
+  ("LIMIT_EXCEEDED"
    (sleep (/ (jsown:val response "retry_after_ms") 1000))
    (apply callee args))
 

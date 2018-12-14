@@ -53,10 +53,11 @@
 (defun user-invite (user-id room-id)
   "Invite a user to a chat-room."
 
-  (jsown:parse (post-room-invite room-id
-                                 (jsown:to-json (cons ':obj (pairlis
-                                                             (list "user_id")
-                                                             (list user-id)))))))
+  (post-room-invite room-id
+                    (jsown:to-json (cons ':obj (pairlis
+                                                (list "user_id")
+                                                (list user-id))))
+                    :callback (generate-generic-callback #'user-invite user-id room-id)))
 
 (defun invitations (user-name &key (since *sync-next-batch*) (from nil from-p))
   ;; see filters in the spec /_matrix/client/r0/user/{userId}/filter
@@ -76,14 +77,16 @@
       invitations)))
 
 (defun upload-filter (user-id filter)
-  (jsown:parse (post-user-filter
-                user-id
-                filter)))
+  (post-user-filter user-id
+                    filter
+                    :callback (generate-generic-callback #'upload-filter user-id filter)))
+
 
 (defun room-join (room-id)
   "Join a Matrix room by id, not the same as alias, see the spec."
 
-  (jsown:parse (post-room-join room-id "{}")))
+  (post-room-join room-id "{}"
+                  :callback (generate-generic-callback #'room-join room-id)))
 
 (defun account-sync (&key since filter)
   "see the spec, read 8.2 syncing to understand how this works."
@@ -161,19 +164,22 @@
          (current-users (jsown:val current-levels "users")))
     (setf (jsown:val current-users user-id) power)
     (setf (jsown:val current-levels "users") current-users)
-    (jsown:parse (put-room-state room
-                                 "m.room.power_levels"
-                                 (jsown:to-json current-levels)))))
+    (put-room-state room
+                    "m.room.power_levels"
+                    (jsown:to-json current-levels)
+                    :callback (generate-generic-callback #'change-power-level room user-id power))))
 
 (defun room-forget (room-id)
   "forget a room"
-  (jsown:parse (post-room-forget room-id
-                                 "{}")))
+  (post-room-forget room-id
+                    "{}"
+                    :callback (generate-generic-callback #'room-forget room-id)))
 
 (defun room-leave (room-id)
   "leave a room"
-  (jsown:parse (post-room-leave room-id
-                                "{}")))
+  (post-room-leave room-id
+                   "{}"
+                   :callback (generate-generic-callback #'room-leave room-id)))
 
 (defun %room-messages (room-id from dir &key to limit filter)
   "see the spec for this one.

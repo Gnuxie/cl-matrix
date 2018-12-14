@@ -16,7 +16,9 @@
 ;;; maybe have who is in them too stored
 
 (defmacro detect-matrix-error (form)
-  `(isnt string= "errcode" (caadr ,form)))
+  `(progn (when (jsown:keyp ,form "errcode")
+            (format t "~a" (jsown:val ,form "errcode"))
+            (isnt string= "errcode" (caadr ,form)))))
 
 (defun load-config ()
   (with-open-file (in (merge-pathnames "test/test.config" (asdf:system-source-directory :cl-matrix)))
@@ -41,7 +43,7 @@
       (let ((a-token (cl-matrix:account-log-in (cl-matrix:username *user-one*) (cl-matrix:password *user-one*))))
         (cl-matrix:account-log-out)
         (setf cl-matrix:*access-token* a-token)
-        (is string= "M_UNKNOWN_TOKEN" (cdadr (cl-matrix:room-join "!QtykxKocfZaZOUrTwp:matrix.org"))))))
+        (fail (cl-matrix:room-join "!QtykxKocfZaZOUrTwp:matrix.org")))))
 
 (define-test room-create
   :parent cl-matrix-test

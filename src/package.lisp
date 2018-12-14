@@ -40,6 +40,10 @@
          account
          :get-room
          :add-room
+
+         cl-matrix-error
+         api-error
+         forbidden
          
          :get-hostname
          :make-account
