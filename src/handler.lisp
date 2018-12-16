@@ -50,7 +50,7 @@
   (let ((url (concatenate 'string
                           "https://" *homeserver* url
                           (when access-token
-                            (format nil "?access_token=~A" *access-token*))
+                            (format nil "?access_token=~A" access-token))
                           (when parameters parameters))))
 
     (drakma:http-request
@@ -96,10 +96,13 @@
              (unless (equal type :get)
                (setf request (append request '(content))))
 
-             (setf request (append request '(:parameters parameters)))
+             (setf request (append request '(:parameters parameters :access-token access-token)))
 
              `((declaim '(inline ,new-name))
-               (defun ,new-name (,@(remove-if #'null `(,@arguments ,(unless (equal type :get) 'content) &key parameters callback)))
+               (defun ,new-name (,@(remove-if #'null `(,@arguments ,(unless (equal type :get) 'content)
+                                                                   &key parameters
+                                                                   callback
+                                                                   (access-token *access-token*))))
                  ,(when documentation-p documentation)
                  (if callback
                      (funcall callback ,request)

@@ -1,8 +1,3 @@
-(in-package :cl-user)
-(defpackage :cl-matrix-test
-  (:use :cl :parachute)
-  (:export :cl-matrix))
-
 (in-package :cl-matrix-test)
 
 (defvar *direct-chat* nil)

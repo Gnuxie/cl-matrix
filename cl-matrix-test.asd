@@ -5,5 +5,6 @@
   :depends-on ("cl-matrix" "parachute" "jsown")
   :components ((:module "test"
                         :components
-                        ((:file "profile")
+                        ((:file "test-package")
+                         (:file "profile")
                          (:file "test")))))
