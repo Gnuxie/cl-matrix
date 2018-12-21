@@ -27,6 +27,8 @@ they can be string on synapse too so watch out
 
 ## add struct for events holding type and id
 
+## usocket timeout exception is not handelled
+
 # Done
 
 ## sort out testing this thing because i don't think the password can be here.

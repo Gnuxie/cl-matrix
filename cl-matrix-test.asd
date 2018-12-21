@@ -7,4 +7,6 @@
                         :components
                         ((:file "test-package")
                          (:file "profile")
-                         (:file "test")))))
+                         (:file "test")
+                         (:file "test-listening")
+                         (:file "run")))))

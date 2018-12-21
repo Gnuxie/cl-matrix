@@ -169,9 +169,10 @@
       (cl-matrix:room-leave *pagination-chat*)
       (cl-matrix:room-forget *direct-chat*))))
 
-(reset)
-(profiling)
-(unwind-protect (test 'cl-matrix-test) 
-  (report)
-  (reset)
-  (cleanup-logout *user-one* *user-two*))
+(defun leave-forget-all-rooms (&rest accounts)
+  (dolist (account accounts)
+    (cl-matrix:with-account (account t)
+      (loop :for room in (cl-matrix:user-joined-rooms)
+         :do
+           (cl-matrix:room-leave room)
+           (cl-matrix:room-forget room)))))

@@ -5,21 +5,23 @@
   (list 'defun name args
         (let ((response response)
               (errcode errcode)
-              (error-msg error-msg))
+              (error-msg error-msg)
+              (arg (gensym)))
           
-          `(lambda (,response)
-             (let ((,response (jsown:parse ,response)))
-               (when (jsown:keyp ,response "error")
-                 (let ((,errcode (jsown:val ,response "errcode"))
-                       (,error-msg (jsown:val ,response "error")))
+          `(lambda (,arg)
+             (let ((,response (jsown:parse ,arg)))
+               (if (jsown:keyp ,response "error")
+                   (let ((,errcode (jsown:val ,response "errcode"))
+                         (,error-msg (jsown:val ,response "error")))
 
-                   (cond ,@ (loop :for arg in rest
-                               :collect (destructuring-bind (name &body body) arg
-                                          `((search ,name ,errcode)
-                                            ,@body)))
+                     (cond ,@ (loop :for arg in rest
+                                 :collect (destructuring-bind (name &body body) arg
+                                            `((search ,name ,errcode)
+                                              ,@body)))
 
-                            `(t (error 'api-error :description (format nil "errcode: ~a~%errmsg: ~a~%" ,errcode ,error-msg))))))
-               ,response)))))
+                              (t (error 'api-error :description (format nil "errcode: ~a~%errmsg: ~a~%" ,errcode ,error-msg)))))
+                   
+                   ,response))))))
 
 (define-callback generate-generic-callback (callee &rest args) ()
   ("LIMIT_EXCEEDED"

@@ -1,6 +1,7 @@
 (in-package :cl-user)
 (defpackage :cl-matrix.listening
   (:use :cl)
+  (:nicknames "CL-M.L")
   (:export
    :listen-to-sync-data
    
@@ -26,7 +27,13 @@
    (listeners :accessor listeners
               :initarg :listeners
               :initform nil
-              :type list)))
+              :type list)
+
+   (do-keys-p :accessor do-keys-p
+                :initarg :do-keys-p
+                :initform nil
+                :type boolean
+                :documentation "tells the iterator whether to do jsown:do-json-keys or map. i.e. whether the filter will return a json object or a list.")))
 
 (defclass listener ()
   ((callback :accessor callback
@@ -40,8 +47,18 @@
              :type catagory)))
 
 (defun listen-to-sync-data (sync-data)
-  (mapcar (lambda (cat) (funmap (mapcar #'callback (listeners cat))
-                              (funcall (filter cat) sync-data)))
+  (mapcar (lambda (cat)
+            (let ((filtered (funcall (filter cat) sync-data))
+                  (callbacks (mapcar #'callback (listeners cat))))
+              
+              (if (do-keys-p cat)
+                  (mapcar #'(lambda (fun)
+                              (jsown:do-json-keys (key val) filtered
+                                (funcall fun key val)))
+                          callbacks)
+                  
+                  (map-2 callbacks
+                         filtered))))
         *listener-catagories*))
 
 
@@ -52,7 +69,7 @@
            (funcall fun data))))
 
 (defun map-2 (functions data)
-  "maps a list of functions on a list of data"
+  "maps a list of functions on a list of data, map squared."
   (mapcar (lambda (fn) (mapcar fn data))
           functions))
 
@@ -60,10 +77,10 @@
   "adds a catagory to the *listener-catagories* that is used by listen-to-sync-data"
   (push this *listener-catagories*))
 
-(defun make-catagory (filter)
-  (make-instance 'catagory :filter filter))
+(defun make-catagory (filter &optional do-keys-p)
+  (make-instance 'catagory :filter filter :do-keys-p do-keys-p))
 
-(defmacro make-fitler (&body filter)
+(defmacro make-filter (&body filter)
   "makes a closure with a jsown:filter to be used on a matrix-response by a catagory"
   (let ((data (gensym)))
     `(lambda (,data)

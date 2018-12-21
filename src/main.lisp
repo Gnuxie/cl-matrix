@@ -26,19 +26,24 @@
                     (preset nil preset-p)
                       (is-direct nil is-direct-p))
   "Create a Matrix room. Please refer to the specification to see what should be given in the keyword args."
-  
-  (let ((json-to-submit (jsown:to-json
-                         (cons ':obj (alist-without-nulls
-                                      "room_alias_name" room-alias room-alias-p
-                                      "visibility" visibility visibility-p
-                                      "name" name room-name-p
-                                      "topic" topic topic-p
-                                      "invite" invite invite-p
-                                      "preset" preset preset-p
-                                      "is_direct" is-direct is-direct-p)))))
-    
-    (jsown:parse (post-create-room json-to-submit))))
 
+  (labels ((room-create-json (json)
+             (funcall (generate-generic-callback #'room-create-json json)
+                      (post-create-room json))))
+    
+    (let ((json-to-submit (jsown:to-json
+                           (cons ':obj (alist-without-nulls
+                                        "room_alias_name" room-alias room-alias-p
+                                        "visibility" visibility visibility-p
+                                        "name" name room-name-p
+                                        "topic" topic topic-p
+                                        "invite" invite invite-p
+                                        "preset" preset preset-p
+                                        "is_direct" is-direct is-direct-p)))))
+
+      ;; this needs sorting out. The problem is we don't want to do all that work creating a room object again
+      ;; so we should either make some representation of a room or make a function that can just take this.
+      (room-create-json json-to-submit))))
 
 (defun msg-send (msg room-id &key (txid (random-timestamp)) (type "m.text"))
   "Send a text message to a specific room."
