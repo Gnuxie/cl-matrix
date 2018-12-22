@@ -16,7 +16,7 @@
 
 (in-package :cl-matrix.listening)
 
-(defvar *listener-categories* nil)
+(defparameter *listener-categories* nil)
 
 (defclass category ()
   ((filter :accessor filter
