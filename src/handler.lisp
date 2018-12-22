@@ -98,7 +98,7 @@
 
              (setf request (append request '(:parameters parameters :access-token access-token)))
 
-             `((declaim '(inline ,new-name))
+             `((declaim (inline ,new-name))
                (defun ,new-name (,@(remove-if #'null `(,@arguments ,(unless (equal type :get) 'content)
                                                                    &key parameters
                                                                    callback

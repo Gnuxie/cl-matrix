@@ -19,13 +19,13 @@
 
       (format t "listening room:~%~s." *listening-room*)
       (let ((cat
-             (cl-m.l:make-catagory
+             (cl-m.l:make-category
               (cl-m.l:make-filter
                "rooms" "join")
               t)))
         
-        (cl-m.l:add-catagory cat)
-        (cl-m.l:add-listener-to-catagory cat
+        (cl-m.l:add-category cat)
+        (cl-m.l:add-listener-to-category cat
                                          (cl-m.l:make-listener
                                           (lambda (room-id stuff)
                                             (when (string= *listening-room*

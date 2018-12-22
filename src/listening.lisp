@@ -5,20 +5,20 @@
   (:export
    :listen-to-sync-data
    
-   :catagory
-   :add-catagory
-   :make-catagory
+   :category
+   :add-category
+   :make-category
    :make-filter
-   :add-listener-to-catagory
+   :add-listener-to-category
    
    :listener
    :make-listener))
 
 (in-package :cl-matrix.listening)
 
-(defvar *listener-catagories* nil)
+(defvar *listener-categories* nil)
 
-(defclass catagory ()
+(defclass category ()
   ((filter :accessor filter
            :initarg :filter
            :initform (error "must supply a filter")
@@ -41,10 +41,10 @@
              :initform (error "must supply a callback")
              :type function)
 
-   (catagory :accessor catagory
-             :initarg :catagory
-             :initform (error "must supply a catagory")
-             :type catagory)))
+   (category :accessor category
+             :initarg :category
+             :initform (error "must supply a category")
+             :type category)))
 
 (defun listen-to-sync-data (sync-data)
   (mapcar (lambda (cat)
@@ -59,7 +59,7 @@
                   
                   (map-2 callbacks
                          filtered))))
-        *listener-catagories*))
+        *listener-categories*))
 
 
 (defun funmap (functions data)
@@ -73,23 +73,23 @@
   (mapcar (lambda (fn) (mapcar fn data))
           functions))
 
-(defmethod add-catagory ((this catagory))
-  "adds a catagory to the *listener-catagories* that is used by listen-to-sync-data"
-  (push this *listener-catagories*))
+(defmethod add-category ((this category))
+  "adds a category to the *listener-categories* that is used by listen-to-sync-data"
+  (push this *listener-categories*))
 
-(defun make-catagory (filter &optional do-keys-p)
-  (make-instance 'catagory :filter filter :do-keys-p do-keys-p))
+(defun make-category (filter &optional do-keys-p)
+  (make-instance 'category :filter filter :do-keys-p do-keys-p))
 
 (defmacro make-filter (&body filter)
-  "makes a closure with a jsown:filter to be used on a matrix-response by a catagory"
+  "makes a closure with a jsown:filter to be used on a matrix-response by a category"
   (let ((data (gensym)))
     `(lambda (,data)
        (jsown:filter ,data
                      ,@filter))))
 
-(defmethod add-listener-to-catagory ((cat catagory) (lnr listener))
-  "adds a listener to a catagory object, not sure whether this should be implied by use of the constructor or not"
+(defmethod add-listener-to-category ((cat category) (lnr listener))
+  "adds a listener to a category object, not sure whether this should be implied by use of the constructor or not"
   (push lnr (listeners cat)))
 
 (defun make-listener (callback category)
-  (make-instance 'listener :callback callback :catagory category))
+  (make-instance 'listener :callback callback :category category))
