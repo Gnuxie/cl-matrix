@@ -1,0 +1,13 @@
+image : daewok/lisp-devel
+
+stages:
+  - test
+  - build
+
+before_script:
+  - ln -s "${CI_PROJECT_DIR}" ~/quicklisp/local-projects/cl-matrix
+
+test:
+  stage: test
+  script:
+    - sbcl --load ci-tests.lisp --disable-debugger --quit
