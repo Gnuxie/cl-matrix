@@ -20,3 +20,6 @@
 # emacs
 *~
 *#*#
+
+# test
+*.config
