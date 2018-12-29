@@ -3,10 +3,11 @@
   :author "Gnuxie <Gnuxie@protonmail.com> Jaidyn Lev <jadedctrl@teknik.io>"
   :maintainer "Gnuxie <Gnuxie@protonmail.com>"
   :license "CSL v1+"
-  :depends-on ("jsown" "matrix-handlers" "drakma")
+  :depends-on ("jsown" "drakma")
   :components ((:module "src"
                 :components
-                ((:file "package")
+                ((:file "requests")
+                 (:file "package")
                  (:file "listening")
                  (:file "basic-listening")
                  (:file "conditions")

@@ -1,4 +1,4 @@
-(defpackage :matrix-handlers
+(defpackage :matrix-requests
   (:use :cl)
   (:export
    :get-login
@@ -12,7 +12,7 @@
    :define-matrix-request
    :get-room-messages
    :post-login
-   :define-matrix-handler
+   :define-matrix-endpoint
    :get-room-event
    :put-room-redact-event
    :post-room-invite
@@ -34,7 +34,7 @@
    *access-token*
    *homeserver*))
 
-(in-package :matrix-handlers)
+(in-package :matrix-requests)
 
 (defparameter *homeserver* "matrix.org")
 (defparameter *access-token* "")
@@ -80,7 +80,7 @@
              (push (car x) new-endpoint)
              (reverse new-endpoint)))
 
-         (handler-of-type (name type arguments new-concat-list &key (documentation nil documentation-p))
+         (endpoint-of-type (name type arguments new-concat-list &key (documentation nil documentation-p))
            ;; creates a function for the endpoint with the http method given in type
            (let ((request `(,(cond ((equal type :post) 'matrix-post-request)
                                    ((equal type :put) 'matrix-put-request)
@@ -108,7 +108,7 @@
                      (funcall callback ,request)
                      ,request))))))
 
-    (defmacro define-matrix-handler (name accepted-methods endpoint &key (documentation nil))
+    (defmacro define-matrix-endpoint (name accepted-methods endpoint &key (documentation nil))
       (let ((arguments (loop
                           :for item in endpoint
                           :collect (when (symbolp item) item)))
@@ -116,11 +116,10 @@
             (new-concat-list (endpoint-seperation endpoint)))
         
         `(progn
-           ,@ (let ((handlers nil))
-                (loop :for method in accepted-methods
-                   :do
-                     (setf handlers (append handlers (handler-of-type name method arguments new-concat-list :documentation documentation))))
-                handlers))))))
+           ,@ (let ((endpoints nil))
+                (loop :for method in accepted-methods :do
+                     (setf endpoints (append endpoints (endpoint-of-type name method arguments new-concat-list :documentation documentation))))
+                endpoints))))))
 
 ;;; some methods (sync) will need access to paramaters and other keywords in matrix-request
 ;;; so we might want to add keyword arguments to let them through.
@@ -129,87 +128,87 @@
 
 
 ;;; below we can just copy the api endpoints from the spec.
-(define-matrix-handler login (:post :get)
+(define-matrix-endpoint login (:post :get)
   ("login"))
 
-(define-matrix-handler logout (:post)
+(define-matrix-endpoint logout (:post)
   ("logout"))
 
-(define-matrix-handler logout-all (:post)
+(define-matrix-endpoint logout-all (:post)
   ("logout" "all"))
 
-(define-matrix-handler user-filter (:post)
+(define-matrix-endpoint user-filter (:post)
   ("user" user-id "filter"))
 
-(define-matrix-handler user-filter (:get)
+(define-matrix-endpoint user-filter (:get)
   ("user" user-id "filter" filter-id))
 
-(define-matrix-handler sync (:get)
+(define-matrix-endpoint sync (:get)
   ("sync"))
 
-(define-matrix-handler room-event (:get)
+(define-matrix-endpoint room-event (:get)
   ("rooms" room-id "event" event-id))
 
-(define-matrix-handler room-state-key (:get)
+(define-matrix-endpoint room-state-key (:get)
   ("rooms" room-id "state" event-type state-key))
 
-(define-matrix-handler room-state-event (:get)
+(define-matrix-endpoint room-state-event (:get)
   ("rooms" room-id "state" event-type))
 
-(define-matrix-handler room-state (:get)
+(define-matrix-endpoint room-state (:get)
   ("rooms" room-id "state"))
 
-(define-matrix-handler room-members (:get)
+(define-matrix-endpoint room-members (:get)
   ("rooms" room-id "members"))
 
-(define-matrix-handler room-joined-members (:get)
+(define-matrix-endpoint room-joined-members (:get)
   ("rooms" room-id "joined_members"))
 
-(define-matrix-handler room-messages (:get)
+(define-matrix-endpoint room-messages (:get)
   ("rooms" room-id "messages"))
 
-(define-matrix-handler room-state-key (:put)
+(define-matrix-endpoint room-state-key (:put)
   ("rooms" room-id "state" event-type state-key))
 
-(define-matrix-handler room-state (:put)
+(define-matrix-endpoint room-state (:put)
   ("rooms" room-id "state" event-type))
 
-(define-matrix-handler room-send-event (:put)
+(define-matrix-endpoint room-send-event (:put)
   ("rooms" room-id "send" event-type txn-id))
 
-(define-matrix-handler room-redact-event (:put)
+(define-matrix-endpoint room-redact-event (:put)
   ("rooms" room-id "redact" event-id txn-id))
 
-(define-matrix-handler create-room (:post)
+(define-matrix-endpoint create-room (:post)
   ("createRoom"))
 
 
-(define-matrix-handler joined-rooms (:get)
+(define-matrix-endpoint joined-rooms (:get)
   ("joined_rooms"))
 
-(define-matrix-handler room-invite (:post)
+(define-matrix-endpoint room-invite (:post)
   ("rooms" room-id "invite"))
 
-(define-matrix-handler room-join (:post)
+(define-matrix-endpoint room-join (:post)
   ("rooms" room-id "join"))
 
-(define-matrix-handler join (:post)
+(define-matrix-endpoint join (:post)
   ("join" room-id-or-alias))
 
-(define-matrix-handler room-leave (:post)
+(define-matrix-endpoint room-leave (:post)
   ("rooms" room-id "leave"))
 
-(define-matrix-handler room-forget (:post)
+(define-matrix-endpoint room-forget (:post)
   ("rooms" room-id "forget"))
 
-(flet ((handler-p (sym)
-         (let ((pack (find-package :matrix-handlers)))
+(flet ((endpoint-p (sym)
+         (let ((pack (find-package :matrix-requests)))
            (and (eql (symbol-package sym) pack)
                 (or (search "GET" (symbol-name sym))
                     (search "PUT"(symbol-name sym))
                     (search "POST"(symbol-name sym)))))))
 
-  (let ((pack (find-package :matrix-handlers)))
+  (let ((pack (find-package :matrix-requests)))
     (do-all-symbols (sym pack)
-      (when (handler-p sym)
+      (when (endpoint-p sym)
         (format t ":~a~%" (string-downcase (symbol-name sym)))))))

@@ -8,16 +8,10 @@ more tests are needed for listening
 ## paginate until predicate method for rooms messages, maybe even use this as the default
 maybe some kind of take 20 messages system too
 
-## rate limiting for all methods
-
-see msg-send
-
 ## test that nesting with-account works
 matrix-migrate does this, so we know it works, it just needs a test.
 
 ## account-log-in is a really bad name
-
-## sort out the errors and allow people to handle them
 
 ## sort out the jsown "key not available for given object"
 so we can handle the case when there is no key e.g. when matrix returns an error instead,
@@ -33,6 +27,14 @@ they can be string on synapse too so watch out
 ## add struct for events holding type and id
 
 ## usocket timeout exception is not handelled
+
+# Partial
+
+## sort out the errors and allow people to handle them
+
+## rate limiting for all methods
+
+see msg-send
 
 # Done
 
