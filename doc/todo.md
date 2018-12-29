@@ -1,5 +1,10 @@
 # todo
 
+## test ordering can cause issues
+if the listening test is done before pagination test then pagination fails
+i suspect it's just the way they are setup and torn down but it does need fixing
+more tests are needed for listening
+
 ## paginate until predicate method for rooms messages, maybe even use this as the default
 maybe some kind of take 20 messages system too
 

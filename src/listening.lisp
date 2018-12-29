@@ -3,93 +3,64 @@
   (:use :cl)
   (:nicknames "CL-M.L")
   (:export
-   :listen-to-sync-data
+
+   listener
+   :listeners
+   :callback
+   :description
+   :parent
    
-   :category
-   :add-category
-   :make-category
-   :make-filter
-   :add-listener-to-category
+   :make-listener
+
+   :invoke-callback
    
-   :listener
-   :make-listener))
+   dispatcher
+   :add-listener
+   :make-dispatcher))
 
 (in-package :cl-matrix.listening)
-
-(defparameter *listener-categories* nil)
-
-(defclass category ()
-  ((filter :accessor filter
-           :initarg :filter
-           :initform (error "must supply a filter")
-           :documentation "a closure containing a jsown:fitler to use on a matrix response. See make-filter")
-
-   (listeners :accessor listeners
-              :initarg :listeners
-              :initform nil
-              :type list)
-
-   (do-keys-p :accessor do-keys-p
-                :initarg :do-keys-p
-                :initform nil
-                :type boolean
-                :documentation "tells the iterator whether to do jsown:do-json-keys or map. i.e. whether the filter will return a json object or a list.")))
 
 (defclass listener ()
   ((callback :accessor callback
              :initarg :callback
-             :initform (error "must supply a callback")
-             :type function)
+             :type function
+             :documentation "a function the dispatcher will call.")
 
-   (category :accessor category
-             :initarg :category
-             :initform (error "must supply a category")
-             :type category)))
+   (description :accessor description
+                :initarg :description
+                :type string
+                :initform ""
+                :documentation "a description for the purpose of the listener.")
 
-(defun listen-to-sync-data (sync-data)
-  (mapcar (lambda (cat)
-            (let ((filtered (funcall (filter cat) sync-data))
-                  (callbacks (mapcar #'callback (listeners cat))))
-              
-              (if (do-keys-p cat)
-                  (mapcar #'(lambda (fun)
-                              (jsown:do-json-keys (key val) filtered
-                                (funcall fun key val)))
-                          callbacks)
-                  
-                  (map-2 callbacks
-                         filtered))))
-        *listener-categories*))
+   (parent     :accessor parent
+               :initarg :parent
+               :initform nil
+               :type dispatcher
+               :documentation "a reference to the parent dispatcher")))
 
+(defmethod print-object ((instance listener) stream)
+  (print-unreadable-object (instance stream :type t :identity t)
+    (format stream "~a" (description instance))))
 
-(defun funmap (functions data)
-  "utility function, funcalls a list of functions on the given item"
-  (loop :for fun in functions
-     :do (progn
-           (funcall fun data))))
+(defun make-listener (callback &optional parent description)
+  (make-instance 'listener :callback callback :parent parent :description description))
 
-(defun map-2 (functions data)
-  "maps a list of functions on a list of data, map squared."
-  (mapcar (lambda (fn) (mapcar fn data))
-          functions))
+(defclass dispatcher (listener)
+  ((listeners :accessor listeners
+              :initarg :listeners
+              :type list))
+  (:documentation "a listener that dispatches more listeners, it's child listeners are specified in the slot listeners.
+an example would be having the callback for the dispatcher set to only dispatch listeners when an event type is string= \"m.room.message\"
+as opposed to having each listener performing this check themselves. Whoever creates the dispatcher takes the responsibility for deciding how it's listeners are to be called ie the expected argument list etc."))
 
-(defmethod add-category ((this category))
-  "adds a category to the *listener-categories* that is used by listen-to-sync-data"
-  (push this *listener-categories*))
+(defmethod invoke-callback ((instance listener) &rest args)
+  (apply (callback instance) instance args))
 
-(defun make-category (filter &optional do-keys-p)
-  (make-instance 'category :filter filter :do-keys-p do-keys-p))
+(defmethod add-listener ((this dispatcher) (a-listener listener))
+  "add a listener to a dispatcher"
+  (push a-listener (listeners this)))
 
-(defmacro make-filter (&body filter)
-  "makes a closure with a jsown:filter to be used on a matrix-response by a category"
-  (let ((data (gensym)))
-    `(lambda (,data)
-       (jsown:filter ,data
-                     ,@filter))))
-
-(defmethod add-listener-to-category ((cat category) (lnr listener))
-  "adds a listener to a category object, not sure whether this should be implied by use of the constructor or not"
-  (push lnr (listeners cat)))
-
-(defun make-listener (callback category)
-  (make-instance 'listener :callback callback :category category))
+(defun make-dispatcher (callback &key parent listeners (description ""))
+  (let ((instance (make-instance 'dispatcher :callback callback :parent parent :listeners listeners :description description)))
+    (when parent (add-listener parent instance))
+    instance))
