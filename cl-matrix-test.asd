@@ -1,7 +1,7 @@
 (defsystem "cl-matrix-test"
   :version "0.0"
   :author "Gnuxie <Gnuxie@protonmail.com>"
-  :license "CSL v1+"
+  :license "AGPL v3+"
   :depends-on ("cl-matrix" "parachute" "jsown")
   :components ((:module "test"
                         :components

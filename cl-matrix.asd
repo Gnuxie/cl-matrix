@@ -2,7 +2,7 @@
   :version "0.0"
   :author "Gnuxie <Gnuxie@protonmail.com> Jaidyn Lev <jadedctrl@teknik.io>"
   :maintainer "Gnuxie <Gnuxie@protonmail.com>"
-  :license "CSL v1+"
+  :license "AGPL v3+"
   :depends-on ("jsown" "drakma")
   :components ((:module "src"
                 :components
