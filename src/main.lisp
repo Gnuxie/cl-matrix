@@ -54,6 +54,12 @@
                                                    (list type msg))))
                        :callback (generate-generic-callback #'msg-send msg room-id :txid txid :type type)))
 
+(defun room-redact (room-id event-id reason &key txid (random-timestamp))
+  "redact an event in a room. txid is a `(random-timestamp)` by default."
+  (let ((json (format nil "{\"reason\": \"~a\"}" reason)))
+    (put-room-redact-event room-id event-id txid json
+                           :callback (generate-generic-callback #'room-redact room-id event-id reason :txid txid))))
+
 
 (defun user-invite (user-id room-id)
   "Invite a user to a chat-room."
@@ -119,12 +125,13 @@
   "Fetch a list of joined members for a room"
   (let ((members
          (jsown:parse (get-room-joined-members room))))
-    (push room members)))
+    members))
 
 (defun rooms-joined-members (rooms)
   "Fetch the members information for all the supplied rooms"
   (let ((members (mapcar #'room-joined-members rooms)))
-    (push ':obj members)))
+    (cons ':obj (pairlis rooms
+                         members))))
 
 (defun rooms-joined-members-ids (rooms)
   "Fetch the joined members as user-ids"
@@ -185,6 +192,34 @@
   (post-room-leave room-id
                    "{}"
                    :callback (generate-generic-callback #'room-leave room-id)))
+
+(defun room-kick (user-id reason &rest room-ids)
+  (let ((json (jsown:to-json (list* ':obj (pairlis
+                                           '("reason" "user_id")
+                                           (list reason user-id))))))
+
+    (labels ((room-kick-json (room-id json)
+               (post-room-kick room-id
+                               json
+                               :callback (generate-generic-callback #'room-kick-json room-id json)))) 
+
+      (dolist (room-id room-ids)
+        (room-kick-json room-id
+                        json)))))
+
+(defun room-ban (user-id reason &rest room-ids)
+  (let ((jsown (jsown:to-json (cons ':obj (pairlis
+                                           '("reason" "user_id")
+                                           (list reason user-id))))))
+
+    (labels ((room-ban-json (room-id json)
+               (post-room-ban room-id
+                              json
+                              :callback (generate-generic-callback #'room-ban-json room-id json))))
+
+      (dolist (room-id room-ids)
+        (room-kick-json room-id
+                        json)))))
 
 (defun %room-messages (room-id from dir &key to limit filter)
   "see the spec for this one.

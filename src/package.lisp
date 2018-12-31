@@ -6,6 +6,7 @@
          :account-log-out
          :room-create
          :msg-send
+         :room-redact
          :user-invite
          :room-join
          :account-sync
@@ -21,6 +22,9 @@
          :change-power-level
          :room-forget
          :room-leave
+         :room-kick
+         :room-ban
+         :room-unban
          :invitations
          :upload-filter
          :room-messages

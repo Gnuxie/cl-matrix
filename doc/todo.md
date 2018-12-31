@@ -1,5 +1,8 @@
 # todo
 
+## we have a problem with the callback thing we have
+look at room-redact and msg send. The content has to be rebuilt every single time.
+
 ## test ordering can cause issues
 if the listening test is done before pagination test then pagination fails
 i suspect it's just the way they are setup and torn down but it does need fixing

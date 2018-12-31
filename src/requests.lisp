@@ -30,6 +30,9 @@
    :get-room-state
    :put-room-state-key
    :post-logout
+   :post-room-kick
+   :post-room-ban
+   :post-room-unban
    
    *access-token*
    *homeserver*))
@@ -121,11 +124,7 @@
                      (setf endpoints (append endpoints (endpoint-of-type name method arguments new-concat-list :documentation documentation))))
                 endpoints))))))
 
-;;; some methods (sync) will need access to paramaters and other keywords in matrix-request
-;;; so we might want to add keyword arguments to let them through.
-
 ;;; also we might want to make a macro class idk for room events, see the spec.
-
 
 ;;; below we can just copy the api endpoints from the spec.
 (define-matrix-endpoint login (:post :get)
@@ -201,6 +200,15 @@
 (define-matrix-endpoint room-forget (:post)
   ("rooms" room-id "forget"))
 
+(define-matrix-endpoint room-kick (:post)
+  ("rooms" room-id "kick"))
+
+(define-matrix-endpoint room-ban (:post)
+  ("rooms" room-id "ban"))
+
+(define-matrix-endpoint room-unban (:post)
+  ("rooms" room-id "unban"))
+
 (flet ((endpoint-p (sym)
          (let ((pack (find-package :matrix-requests)))
            (and (eql (symbol-package sym) pack)
@@ -211,4 +219,4 @@
   (let ((pack (find-package :matrix-requests)))
     (do-all-symbols (sym pack)
       (when (endpoint-p sym)
-        (format t ":~a~%" (string-downcase (symbol-name sym)))))))
+        (format t "~%:~a" (string-downcase (symbol-name sym)))))))
