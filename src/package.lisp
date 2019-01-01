@@ -63,7 +63,6 @@
          *account*
 
          :client-new-room
-         :client-new-events
          :client-room-front-updater))
 
 (in-package :cl-matrix)

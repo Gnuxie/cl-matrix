@@ -45,7 +45,6 @@
               :type dispatcher)))
 
 (let ((new-room-client (make-listener (cl-matrix:client-new-room)))
-      (new-event-client (make-listener (cl-matrix:client-new-events)))
       (room-front-client (make-listener (cl-matrix:client-room-front-updater))))
 
   (defun base-sync ()
@@ -69,7 +68,6 @@
        (let ((listeners (listeners instance))
              (events (jsown:filter the-room "timeline" "events")))
          (mapcar (lambda (event)
-                   (invoke-callback new-event-client room-id event)
                    (mapcar (lambda (l) (invoke-callback l room-id event))
                            listeners))
                  events)))

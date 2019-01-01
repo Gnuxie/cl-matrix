@@ -4,17 +4,13 @@
 
 (defun client-new-room ()
   (lambda (instance room-id the-room)
-    (unless (member room-id (room-list *account*))
+    (unless (member room-id (room-list *account*) :test #'string=)
       (add-room room-id
                 (make-instance 'room
                                :id room-id
-                               :events (reverse (jsown:filter the-room "timeline" "events"))
-                               :back (jsown:filter the-room "timeline" "prev_batch"))))))
-
-(defun client-new-events ()
-  (lambda (instance room-id event)
+                               :back (jsown:filter the-room "timeline" "prev_batch"))))
     (with-accessors ((events events)) (get-room room-id)
-      (push event events))))
+      (push (reverse (jsown:filter the-room "timeline" "events")) events))))
 
 (defun client-room-front-updater ()
   (lambda (instance data)

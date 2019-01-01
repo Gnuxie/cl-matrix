@@ -102,4 +102,5 @@ it sould be noted that the chunk blocks are most recent first in order for both 
   (remove-if-not predicate sequence :start start :key key :end end))
 
 (defmethod events ((room-id string))
+  "this is all fine until you want to use the accessor, where this won't work"
   (events (get-room room-id)))

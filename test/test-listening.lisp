@@ -6,7 +6,8 @@
 
 (define-test listening-test
   :parent cl-matrix-test
-)
+  :depends-on (pagination-chat)
+  )
 
 (defun set-up-listening ()
   (cl-matrix:with-account (*user-one*)

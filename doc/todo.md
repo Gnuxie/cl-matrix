@@ -17,7 +17,12 @@ look at room-redact and msg send. The content has to be rebuilt every single tim
 ## test ordering can cause issues
 if the listening test is done before pagination test then pagination fails
 i suspect it's just the way they are setup and torn down but it does need fixing
-more tests are needed for listening
+more tests are needed for listening.
+
+### 01/01/2019
+Aright I had a look and I still have no idea why this happens.
+For some reason the room that's created during setup does not exist in the sync data returned.
+Yet it does when the listening test is done after and not before??
 
 ## paginate until predicate method for rooms messages, maybe even use this as the default
 maybe some kind of take 20 messages system too

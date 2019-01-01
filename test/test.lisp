@@ -135,7 +135,9 @@
   :depends-on (direct-chat)
 
   (setup-room-pagination-test)
-    (format t "room: ~a~%" *pagination-chat*)
+  (cl-matrix:with-account (*user-one*)
+    (true (member *pagination-chat* (cl-matrix:user-joined-rooms) :test #'string=)))
+  (format t "room: ~a~%" *pagination-chat*)
   (format t "collecting events before...~%")
   (cl-matrix:with-account (*user-one*)
     (let ((events-before (cl-matrix:events *pagination-chat*)))
