@@ -1,3 +1,5 @@
+#| This file is part of cl-matrix
+   Copyright (C) 2018-2019 Gnuxie <Gnuxie@protonmail.com> |#
 (in-package :cl-matrix)
 
 (defclass room ()
@@ -75,18 +77,17 @@ it sould be noted that the chunk blocks are most recent first in order for both 
   "Initialises the rooms the user has joined by using the sync endpoint"
   (let* ((sync-data (account-sync))
          (front-token (jsown:val sync-data "next_batch"))
-         (joined-room-data (jsown:filter sync-data "rooms" "join"))
-         (joined-rooms (user-joined-rooms)))
+         (joined-room-data (jsown:filter sync-data "rooms" "join")))
 
     (setf (%rooms *account*) (make-hash-table :test 'equal :size 200))
+    (setf (room-list *account*) nil)
 
-    (loop :for id in joined-rooms
-       :do
-         (let ((new-room (make-instance 'room :id id
-                                        :events (reverse (jsown:filter joined-room-data id "timeline" "events"))
-                                        :front front-token
-                                        :back (jsown:filter joined-room-data id "timeline" "prev_batch"))))
-           (add-room id new-room)))))
+    (jsown:do-json-keys (room-id room-data) joined-room-data
+      (let ((new-room (make-instance 'room :id room-id
+                                     :events (reverse (jsown:filter room-data "timeline" "events"))
+                                     :front front-token
+                                     :back (jsown:filter room-data "timeline" "prev_batch"))))
+        (add-room room-id new-room)))))
 
 (defgeneric filter (predicate sequence &key key start  end)
   (:documentation "filter a cl-matrix sequence"))

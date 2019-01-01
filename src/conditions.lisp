@@ -1,3 +1,5 @@
+#| This file is part of cl-matrix
+   Copyright (C) 2018-2019 Gnuxie <Gnuxie@protonmail.com> |#
 (in-package :cl-matrix)
 
 (define-condition cl-matrix-error (error) ())

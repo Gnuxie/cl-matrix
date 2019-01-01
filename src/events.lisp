@@ -1,3 +1,5 @@
+#| This file is part of cl-matrix
+   Copyright (C) 2018-2019 Gnuxie <Gnuxie@protonmail.com> |#
 (in-package :cl-matrix)
 
 ;;; ok this is basically going to use the list :obj things from jsown for now, as with the events list in room.lisp

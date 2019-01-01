@@ -1,3 +1,5 @@
+#| This file is part of cl-matrix
+   Copyright (C) 2018-2019 Gnuxie <Gnuxie@protonmail.com> |#
 (in-package :cl-matrix)
 
 (defclass account ()
@@ -29,7 +31,12 @@
           :initarg :rooms
           :initform (make-hash-table :test 'equal :size 200)
           :type hash-table
-          :documentation "a hash table containing room-ids that point to different room instances")))
+          :documentation "a hash table containing room-ids that point to different room instances")
+
+   (room-list :accessor room-list
+              :initform nil
+              :type list
+              :documentation "a list representing the rooms which are in the hashtable")))
 
 (defmethod print-object ((this-account account) stream)
   (print-unreadable-object (this-account stream :type t :identity t)
@@ -72,4 +79,5 @@
   (gethash room-id (%rooms *account*)))
 
 (defun add-room (room-id room)
+  (push room-id (room-list *account*))
   (setf (gethash room-id (%rooms *account*)) room))

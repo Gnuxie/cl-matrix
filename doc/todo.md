@@ -1,5 +1,16 @@
 # todo
 
+## startup sync isn't even required anymore
+as the new internal listeners will do what startup sync does on a new room creation anyways
+
+## listener dependancy
+some listeners require other listeners to have executed first before themselves
+tbh at this point there has to be a listner library or something, if we implement this properly
+we may aswell make our own.
+
+## the listeners need to be per account as per say but
+tbh, this technically can be controlled by the user when they decide which base dispatcher to give which accounts sync-data to.
+
 ## we have a problem with the callback thing we have
 look at room-redact and msg send. The content has to be rebuilt every single time.
 

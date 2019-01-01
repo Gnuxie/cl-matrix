@@ -2,23 +2,22 @@
 
 (defparameter *listening-room* nil)
 (defparameter *listener-worked-p* nil)
-(defparameter *after-setup-token* nil)
 (defparameter *base-dispatcher* (base-dispatcher:make-base-dispatcher))
 
 (define-test listening-test
   :parent cl-matrix-test
-  :depends-on (pagination-chat))
+)
 
 (defun set-up-listening ()
   (cl-matrix:with-account (*user-one*)
-    (when (not *after-setup-token*)
-      (setf *after-setup-token*
-            (jsown:val (cl-matrix:account-sync) "next_batch"))
-      
-      (setf *listening-room*
-            (jsown:val (cl-matrix:room-create :invite (list (cl-matrix:username *user-two*))) "room_id"))
+    (setf *base-dispatcher* (base-dispatcher:make-base-dispatcher))
+    (setf *after-setup-token*
+          (jsown:val (cl-matrix:account-sync) "next_batch"))
+    
+    (setf *listening-room*
+          (jsown:val (cl-matrix:room-create :invite (list (cl-matrix:username *user-two*))) "room_id"))
 
-      (format t "listening room:~%~s." *listening-room*))))
+    (format t "listening room:~%~s." *listening-room*)))
 
 (define-test room-event-listening
   :parent listening-test

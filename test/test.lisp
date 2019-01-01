@@ -24,7 +24,8 @@
 
 (load-config)
 
-(define-test cl-matrix-test)
+(define-test cl-matrix-test
+  :serial nil)
 (define-test login
   :parent cl-matrix-test
 
@@ -123,7 +124,8 @@
     (format t "sending lots of messages...~%")
     (send-lots-of-test-messages *pagination-chat* :amount 20)
     (format t "done~%")
-    
+
+    (format t "room: ~a~%" *pagination-chat*)
 
     (cl-matrix:startup-sync)
     (format t "pagination test setup complete~%")))
@@ -133,7 +135,7 @@
   :depends-on (direct-chat)
 
   (setup-room-pagination-test)
-
+    (format t "room: ~a~%" *pagination-chat*)
   (format t "collecting events before...~%")
   (cl-matrix:with-account (*user-one*)
     (let ((events-before (cl-matrix:events *pagination-chat*)))

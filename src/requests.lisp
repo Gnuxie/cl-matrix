@@ -1,3 +1,5 @@
+#| This file is part of cl-matrix
+   Copyright (C) 2018-2019 Gnuxie <Gnuxie@protonmail.com> |#
 (defpackage :matrix-requests
   (:use :cl)
   (:export

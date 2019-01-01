@@ -1,3 +1,6 @@
+#| This file is part of cl-matrix
+   Copyright (C) 2018 Jaidyn Lev
+   Copyright (C) 2018-2019 Gnuxie <Gnuxie@protonmail.com> |#
 (in-package :cl-matrix)
 
 (push '("application" . "json") drakma:*text-content-types*)
