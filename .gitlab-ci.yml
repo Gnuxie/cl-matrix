@@ -1,13 +1,28 @@
+stages:
+    - test
+    - build
+    - deploy
+    
+pages:
+    stage: deploy
+    script:
+        - mkdir .public
+        - cp -r ./doc/* .public
+        - mv .public public
+    artifacts:
+        paths:
+            - public
+    only:
+        - master
+
+
+
 image : daewok/lisp-devel
 
-stages:
-  - test
-  - build
-
 before_script:
-  - ln -s "${CI_PROJECT_DIR}" ~/quicklisp/local-projects/cl-matrix
+        - ln -s "${CI_PROJECT_DIR}" ~/quicklisp/local-projects/cl-matrix
 
 test:
-  stage: test
-  script:
-    - sbcl --load ci-tests.lisp --disable-debugger --quit
+    stage: test
+    script:
+        - sbcl --load ci-tests.lisp --disable-debugger --quit
