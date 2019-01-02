@@ -141,7 +141,7 @@
   (format t "collecting events before...~%")
   (cl-matrix:with-account (*user-one*)
     (let ((events-before (cl-matrix:events *pagination-chat*)))
-      (format t "done~%sedning new messages~%")
+      (format t "done~%sending new messages~%")
       (send-lots-of-test-messages *pagination-chat* :amount 10 :start 20)
       (format t "done~%fetching new messages~%")
       (cl-matrix:messages *pagination-chat* "f")

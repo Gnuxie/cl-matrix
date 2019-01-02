@@ -14,7 +14,7 @@ Here is a hello world example
   (cl-matrix:msg-send "hello world!" "!someRoomId:matrix.org"))
 ```
 
-## What is supported
+## What is supported?
 At the moment most apis are usable and there are classes for accounts and rooms
 
 There is now also event listening and I will be writing more documentation on this shortly.
@@ -24,7 +24,7 @@ I made this so I could write my own bots and tools for matrix, I am planning on 
 
 I have tried to make this as extensible as possible.
 
-## What can I expect this to become
+## What can I expect this to become?
 There is a chance that the code base could be abandoned still as it still hasn't had a release.
 That being said, it's a fairly simple code base and there will be things here that are useful for similar libraries.
 
