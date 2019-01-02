@@ -3,7 +3,7 @@
   :author "Gnuxie <Gnuxie@protonmail.com> Jaidyn Lev <jadedctrl@teknik.io>"
   :maintainer "Gnuxie <Gnuxie@protonmail.com>"
   :license "AGPL v3+"
-  :depends-on ("jsown" "drakma")
+  :depends-on ("jsown" "drakma" "documentation-utils")
   :components ((:module "src"
                 :components
                 ((:file "requests")
@@ -18,6 +18,10 @@
                  (:file "events")
                  (:file "client-listeners")
                  (:file "basic-listening")
-)))
+                 (:module "docstrings"
+                          :components
+                          ((:file "cl-matrix-doc")
+                           (:file "matrix-requests-doc")
+                           )))))
   :description
         "A WIP Matrix library for Common Lisp.")

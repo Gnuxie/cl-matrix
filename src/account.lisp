@@ -51,9 +51,7 @@
   (:documentation "changes to the account"))
 
 (defmethod change-account ((this-account account))
-  (setf *access-token* (access-token this-account))
-  (setf *account*      this-account)
-  (setf *homeserver*   (homeserver this-account)))
+  (setf *access-token* (access-token this-account)))
 
 (defmethod change-account :before ((this-account account))
   (setf *homeserver* (homeserver this-account))
