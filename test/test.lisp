@@ -29,17 +29,21 @@
 (define-test login
   :parent cl-matrix-test
 
-  (fail (cl-matrix:account-log-in "fjfjfjf " "fjfjfjjf"))
-  (cl-matrix:change-account *user-one*)
-  (true (< 0 (length (cl-matrix:access-token *user-one*))))
-  (cl-matrix:change-account *user-two*)
-  (true (< 0 (length (cl-matrix:access-token *user-two*))))
+  (fail (cl-matrix:login "fjfjfjf " "fjfjfjjf"))
+  (cl-matrix:with-account (*user-one*)
+    (true (< 0 (length (cl-matrix:access-token *user-one*)))))
+  (cl-matrix:with-account (*user-two*)
+    (true (< 0 (length (cl-matrix:access-token *user-two*)))))
 
-  (define-test loging-out
-      (let ((a-token (cl-matrix:account-log-in (cl-matrix:username *user-one*) (cl-matrix:password *user-one*))))
-        (cl-matrix:account-log-out)
-        (setf cl-matrix:*access-token* a-token)
-        (fail (cl-matrix:room-join "!QtykxKocfZaZOUrTwp:matrix.org")))))
+  (define-test logout
+    (let ((token nil))
+      (cl-matrix:with-account (*user-one* t)
+        (setf token (cl-matrix:access-token *user-one*)))
+
+      (setf (cl-matrix:access-token *user-one*) token)
+      (cl-matrix:with-account (*user-one*)
+        (fail (cl-matrix:room-create)))
+      (setf (cl-matrix:access-token *user-one*) nil))))
 
 (define-test room-create
   :parent cl-matrix-test
@@ -165,18 +169,11 @@
                                                                    events-after-backwards :key #'cl-matrix:event-type)))
                                       "content" "body"))))))
 
-;; clean up direct chat test.
-(defun cleanup-logout (&rest accounts)
-  (dolist (account accounts)
-    (cl-matrix:with-account (account t)
-      (cl-matrix:room-leave *direct-chat*)
-      (cl-matrix:room-leave *pagination-chat*)
-      (cl-matrix:room-forget *direct-chat*))))
-
 (defun leave-forget-all-rooms (&rest accounts)
   (dolist (account accounts)
     (cl-matrix:with-account (account t)
-      (loop :for room in (cl-matrix:user-joined-rooms)
-         :do
-           (cl-matrix:room-leave room)
-           (cl-matrix:room-forget room)))))
+      (dolist (room  (cl-matrix:user-joined-rooms))
+        (format t "~a~%" room)
+        (cl-matrix:room-leave room)
+        (cl-matrix:room-forget room)))))
+

@@ -4,21 +4,21 @@
 (in-package :cl-matrix)
 
 (push '("application" . "json") drakma:*text-content-types*)
-(defparameter *account* nil)
+(defparameter *account* (make-instance 'matrix-requests:url-formats))
 
-(defun account-log-in (username password)
+(defun login (username password)
   "'Log in' by fetching the access-token of an account."
 
-  (let ((response (jsown:parse (post-login
+  (let ((response (jsown:parse (post-login *account*
                                 (jsown:to-json (cons ':obj (pairlis
                                                             (list "type" "user" "password")
                                                             (list "m.login.password" username password))))))))
-    (setf *access-token* (jsown:val response "access_token"))))
+    (setf (access-token *account*) (jsown:val response "access_token"))))
 
-(defun account-log-out ()
-  (post-logout "{}")
+(defun logout ()
+  (post-logout *account* "{}")
 
-  (setf *access-token* nil))
+  (setf (access-token *account*) nil))
 
 (defun room-create (&key
                     (room-alias nil room-alias-p)
@@ -32,7 +32,7 @@
 
   (labels ((room-create-json (json)
              (funcall (generate-generic-callback #'room-create-json json)
-                      (post-create-room json))))
+                      (post-create-room *account* json))))
     
     (let ((json-to-submit (jsown:to-json
                            (cons ':obj (alist-without-nulls
@@ -51,7 +51,7 @@
 (defun msg-send (msg room-id &key (txid (random-timestamp)) (type "m.text"))
   "Send a text message to a specific room."
 
-  (put-room-send-event room-id "m.room.message" (princ-to-string txid)
+  (put-room-send-event *account* room-id "m.room.message" (princ-to-string txid)
                        (jsown:to-json (cons ':obj (pairlis
                                                    (list "msgtype" "body")
                                                    (list type msg))))
@@ -60,14 +60,14 @@
 (defun room-redact (room-id event-id reason &key txid (random-timestamp))
   "redact an event in a room. txid is a `(random-timestamp)` by default."
   (let ((json (format nil "{\"reason\": \"~a\"}" reason)))
-    (put-room-redact-event room-id event-id txid json
+    (put-room-redact-event *account* room-id event-id txid json
                            :callback (generate-generic-callback #'room-redact room-id event-id reason :txid txid))))
 
 
 (defun user-invite (user-id room-id)
   "Invite a user to a chat-room."
 
-  (post-room-invite room-id
+  (post-room-invite *account* room-id
                     (jsown:to-json (cons ':obj (pairlis
                                                 (list "user_id")
                                                 (list user-id))))
@@ -91,7 +91,8 @@
       invitations)))
 
 (defun upload-filter (user-id filter)
-  (post-user-filter user-id
+  (post-user-filter *account*
+                    user-id
                     filter
                     :callback (generate-generic-callback #'upload-filter user-id filter)))
 
@@ -99,13 +100,14 @@
 (defun room-join (room-id)
   "Join a Matrix room by id, not the same as alias, see the spec."
 
-  (post-room-join room-id "{}"
+  (post-room-join *account* room-id "{}"
                   :callback (generate-generic-callback #'room-join room-id)))
 
 (defun account-sync (&key since filter)
   "see the spec, read 8.2 syncing to understand how this works."
 
-  (let ((response (jsown:parse (get-sync :parameters
+  (let ((response (jsown:parse (get-sync *account*
+                                         :parameters
                                          (concatenate 'string
                                                       (when since
                                                         (concatenate 'string
@@ -121,13 +123,13 @@
 (defun user-joined-rooms ()
   "Fetch rooms joined by the user. This is not filtered from sync, it's an actual api call."
 
-  (jsown:val (jsown:parse (get-joined-rooms))
+  (jsown:val (jsown:parse (get-joined-rooms *account*))
              "joined_rooms"))
 
 (defun room-joined-members (room)
   "Fetch a list of joined members for a room"
   (let ((members
-         (jsown:parse (get-room-joined-members room))))
+         (jsown:parse (get-room-joined-members *account* room))))
     members))
 
 (defun rooms-joined-members (rooms)
@@ -152,12 +154,13 @@
 (defun room-state (room-id &optional event-type state-key)
   "Get the state events for the current state of a room."
   (jsown:parse
-   (cond ((and event-type state-key) (get-room-state-key room-id
+   (cond ((and event-type state-key) (get-room-state-key *account
+                                                         room-id
                                                          event-type
                                                          state-key))
 
-         (event-type (get-room-state-event room-id event-type))
-         (t (get-room-state room-id)))))
+         (event-type (get-room-state-event *account* room-id event-type))
+         (t (get-room-state *account* room-id)))))
 
 (defun rooms-state (rooms &optional event-type state-key)
   (cons ':obj (pairlis rooms
@@ -179,20 +182,23 @@
          (current-users (jsown:val current-levels "users")))
     (setf (jsown:val current-users user-id) power)
     (setf (jsown:val current-levels "users") current-users)
-    (put-room-state room
+    (put-room-state *account*
+                    room
                     "m.room.power_levels"
                     (jsown:to-json current-levels)
                     :callback (generate-generic-callback #'change-power-level room user-id power))))
 
 (defun room-forget (room-id)
   "forget a room"
-  (post-room-forget room-id
+  (post-room-forget *account*
+                    room-id
                     "{}"
                     :callback (generate-generic-callback #'room-forget room-id)))
 
 (defun room-leave (room-id)
   "leave a room"
-  (post-room-leave room-id
+  (post-room-leave *account*
+                   room-id
                    "{}"
                    :callback (generate-generic-callback #'room-leave room-id)))
 
@@ -202,7 +208,8 @@
                                            (list reason user-id))))))
 
     (labels ((room-kick-json (room-id json)
-               (post-room-kick room-id
+               (post-room-kick *account*
+                               room-id
                                json
                                :callback (generate-generic-callback #'room-kick-json room-id json)))) 
 
@@ -216,7 +223,8 @@
                                            (list reason user-id))))))
 
     (labels ((room-ban-json (room-id json)
-               (post-room-ban room-id
+               (post-room-ban *account*
+                              room-id
                               json
                               :callback (generate-generic-callback #'room-ban-json room-id json))))
 
@@ -228,7 +236,8 @@
   "see the spec for this one.
 returns the response, the start token and then the end token"
   (let ((response
-         (jsown:parse (get-room-messages room-id :parameters
+         (jsown:parse (get-room-messages *account*
+                                         room-id :parameters
                                          (concatenate 'string
                                                       "&from="
                                                       from

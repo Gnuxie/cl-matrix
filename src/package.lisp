@@ -2,8 +2,8 @@
   (:use :cl :matrix-requests)
   (:shadow "ROOM")
         (:export 
-         :account-log-in
-         :account-log-out
+         :login
+         :logout
          :room-create
          :msg-send
          :room-redact
@@ -58,8 +58,6 @@
          :password
          :homeserver
 
-         *access-token*
-         *homeserver*
          *account*
 
          :client-new-room

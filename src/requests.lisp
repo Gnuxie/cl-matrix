@@ -36,36 +36,47 @@
    :post-room-ban
    :post-room-unban
    
-   *access-token*
-   *homeserver*))
+   url-formats
+   :access-token
+   :homeserver))
 
 (in-package :matrix-requests)
 
-(defparameter *homeserver* "matrix.org")
-(defparameter *access-token* "")
+(defclass url-formats ()
+  ((access-token :accessor access-token
+                 :initarg :access-token
+                 :initform nil
+                 :type string)
+
+   (homeserver   :accessor homeserver
+                 :initarg :homeserver
+                 :initform nil
+                 :type string)))
 
 (defmacro define-matrix-request (name type)
-  `(defun ,name ,(remove-if #'null `(url ,(unless (equal type ':get) 'the-json) &key
+  `(defun ,name ,(remove-if #'null `(url url-format ,(unless (equal type ':get) 'the-json)
+                                         &key
                                         (parameters nil)
-                                        (access-token *access-token*)
                                         ,(unless (equal type ':get)
                                           '(content-type "application/json"))))
   "Make a request to a Matrix homeserver, for API calls."
 
-  (let ((url (concatenate 'string
-                          "https://" *homeserver* url
-                          (when access-token
-                            (format nil "?access_token=~A" access-token))
-                          (when parameters parameters))))
+  (with-accessors ((homeserver homeserver) (access-token access-token)) url-format
+    (let ((url (concatenate 'string
+                            "https://" homeserver url
+                            (when access-token
+                              (format nil "?access_token=~A" access-token))
+                            (when parameters parameters))))
 
-    (drakma:http-request
-     ,@ (remove-if #'null
-                   (append 
-                    `(url
-                     :method ,type)
-                    (unless (equal type ':get)
-                      '(:content the-json
-                                :content-type content-type))))))))
+      (drakma:http-request
+       ,@ (remove-if #'null
+                     (append 
+                      `(url
+                        :method ,type)
+                      (unless (equal type ':get)
+                        '(:content the-json
+                          :content-type content-type)))))))))
+
 
 (define-matrix-request matrix-post-request :post)
 (define-matrix-request matrix-put-request :put)
@@ -98,16 +109,14 @@
                                                               ((equal type :get) "GET-"))
                                                 (symbol-name name)))))
 
-             (unless (equal type :get)
-               (setf request (append request '(content))))
-
-             (setf request (append request '(:parameters parameters :access-token access-token)))
+             (setf request (if (equal type :get)
+                               (append request '(url-format :parameters parameters))
+                               (append request '(url-format content :parameters parameters))))
 
              `((declaim (inline ,new-name))
-               (defun ,new-name (,@(remove-if #'null `(,@arguments ,(unless (equal type :get) 'content)
+               (defun ,new-name (,@(remove-if #'null `(url-format ,@arguments ,(unless (equal type :get) 'content)
                                                                    &key parameters
-                                                                   callback
-                                                                   (access-token *access-token*))))
+                                                                   callback)))
                  ,(when documentation-p documentation)
                  (if callback
                      (funcall callback ,request)

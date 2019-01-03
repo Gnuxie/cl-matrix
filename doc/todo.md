@@ -1,5 +1,7 @@
 # todo
 
+## with-account will ruin everything if the access-token is invalid
+
 ## startup sync isn't even required anymore
 as the new internal listeners will do what startup sync does on a new room creation anyways
 

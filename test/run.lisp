@@ -8,7 +8,8 @@
                           (test 'cl-matrix-test :report report))
       (report)
       (reset)
-      (unwind-protect (cleanup-logout *user-one* *user-two*)
+      (unwind-protect (progn 
+                             (leave-forget-all-rooms *user-one* *user-two*))
         full-test-report))))
 
 (defun ci-run ()

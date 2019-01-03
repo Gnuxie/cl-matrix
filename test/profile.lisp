@@ -1,8 +1,8 @@
 (in-package :cl-matrix-test)
 
 (defun profiling ()
-  #+sbcl (sb-profile:profile cl-matrix:account-log-in
-                             cl-matrix:account-log-out
+  #+sbcl (sb-profile:profile cl-matrix:login
+                             cl-matrix:logout
                              cl-matrix:room-create
                              cl-matrix:msg-send
                              cl-matrix:user-invite
