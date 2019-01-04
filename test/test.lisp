@@ -19,8 +19,8 @@
   (with-open-file (in (merge-pathnames "test/test.config" (asdf:system-source-directory :cl-matrix)))
     (with-standard-io-syntax
         (let ((config (read in)))
-          (setf *user-one* (cl-matrix:make-account (getf config :username) (getf config :password)))
-          (setf *user-two* (cl-matrix:make-account (getf config :username2) (getf config :password2)))))))
+          (setf *user-one* (cl-matrix:login (getf config :username) (getf config :password)))
+          (setf *user-two* (cl-matrix:login (getf config :username2) (getf config :password2)))))))
 
 (load-config)
 
@@ -37,13 +37,15 @@
 
   (define-test logout
     (let ((token nil))
-      (cl-matrix:with-account (*user-one* t)
-        (setf token (cl-matrix:access-token *user-one*)))
+      (cl-matrix:with-account (*user-one*)
+        (setf token (cl-matrix:access-token *user-one*))
+        (cl-matrix:logout))
 
       (setf (cl-matrix:access-token *user-one*) token)
       (cl-matrix:with-account (*user-one*)
         (fail (cl-matrix:room-create)))
-      (setf (cl-matrix:access-token *user-one*) nil))))
+      (setf (cl-matrix:access-token *user-one*) nil)
+      (setf *user-one* (cl-matrix:login (cl-matrix:username *user-one*) (cl-matrix:password *user-one*))))))
 
 (define-test room-create
   :parent cl-matrix-test
@@ -171,9 +173,10 @@
 
 (defun leave-forget-all-rooms (&rest accounts)
   (dolist (account accounts)
-    (cl-matrix:with-account (account t)
+    (cl-matrix:with-account (account)
       (dolist (room  (cl-matrix:user-joined-rooms))
         (format t "~a~%" room)
         (cl-matrix:room-leave room)
-        (cl-matrix:room-forget room)))))
+        (cl-matrix:room-forget room))
+      (cl-matrix:logout))))
 

@@ -32,16 +32,15 @@
 
 (defun get-hostname (user-id) (elt (nth-value 1 (cl-ppcre:scan-to-strings "@.*:(.*)" user-id)) 0))
 
-(defun make-account (username password &optional (homeserver (get-hostname username)))
-  (make-instance 'account :username username :password password :homeserver homeserver))
+(defun make-account (username access-token &optional (homeserver (get-hostname username)))
+  (make-instance 'account :username username :access-token access-token :homeserver homeserver))
 
-(defmacro with-account ((this-account &optional logout-p) &body body)
+(defmacro with-account ((this-account) &body body)
   `(let ((*account* ,this-account))
-
-     (unwind-protect (progn (unless (access-token ,this-account)
-                              (login (username ,this-account) (password ,this-account))) 
-                       ,@body)
-       ,(when logout-p '(logout)))))
+     (declare (special *account*))
+     (if (not (typep *account* 'account))
+         (error 'cl-matrix-error :description "invalid input to with-account")
+         (progn ,@body))))
 
 (defun get-room (room-id)
   (gethash room-id (%rooms *account*)))

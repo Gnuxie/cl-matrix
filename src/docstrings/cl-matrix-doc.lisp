@@ -45,19 +45,10 @@ Simple function that will return a hostname from a USERNAME
 See MAKE-ACCOUNT
 See ACCOUNT")
 
-  (function change-account
-    "Generic function that is used to change the \"active\" account of the client.
-To achieve this it sets the global variables *ACCOUNT* *ACCESS-TOKEN* *HOMESERVER* to the respective slots held in the account instance.
-
-This function has a before override that will manage the homeserver and use the account to login if the ACCESS-TOKEN slot is empty.
-
-See ACCOUNT-LOG-IN
-See ACCOUNT
-See *ACCOUNT*")
-
   (function with-account
-    "Macro that will wrap the body such that the given account will be used.
-A decision was made early on in the library to use this macro for the client and the requests. It might have been better to use gfs instead.
+    "Macro that will wrap the body in a let clause with a dynamic binding to whatever the first argument evaluates to and the symbol *ACCOUNT* .
+An example of this could be `(with-account ((login \"@me:matrix.org\" \"*****\")) (user-joined-rooms))`
+Most of the time though, with-account will be used something like this `(with-account (*my-account*) body...)`.
 
 These forms are nestable.")
 

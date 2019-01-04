@@ -7,13 +7,23 @@
 (defparameter *account* (make-instance 'matrix-requests:url-formats))
 
 (defun login (username password)
-  "'Log in' by fetching the access-token of an account."
+  "calls the api endpoint post-login with the username and password.
+makes a new cl-matrix:account object with the username and password.
+sets the access-token slot of the account object to the one returned in the response.
+returns the account object.
 
-  (let ((response (jsown:parse (post-login *account*
-                                (jsown:to-json (cons ':obj (pairlis
-                                                            (list "type" "user" "password")
-                                                            (list "m.login.password" username password))))))))
-    (setf (access-token *account*) (jsown:val response "access_token"))))
+See make-account
+See with-account"
+
+  (let ((new-account (make-instance 'account :username username :password password :homeserver (get-hostname username))))
+    (let ((response (jsown:parse (post-login new-account
+                                             (jsown:to-json (cons ':obj (pairlis
+                                                                         (list "type" "user" "password")
+                                                                         (list "m.login.password" username password))))))))
+
+      
+      (setf (access-token new-account) (jsown:val response "access_token"))
+      new-account)))
 
 (defun logout ()
   (post-logout *account* "{}")
