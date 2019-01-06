@@ -15,7 +15,6 @@
                  (:file "main")
                  (:file "utils")
                  (:file "account")
-                 (:file "room")
                  (:file "events")
                  (:file "base-events")
                  (:module "docstrings"
