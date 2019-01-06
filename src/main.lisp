@@ -30,6 +30,10 @@ See with-account"
 
   (setf (access-token *account*) nil))
 
+(defun logout-all ()
+  (post-logout-all *account* "{}")
+  (setf (access-token *account*) nil))
+
 (defun room-create (&key
                     (room-alias nil room-alias-p)
                     (visibility "private" visibility-p)
@@ -242,12 +246,18 @@ See with-account"
         (room-kick-json room-id
                         json)))))
 
-(defun %room-messages (room-id from dir &key to limit filter)
+(defun room-messages (room-id from dir &key to limit filter)
   "see the spec for this one.
-returns the response, the start token and then the end token"
+returns the response, the start token and then the end token
+
+if moving backwards the most recent events will appear first in the chunk.
+if moving forwards the most recent events will appear last in the chunk.
+
+This is because the paginator has to return the events nearest the front token first, ie, the events nearest the from token will be closer to the front."
   (let ((response
          (jsown:parse (get-room-messages *account*
-                                         room-id :parameters
+                                         room-id
+                                         :parameters
                                          (concatenate 'string
                                                       "&from="
                                                       from
@@ -264,13 +274,45 @@ returns the response, the start token and then the end token"
 
                                                       (when limit
                                                         (concatenate 'string
-                                                                     "&limit"
+                                                                     "&limit="
                                                                      limit)))))))
 
-    (values response (jsown:val response "start") (jsown:val response "end"))))
+    (values (jsown:val response "chunk") (jsown:val response "start") (jsown:val response "end"))))
 
-(defun room-messages (room-id dir)
-  (messages (get-room room-id) dir))
+(defun n-messages (room-id from dir n &key to filter)
+  "returns a minimum number of messages from a room, if there that many
+
+alright, i don't think this is necessary.
+
+returns values the event-list, the end of the chunk and the number of messages returned.
+
+TODO maybe make n optional, returning all messages by default?
+maybe allow user defined predicates for terminating pagination."
+  (let ((messages nil)
+        (current-number 0)
+        (morep t))
+    (loop :while (and morep (> n current-number)) :do
+         (multiple-value-bind (new-messages start end) (room-messages room-id from dir :to to :limit (princ-to-string (- n current-number)) :filter filter)
+           (if (null new-messages)
+               (setf morep nil)
+               (progn
+                 (setf messages (append messages new-messages))
+                 (setf current-number (+ current-number (length new-messages)))
+                 (setf from end)))))
+
+    (values messages from current-number)))
+
+(defun all-messages (room-id from dir &key to filter)
+  (let ((messages nil)
+        (morep t))
+    (loop :while morep :do
+         (multiple-value-bind (new-messages start end) (room-messages room-id from dir :to to :limit "1000" :filter filter)
+           (if (null new-messages)
+               (setf morep nil)
+               (progn (setf messages (append messages new-messages))
+                      (setf from end)))))
+    (values messages from)))
+
 
 (defun random-timestamp ()
   (+ (* 100000 (get-universal-time)) (random 100000)))

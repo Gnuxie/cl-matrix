@@ -8,26 +8,19 @@ Here is a hello world example
 
 ```
 
-(defvar *user-one* (cl-matrix:make-account "@my-username:my-homeserver" "******"))
+(defvar *user-one* (cl-matrix:login "@me:myhomeserver" "******"))
 
 (cl-matrix:with-account (*user-one*)
   (cl-matrix:msg-send "hello world!" "!someRoomId:matrix.org"))
 ```
 
 ## What is supported?
-At the moment most apis are usable and there are classes for accounts and rooms
+At the moment most apis are usable
 
-There is now also event listening and I will be writing more documentation on this shortly.
-
-event listening is changeing again. I'm going to use deeds.
+There is an example of event listening on account-sync,
+I'm still unsure if this should be a part of the library since it's simple to setup and you might want to use an event framework different to deeds.
 
 ## Why did you make this?
 I made this so I could write my own bots and tools for matrix, I am planning on sharing them as soon as this library has a release since most of them rely on it one change in this repo is going to break the others.
 
 I have tried to make this as extensible as possible.
-
-## What can I expect this to become?
-I am now changing some of the fundamental parts of the library and doing them a better way for example
-I'm not longer keeping any state about rooms in the client as I've found a work around for the behavoir i wanted.
-
-

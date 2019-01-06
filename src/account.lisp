@@ -13,18 +13,7 @@
              :initarg :password
              :initform ""
              :type string
-             :documentation "The password for the account")
-
-   (rooms :accessor %rooms
-          :initarg :rooms
-          :initform (make-hash-table :test 'equal :size 200)
-          :type hash-table
-          :documentation "a hash table containing room-ids that point to different room instances")
-
-   (room-list :accessor room-list
-              :initform nil
-              :type list
-              :documentation "a list representing the rooms which are in the hashtable")))
+             :documentation "The password for the account")))
 
 (defmethod print-object ((this-account account) stream)
   (print-unreadable-object (this-account stream :type t :identity t)
@@ -41,10 +30,3 @@
      (if (not (typep *account* 'account))
          (error 'cl-matrix-error :description "invalid input to with-account")
          (progn ,@body))))
-
-(defun get-room (room-id)
-  (gethash room-id (%rooms *account*)))
-
-(defun add-room (room-id room)
-  (push room-id (room-list *account*))
-  (setf (gethash room-id (%rooms *account*)) room))

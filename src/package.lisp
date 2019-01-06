@@ -4,6 +4,7 @@
         (:export 
          :login
          :logout
+         :logout-all
          :room-create
          :msg-send
          :room-redact
@@ -28,22 +29,12 @@
          :invitations
          :upload-filter
          :room-messages
-
-         room
-         :id
-         :events
-         :front
-         :back
-         :limit
-         :startup-sync
-         :filter
-         :messages
+         :n-messages
+         :all-messages
 
          :event-type
          
          account
-         :get-room
-         :add-room
 
          cl-matrix-error
          api-error
@@ -51,7 +42,6 @@
          
          :get-hostname
          :make-account
-         :change-account
          :with-account
          :access-token
          :username

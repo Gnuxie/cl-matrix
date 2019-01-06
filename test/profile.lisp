@@ -23,21 +23,10 @@
                              cl-matrix:invitations
                              cl-matrix:upload-filter
                              cl-matrix:room-messages
-                             cl-matrix:id
-                             cl-matrix:events
-                             cl-matrix:front
-                             cl-matrix:back
-                             cl-matrix:limit
-                             cl-matrix:startup-sync
-                             cl-matrix:filter
-                             cl-matrix:messages
                              cl-matrix:event-type
-                             cl-matrix:get-room
-                             cl-matrix:add-room
 
                              cl-matrix:get-hostname
                              cl-matrix:make-account
-                             cl-matrix:change-account
                              cl-matrix:with-account
                              cl-matrix:access-token
                              cl-matrix:username

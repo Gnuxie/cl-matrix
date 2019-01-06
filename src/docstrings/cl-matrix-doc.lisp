@@ -5,7 +5,9 @@
 ;; src/main.lisp
 (docs:define-docs
   (variable *account*
-    "Special variable that is used to manage the active account. Effects operations on the clients room representation
+    "Special variable that is used to manage the active account.
+
+It could be set by the user to an account object but it is recommended to use the with-account macro, think of the *account* variable more of a special that is local the functions making requests to the homeserver.
 
 See WITH-ACCOUNT
 See ACCOUNT
@@ -16,18 +18,20 @@ See CHANGE-ACCOUNT"))
   (type account
     "Class representing a matrix account
 
-Contains all the state that can be associated with an account including the rooms the user has joined and in turn their state.
+accounts are only used to represent a login session and in future device information,
+it is recommended to make a new instance should you wish to logout then login again.
+
+At the minumum an instance only needs the username, access-token and hostname.
 
 Contains ACCESS-TOKEN slot containing the access-token associated with a currently \"logged in\" account.
 Contains USERNAME slot holding the full user id for this account.
 Contains PASSWORD slot for this accounts password.
 Contains HOMESERVER slot for this accounts homeserver address e.g. `matrix.org`
-Contains ROOMS slot which is a hash-table with keys for the room-id and values for ROOM instances.
-Contains ROOM-LIST slot which is a list of all the rooms in the hashtable for MEMBER tests. Not sure how necessary this is tbh.
 
+See LOGIN
 See MAKE-ACCOUNT
 See GET-HOSTNAME
-See ROOM")
+")
 
   (function make-account
     "Constructor for ACCOUNT
@@ -52,25 +56,7 @@ Most of the time though, with-account will be used something like this `(with-ac
 
 These forms are nestable.")
 
-  (function get-room
-    "Reader that will return a ROOM from the given room-id from the ROOMS slot in the current *ACCOUNT*")
-
-  (function add-room
-    "Function that will add a ROOM instance to the ROOMS slot in *ACCOUNT* with the given room-id as the key.")
-  )
-
-;; src/room.lisp
-(docs:define-docs
-  (type room
-    "Class that shadows cl:room. Represents a matrix room
-
-Contains an ID slot representing the id for the room in full.
-Contains an EVENT slot representing the events the client has locally for the room.
-Contains a STATE slot representing the most recent room state the client has locally.
-Contains a BACK slot which is supposed to hold a pagination token for events backwards.
-Contains a FRONT slot which is supposed to hold a pagination token for events forwards."
-
-    ))
+)
 
 ;; src/conditions.lisp
 (docs:define-docs
