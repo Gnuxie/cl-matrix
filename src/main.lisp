@@ -18,8 +18,8 @@ See with-account"
   (let ((new-account (make-instance 'account :username username :password password :homeserver (get-hostname username))))
     (let ((response (jsown:parse (post-login new-account
                                              (jsown:to-json (cons ':obj (pairlis
-                                                                         (list "type" "user" "password")
-                                                                         (list "m.login.password" username password))))))))
+                                                                         (list "type" "user" "password" "initial_device_display_name")
+                                                                         (list "m.login.password" username password "(λ () 'cl-matrix)"))))))))
 
       
       (setf (access-token new-account) (jsown:val response "access_token"))
@@ -105,10 +105,11 @@ See with-account"
       invitations)))
 
 (defun upload-filter (user-id filter)
-  (post-user-filter *account*
-                    user-id
-                    filter
-                    :callback (generate-generic-callback #'upload-filter user-id filter)))
+  (jsown:val (post-user-filter *account*
+                                user-id
+                                filter
+                                :callback (generate-generic-callback #'upload-filter user-id filter))
+             "filter_id"))
 
 
 (defun room-join (room-id)
@@ -133,6 +134,14 @@ See with-account"
                                                                      filter)))))))
     
     (values response (jsown:val response "next_batch"))))
+
+(defun now-token ()
+  "returns a pagination token for now using sync, useful to get the starting token for sync if the user has a lot of rooms and messages.
+
+This is really useful if the account is in a lot of rooms and sync will try return GiB's of messages with no filter."
+
+  (let ((filter (upload-filter (username *account*) "{\"room\":{\"state\":{\"lazy_load_members\":true},\"timeline\":{\"limit\":0}}}")))
+    (nth-value 1 (account-sync :filter filter))))
 
 (defun user-joined-rooms ()
   "Fetch rooms joined by the user. This is not filtered from sync, it's an actual api call."

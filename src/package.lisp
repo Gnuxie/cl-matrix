@@ -31,6 +31,7 @@
          :room-messages
          :n-messages
          :all-messages
+         :now-token
 
          :event-type
          
