@@ -90,13 +90,13 @@ See with-account"
 (defun invitations (user-name &key (since *sync-next-batch*) (from nil from-p))
   ;; see filters in the spec /_matrix/client/r0/user/{userId}/filter
 
-  (let ((invitations-filter (cdadr (upload-filter
-                                    user-name
-                                    (if from-p
-                                        (format nil
-                                                "{\"event_fields\":[\"m.room.member\"], \"account_data\":{\"limit\":0, \"not_types\":[\"*\"]},\"room\":{\"account_data\":{\"senders\":[~s]}}}"
-                                                from)
-                                        "{\"event_fields\":[\"m.room.member\"]}")))))
+  (let ((invitations-filter (upload-filter
+                             user-name
+                             (if from-p
+                                 (format nil
+                                         "{\"event_fields\":[\"m.room.member\"], \"account_data\":{\"limit\":0, \"not_types\":[\"*\"]},\"room\":{\"account_data\":{\"senders\":[~s]}}}"
+                                         from)
+                                 "{\"event_fields\":[\"m.room.member\"]}"))))
 
     (let ((invitations (jsown:filter (account-sync :filter invitations-filter
                                                    :since since)
