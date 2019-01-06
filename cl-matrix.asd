@@ -1,10 +1,11 @@
+
 (asdf:defsystem "cl-matrix"
   :version "0.0"
   :author "Gnuxie <Gnuxie@protonmail.com> Jaidyn Lev <jadedctrl@teknik.io>"
   :maintainer "Gnuxie <Gnuxie@protonmail.com>"
   :license "AGPL v3+"
   :homepage  "https://gnuxie.gitlab.io/cl-matrix/"
-  :depends-on ("jsown" "drakma" "documentation-utils")
+  :depends-on ("jsown" "drakma" "deeds" "documentation-utils")
   :components ((:module "src"
                 :components
                 ((:file "requests")
@@ -18,7 +19,7 @@
                  (:file "room")
                  (:file "events")
                  (:file "client-listeners")
-                 (:file "basic-listening")
+                 (:file "base-events")
                  (:module "docstrings"
                           :components
                           ((:file "cl-matrix-doc")

@@ -1,6 +1,17 @@
 # todo
 
+
+## RE-WORK
+### thinking about using deeds for events
+
+### no room state is kept client side, apart from front tokens in a sync event loop or a pagination event loop
+
+### not even front and back need to be kept because just think about it, they don't
+
+### need to think about how deeds will work when there are multiple account listening for events. since they will share the same event loop right?
+
 ## with-account will ruin everything if the access-token is invalid
+
 
 ## startup sync isn't even required anymore
 as the new internal listeners will do what startup sync does on a new room creation anyways
