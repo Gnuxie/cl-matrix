@@ -59,8 +59,6 @@
          :homeserver
 
          *account*
-
-         :client-new-room
-         :client-room-front-updater))
+))
 
 (in-package :cl-matrix)

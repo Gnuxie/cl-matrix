@@ -17,7 +17,6 @@
                  (:file "account")
                  (:file "room")
                  (:file "events")
-                 (:file "client-listeners")
                  (:file "base-events")
                  (:module "docstrings"
                           :components

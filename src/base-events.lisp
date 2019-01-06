@@ -14,8 +14,7 @@
    ephemeral-event
 
    :issue-sync-event
-   :register-client-handlers
-   :deregister-client-handlers))
+))
 (in-package :cl-matrix.base-events)
 
 (deeds:define-event base-event (deeds:event)
@@ -67,22 +66,3 @@
 ;; try get it so that this isn't blocking but the other events are blocking. This way accounts can run in parrelel.
 (defun issue-sync-event (sync-data)
   (deeds:do-issue sync :data sync-data :account *account*))
-
-(deeds:define-handler (client-new-room-h on-room) (event account room-id room-data)
-  :before '(:main)
-  :class 'deeds:globally-blocking-handler
-  (with-account (account)
-    (funcall (client-new-room) event room-id room-data)))
-
-(deeds:define-handler (client-room-front-h sync) (event account data)
-  :after '(:main)
-  (with-account (account)
-    (funcall (client-room-front-updater) event data)))
-
-(defun register-client-handlers ()
-  (deeds:register-handler client-room-front-h)
-  (deeds:register-handler client-new-room-h))
-
-(defun deregister-client-handlers ()
-  (deeds:deregister-handler client-new-front-h)
-  (deeds:deregister-handler client-new-room-h))
