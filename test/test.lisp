@@ -71,7 +71,7 @@
   :depends-on (room-create)
 
   (cl-matrix:with-account (*user-two*)
-    (let ((the-invitations (cl-matrix:invitations (cl-matrix:username *user-two*) :since nil :from (cl-matrix:username *user-one*))))
+    (let ((the-invitations (cl-matrix:invitations :since nil :from (cl-matrix:username *user-one*))))
       (format t "~s~%" the-invitations)
       (detect-matrix-error the-invitations)
       

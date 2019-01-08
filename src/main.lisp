@@ -87,16 +87,20 @@ See with-account"
                                                 (list user-id))))
                     :callback (generate-generic-callback #'user-invite user-id room-id)))
 
-(defun invitations (user-name &key (since *sync-next-batch*) (from nil from-p))
-  ;; see filters in the spec /_matrix/client/r0/user/{userId}/filter
+(defun invitations (&key since (from nil from-p))
+  "attampts to return just the invitations from sync.
+
+See UPLOAD-FILTER
+See ACCOUNT-SYNC
+See filters in the spec /_matrix/client/r0/user/{userId}/filter"
 
   (let ((invitations-filter (upload-filter
-                             user-name
+                             (username *account*)
                              (if from-p
                                  (format nil
-                                         "{\"event_fields\":[\"m.room.member\"], \"account_data\":{\"limit\":0, \"not_types\":[\"*\"]},\"room\":{\"account_data\":{\"senders\":[~s]}}}"
+                                         "{\"event_fields\":[\"m.room.member\"], \"account_data\":{\"limit\":0, \"not_types\":[\"*\"]},\"room\":{\"account_data\":{\"senders\":[~s]}, \"state\":{\"lazy_load_members\":true},\"timeline\":{\"limit\":0}}}"
                                          from)
-                                 "{\"event_fields\":[\"m.room.member\"]}"))))
+                                 "{\"event_fields\":[\"m.room.member\"], \"room\":{\"state\":{\"lazy_load_members\":true},\"timeline\":{\"limit\":0}}}"))))
 
     (let ((invitations (jsown:filter (account-sync :filter invitations-filter
                                                    :since since)
@@ -262,7 +266,7 @@ returns the response, the start token and then the end token
 if moving backwards the most recent events will appear first in the chunk.
 if moving forwards the most recent events will appear last in the chunk.
 
-This is because the paginator has to return the events nearest the front token first, ie, the events nearest the from token will be closer to the front."
+This is because the paginator has to return the events nearest the from token first, ie, the events nearest the from token will be closer to the front."
   (let ((response
          (jsown:parse (get-room-messages *account*
                                          room-id
