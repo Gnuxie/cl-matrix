@@ -12,3 +12,6 @@
 
 (defmethod event-type ((event list))
   (jsown:val event "type"))
+
+(defmethod msgtype ((event list))
+  (jsown:filter event "content" "msgtype"))

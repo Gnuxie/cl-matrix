@@ -33,4 +33,11 @@
   ("FORBIDDEN"
    (error 'forbidden :description error-msg)))
 
+(define-callback state-event-callback (callee &rest args) ()
+  ("NOT_FOUND"
+   nil)
+
+  ("FORBIDDEN"
+   (error 'forbidden :description error-msg)))
+
 

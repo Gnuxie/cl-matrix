@@ -40,7 +40,8 @@ See with-account"
                     (name nil room-name-p)
                     (topic nil topic-p)
                     (invite nil invite-p)
-                    (preset nil preset-p)
+                      (preset nil preset-p)
+                      (initial-state nil initial-state-p)
                       (is-direct nil is-direct-p))
   "Create a Matrix room. Please refer to the specification to see what should be given in the keyword args."
 
@@ -56,6 +57,7 @@ See with-account"
                                         "topic" topic topic-p
                                         "invite" invite invite-p
                                         "preset" preset preset-p
+                                        "initial_state" initial-state initial-state-p
                                         "is_direct" is-direct is-direct-p)))))
 
       ;; this needs sorting out. The problem is we don't want to do all that work creating a room object again
@@ -153,6 +155,7 @@ This is really useful if the account is in a lot of rooms and sync will try retu
   (jsown:val (jsown:parse (get-joined-rooms *account*))
              "joined_rooms"))
 
+;;; seriously wtf this whole section with "rooms" needs looking at.
 (defun room-joined-members (room)
   "Fetch a list of joined members for a room"
   (let ((members
@@ -179,15 +182,16 @@ This is really useful if the account is in a lot of rooms and sync will try retu
                                  (cdr members))))))
 
 (defun room-state (room-id &optional event-type state-key)
-  "Get the state events for the current state of a room."
-  (jsown:parse
-   (cond ((and event-type state-key) (get-room-state-key *account
-                                                         room-id
-                                                         event-type
-                                                         state-key))
+  "Get the state events for the current state of a room.
+This needs a good cleanup."
+  (let ((response (cond ((and event-type state-key) (get-room-state-key *account
+                                                                        room-id
+                                                                        event-type
+                                                                        state-key))
 
-         (event-type (get-room-state-event *account* room-id event-type))
-         (t (get-room-state *account* room-id)))))
+                        (event-type (get-room-state-event *account* room-id event-type))
+                        (t (get-room-state *account* room-id)))))
+    (funcall (state-event-callback room-id event-type state-key) response)))
 
 (defun rooms-state (rooms &optional event-type state-key)
   (cons ':obj (pairlis rooms
@@ -256,8 +260,17 @@ This is really useful if the account is in a lot of rooms and sync will try retu
                               :callback (generate-generic-callback #'room-ban-json room-id json))))
 
       (dolist (room-id room-ids)
-        (room-kick-json room-id
-                        json)))))
+        (room-ban-json room-id
+                       room-ban-json)))))
+
+(defun room-put-state (event-type content &rest room-ids)
+  "add a state event to each room."
+  (dolist (room-id room-ids)
+    (put-room-state *account*
+                    room-id
+                    event-type
+                    content
+                    :callback (generate-generic-callback #'put-room-state *account* room-id event-type content))))
 
 (defun room-messages (room-id from dir &key to limit filter)
   "see the spec for this one.
@@ -325,7 +338,6 @@ maybe allow user defined predicates for terminating pagination."
                (progn (setf messages (append messages new-messages))
                       (setf from end)))))
     (values messages from)))
-
 
 (defun random-timestamp ()
   (+ (* 100000 (get-universal-time)) (random 100000)))

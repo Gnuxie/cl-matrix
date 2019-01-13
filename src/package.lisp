@@ -1,6 +1,5 @@
 (defpackage :cl-matrix
   (:use :cl :matrix-requests)
-  (:shadow "ROOM")
         (:export 
          :login
          :logout
@@ -26,6 +25,7 @@
          :room-kick
          :room-ban
          :room-unban
+         :room-put-state
          :invitations
          :upload-filter
          :room-messages
@@ -33,7 +33,9 @@
          :all-messages
          :now-token
 
+         :id
          :event-type
+         :msgtype
          
          account
 
