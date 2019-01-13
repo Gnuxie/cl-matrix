@@ -36,13 +36,13 @@
    :post-room-ban
    :post-room-unban
    
-   url-formats
+   auth
    :access-token
    :homeserver))
 
 (in-package :matrix-requests)
 
-(defclass url-formats ()
+(defclass auth ()
   ((access-token :accessor access-token
                  :initarg :access-token
                  :initform nil
@@ -54,14 +54,14 @@
                  :type string)))
 
 (defmacro define-matrix-request (name type)
-  `(defun ,name ,(remove-if #'null `(url url-format ,(unless (equal type ':get) 'the-json)
+  `(defun ,name ,(remove-if #'null `(url authentication ,(unless (equal type ':get) 'the-json)
                                          &key
                                         (parameters nil)
                                         ,(unless (equal type ':get)
                                           '(content-type "application/json"))))
   "Make a request to a Matrix homeserver, for API calls."
 
-  (with-accessors ((homeserver homeserver) (access-token access-token)) url-format
+  (with-accessors ((homeserver homeserver) (access-token access-token)) authentication
     (let ((url (concatenate 'string
                             "https://" homeserver url
                             (when access-token
@@ -110,11 +110,11 @@
                                                 (symbol-name name)))))
 
              (setf request (if (equal type :get)
-                               (append request '(url-format :parameters parameters))
-                               (append request '(url-format content :parameters parameters))))
+                               (append request '(authentication :parameters parameters))
+                               (append request '(authentication content :parameters parameters))))
 
              `((declaim (inline ,new-name))
-               (defun ,new-name (,@(remove-if #'null `(url-format ,@arguments ,(unless (equal type :get) 'content)
+               (defun ,new-name (,@(remove-if #'null `(authentication ,@arguments ,(unless (equal type :get) 'content)
                                                                    &key parameters
                                                                    callback)))
                  ,(when documentation-p documentation)

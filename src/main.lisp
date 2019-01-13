@@ -4,7 +4,7 @@
 (in-package :cl-matrix)
 
 (push '("application" . "json") drakma:*text-content-types*)
-(defparameter *account* (make-instance 'matrix-requests:url-formats))
+(defparameter *account* (make-instance 'matrix-requests:auth))
 
 (defun login (username password)
   "calls the api endpoint post-login with the username and password.

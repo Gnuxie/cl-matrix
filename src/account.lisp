@@ -2,7 +2,7 @@
    Copyright (C) 2018-2019 Gnuxie <Gnuxie@protonmail.com> |#
 (in-package :cl-matrix)
 
-(defclass account (matrix-requests:url-formats)
+(defclass account (matrix-requests:auth)
   ((username :accessor username
              :initarg :username
              :initform ""
