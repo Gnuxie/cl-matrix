@@ -24,3 +24,6 @@ I'm still unsure if this should be a part of the library since it's simple to se
 I made this so I could write my own bots and tools for matrix, I am planning on sharing them as soon as this library has a release since most of them rely on it one change in this repo is going to break the others.
 
 I have tried to make this as extensible as possible.
+
+## Halp
+You can talk to me in `#cl-matrix:matrix.org`

@@ -42,8 +42,11 @@ See with-account"
                     (invite nil invite-p)
                       (preset nil preset-p)
                       (initial-state nil initial-state-p)
+                      (power-level-content-override nil power-level-content-override-p)
                       (is-direct nil is-direct-p))
-  "Create a Matrix room. Please refer to the specification to see what should be given in the keyword args."
+  "Create a Matrix room. Please refer to the specification to see what should be given in the keyword args.
+
+Returns the room-id for the created room."
 
   (labels ((room-create-json (json)
              (funcall (generate-generic-callback #'room-create-json json)
@@ -58,11 +61,12 @@ See with-account"
                                         "invite" invite invite-p
                                         "preset" preset preset-p
                                         "initial_state" initial-state initial-state-p
+                                        "power_level_content_override" power-level-content-override power-level-content-override-p
                                         "is_direct" is-direct is-direct-p)))))
 
       ;; this needs sorting out. The problem is we don't want to do all that work creating a room object again
       ;; so we should either make some representation of a room or make a function that can just take this.
-      (room-create-json json-to-submit))))
+      (jsown:val (room-create-json json-to-submit) "room_id"))))
 
 (defun msg-send (msg room-id &key (txid (random-timestamp)) (type "m.text"))
   "Send a text message to a specific room."
@@ -155,7 +159,6 @@ This is really useful if the account is in a lot of rooms and sync will try retu
   (jsown:val (jsown:parse (get-joined-rooms *account*))
              "joined_rooms"))
 
-;;; seriously wtf this whole section with "rooms" needs looking at.
 (defun room-joined-members (room)
   "Fetch a list of joined members for a room"
   (let ((members
@@ -182,34 +185,26 @@ This is really useful if the account is in a lot of rooms and sync will try retu
                                  (cdr members))))))
 
 (defun room-state (room-id &optional event-type state-key)
-  "Get the state events for the current state of a room.
-This needs a good cleanup."
-  (let ((response (cond ((and event-type state-key) (get-room-state-key *account
-                                                                        room-id
-                                                                        event-type
-                                                                        state-key))
+  "Get the state events for the current state of a room."
+  (let ((response (cond ((and event-type state-key)
+                         (get-room-state-key *account*
+                                             room-id
+                                             event-type
+                                             state-key
+                                             ))
 
                         (event-type (get-room-state-event *account* room-id event-type))
+                        
                         (t (get-room-state *account* room-id)))))
-    (funcall (state-event-callback room-id event-type state-key) response)))
+    (funcall (get-state-callback) response)))
 
 (defun rooms-state (rooms &optional event-type state-key)
   (cons ':obj (pairlis rooms
                        (mapcar #'(lambda (x) (room-state x (when event-type event-type) (when state-key state-key))) rooms))))
 
-(defun room-power-levels (room)
-  "Get the power levels for the room. Maybe this should be deprecated for room-state"
-  (room-state room "m.room.power_levels"))
-
-(defun rooms-power-levels (rooms)
-  "Get the power levels for all the rooms. Maybe this should be deprecated for rooms-state"
-  (cons ':obj (pairlis
-               rooms
-               (mapcar #'list (mapcar #'room-power-levels rooms)))))
-
 (defun change-power-level (room user-id power)
   "change the power level of a user"
-  (let* ((current-levels (room-power-levels room))
+  (let* ((current-levels (room-state room "m.room.power_levels"))
          (current-users (jsown:val current-levels "users")))
     (setf (jsown:val current-users user-id) power)
     (setf (jsown:val current-levels "users") current-users)

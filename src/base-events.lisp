@@ -10,7 +10,7 @@
    on-room
    room-event
    presence-event
-   inivite-event
+   invite-event
    ephemeral-event
    e-m.room.message
    e-m.text

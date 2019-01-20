@@ -52,8 +52,7 @@
   :depends-on (login)
   ;; how can we do somehting like this within the limits of the framework?
   (cl-matrix:with-account (*user-one*) 
-    (let* ((response (cl-matrix:room-create :name "test1" :topic "test topic" :visibility "private"))
-           (room-id (jsown:val response "room_id")))
+    (let ((room-id (cl-matrix:room-create :name "test1" :topic "test topic" :visibility "private")))
       (of-type string room-id)
       
       ;; clean up, jsown specific
@@ -61,10 +60,10 @@
       (is = 1 (length (cl-matrix:room-forget room-id)))
 
       ;; set up inchat test
-      (setf *direct-chat* (jsown:val (cl-matrix:room-create :name "test direct"
-                                                            :preset "private_chat"
-                                                            :is-direct t
-                                                            :invite (list (cl-matrix:username *user-two*))) "room_id")))))
+      (setf *direct-chat* (cl-matrix:room-create :name "test direct"
+                                                 :preset "private_chat"
+                                                 :is-direct t
+                                                 :invite (list (cl-matrix:username *user-two*)))))))
 
 (define-test direct-chat
   :parent cl-matrix-test
@@ -103,7 +102,7 @@
           (detect-matrix-error power-change-response)
           (is string= "event_id" (caadr power-change-response))
 
-          (let ((direct-chat-levels (cl-matrix:room-power-levels *direct-chat*)))
+          (let ((direct-chat-levels (cl-matrix:room-state *direct-chat* "m.room.power_levels")))
             (is string= "90" (jsown:filter direct-chat-levels "users" (cl-matrix:username *user-two*)) "verify that the power level changed")))))))
 
 (defun send-lots-of-test-messages (room &key (amount 30) (start 0))
@@ -118,11 +117,10 @@
 (defun setup-room-pagination-test ()
   (format t "setting up pagination test~%")
   (cl-matrix:with-account (*user-one*)
-    (setf *pagination-chat* (jsown:val (cl-matrix:room-create :name "pagination test"
-                                                              :preset "private_chat"
-                                                              :is-direct t
-                                                              :invite (list (cl-matrix:username *user-two*)))
-                                       "room_id"))
+    (setf *pagination-chat* (cl-matrix:room-create :name "pagination test"
+                                                   :preset "private_chat"
+                                                   :is-direct t
+                                                   :invite (list (cl-matrix:username *user-two*))))
 
     (cl-matrix:with-account (*user-two*)
       (cl-matrix:room-join *pagination-chat*))

@@ -11,7 +11,7 @@ It could be set by the user to an account object but it is recommended to use th
 
 See WITH-ACCOUNT
 See ACCOUNT
-See CHANGE-ACCOUNT"))
+"))
 
 ;; src/account.lisp
 (docs:define-docs

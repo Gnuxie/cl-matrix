@@ -14,7 +14,7 @@
           (jsown:val (cl-matrix:account-sync) "next_batch"))
     
     (setf *listening-room*
-          (jsown:val (cl-matrix:room-create :invite (list (cl-matrix:username *user-two*))) "room_id"))
+          (cl-matrix:room-create :invite (list (cl-matrix:username *user-two*))))
 
     (format t "listening room:~%~s." *listening-room*)))
 
