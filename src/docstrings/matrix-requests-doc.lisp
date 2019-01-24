@@ -38,6 +38,6 @@ e.g. the api `PUT /_matrix/client/r0/rooms/{roomId}/send/{eventType}/{txnId}` ca
 which should create a function with the signature
 `(PUT-ROOM-SEND ROOM-ID EVENT-TYPE TXNID CONTENT &KEY PARAMETERS CALLBACK ACCESS-TOKEN)`
 
-The CALLBACK keyword is supposed to be used as a bodge, these apis are blocking. The reason for the bodge is so that the http response code could be read from the drakma:http-request in future but I'm not sure if this is even necessary, either way this needs sorting out. Currently the CALLBACK parameter is used throughout cl-matrix/src/main.lisp to detect api-erros although this could be done more easily without.
+the json is parsed by jsown and returned as their representation of the object, this was necessary so that errors could be detected properly and rate limiting could be handled.
 
 See DEFINE-MATRIX-REQUEST"))

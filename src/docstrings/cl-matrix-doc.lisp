@@ -71,33 +71,9 @@ Will report the content of the ERROR-DESCRIPTION to a stream.
 
 if the type of api-error has not been defined then this condition should be raised.
 
-See DEFINE-CALLBACK
-See GENERATE-GENERIC-CALLBACK
 See https://matrix.org/docs/spec/client_server/latest.html#api-standards")
 
   (type forbidden
     "A condition for the matrix api error of FORBIDDEN
 
 See https://matrix.org/docs/spec/client_server/latest.html#api-standards"))
-
-
-;; src/callback.lisp
-(docs:define-docs
-  (function define-callback
-    "Macro that is used to generate \"callback\" generating functions. What I mean by that is the functions that are produced return a closure that can be used with a function defined by DEFINE-MATRIX-ENDPOINT to raise different errors depending on the error content of the server response.
-
-It takes the name, the arguments you want for the generator, the arguments that generator should expect and then a list for what symbols you want to use for the server response, the \"errcode\" and the \"error\" (or error message (these names are from the matrix spec and they're bad)) by default they are response, errcode, and error-msg.
-
-Then you pass lists starting with the matrix error (from the spec) you want to handle. e.g.
-```
-(define-callback forbidden-callback ()
-  (\"FORBIDDEN\" (error 'forbidden :description error-msg)))
-```
-If the error type returned by a request using this callback is not specified then an api-error will be raised.
-
-again apologies for the horrible name.
-There is an example of this macro:
-
-See GENERATE-GENERIC-CALLBACK
-See API-ERROR"))
-

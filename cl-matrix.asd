@@ -8,10 +8,12 @@
   :depends-on ("jsown" "drakma" "deeds" "documentation-utils")
   :components ((:module "src"
                 :components
-                ((:file "requests")
+                ((:module "requests"
+                          :components
+                          ((:file "package")
+                           (:file "conditions")
+                           (:file "requests")))
                  (:file "package")
-                 (:file "conditions")
-                 (:file "callback")
                  (:file "main")
                  (:file "utils")
                  (:file "account")

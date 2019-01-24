@@ -16,10 +16,10 @@ See make-account
 See with-account"
 
   (let ((new-account (make-instance 'account :username username :password password :homeserver (get-hostname username))))
-    (let ((response (jsown:parse (post-login new-account
-                                             (jsown:to-json (cons ':obj (pairlis
-                                                                         (list "type" "user" "password" "initial_device_display_name")
-                                                                         (list "m.login.password" username password "(λ () 'cl-matrix)"))))))))
+    (let ((response (post-login new-account
+                                (jsown:to-json (cons ':obj (pairlis
+                                                            (list "type" "user" "password" "initial_device_display_name")
+                                                            (list "m.login.password" username password "(λ () 'cl-matrix)")))))))
 
       
       (setf (access-token new-account) (jsown:val response "access_token"))
@@ -48,25 +48,21 @@ See with-account"
 
 Returns the room-id for the created room."
 
-  (labels ((room-create-json (json)
-             (funcall (generate-generic-callback #'room-create-json json)
-                      (post-create-room *account* json))))
-    
-    (let ((json-to-submit (jsown:to-json
-                           (cons ':obj (alist-without-nulls
-                                        "room_alias_name" room-alias room-alias-p
-                                        "visibility" visibility visibility-p
-                                        "name" name room-name-p
-                                        "topic" topic topic-p
-                                        "invite" invite invite-p
-                                        "preset" preset preset-p
-                                        "initial_state" initial-state initial-state-p
-                                        "power_level_content_override" power-level-content-override power-level-content-override-p
-                                        "is_direct" is-direct is-direct-p)))))
+  (let ((json-to-submit (jsown:to-json
+                         (cons ':obj (alist-without-nulls
+                                      "room_alias_name" room-alias room-alias-p
+                                      "visibility" visibility visibility-p
+                                      "name" name room-name-p
+                                      "topic" topic topic-p
+                                      "invite" invite invite-p
+                                      "preset" preset preset-p
+                                      "initial_state" initial-state initial-state-p
+                                      "power_level_content_override" power-level-content-override power-level-content-override-p
+                                      "is_direct" is-direct is-direct-p)))))
 
-      ;; this needs sorting out. The problem is we don't want to do all that work creating a room object again
-      ;; so we should either make some representation of a room or make a function that can just take this.
-      (jsown:val (room-create-json json-to-submit) "room_id"))))
+    ;; this needs sorting out. The problem is we don't want to do all that work creating a room object again
+    ;; so we should either make some representation of a room or make a function that can just take this.
+    (jsown:val (post-create-room *account* json-to-submit) "room_id")))
 
 (defun msg-send (msg room-id &key (txid (random-timestamp)) (type "m.text"))
   "Send a text message to a specific room."
@@ -74,15 +70,12 @@ Returns the room-id for the created room."
   (put-room-send-event *account* room-id "m.room.message" (princ-to-string txid)
                        (jsown:to-json (cons ':obj (pairlis
                                                    (list "msgtype" "body")
-                                                   (list type msg))))
-                       :callback (generate-generic-callback #'msg-send msg room-id :txid txid :type type)))
+                                                   (list type msg))))))
 
 (defun room-redact (room-id event-id reason &key txid (random-timestamp))
   "redact an event in a room. txid is a `(random-timestamp)` by default."
   (let ((json (format nil "{\"reason\": \"~a\"}" reason)))
-    (put-room-redact-event *account* room-id event-id txid json
-                           :callback (generate-generic-callback #'room-redact room-id event-id reason :txid txid))))
-
+    (put-room-redact-event *account* room-id event-id txid json)))
 
 (defun user-invite (user-id room-id)
   "Invite a user to a chat-room."
@@ -90,8 +83,7 @@ Returns the room-id for the created room."
   (post-room-invite *account* room-id
                     (jsown:to-json (cons ':obj (pairlis
                                                 (list "user_id")
-                                                (list user-id))))
-                    :callback (generate-generic-callback #'user-invite user-id room-id)))
+                                                (list user-id))))))
 
 (defun invitations (&key since (from nil from-p))
   "attampts to return just the invitations from sync.
@@ -117,33 +109,30 @@ See filters in the spec /_matrix/client/r0/user/{userId}/filter"
 (defun upload-filter (user-id filter)
   (jsown:val (post-user-filter *account*
                                 user-id
-                                filter
-                                :callback (generate-generic-callback #'upload-filter user-id filter))
+                                filter)
              "filter_id"))
-
 
 (defun room-join (&rest room-ids)
   "Join a Matrix room by id, not the same as alias, see the spec."
 
-  (labels ((join-room (room-id)
-           (post-room-join *account* room-id "{}"
-                           :callback (generate-generic-callback #'join-room room-id))))
+  (flet ((join-room (room-id)
+           (post-room-join *account* room-id "{}")))
     (mapc #'join-room room-ids)))
 
 (defun account-sync (&key since filter)
   "see the spec, read 8.2 syncing to understand how this works."
 
-  (let ((response (jsown:parse (get-sync *account*
-                                         :parameters
-                                         (concatenate 'string
-                                                      (when since
-                                                        (concatenate 'string
-                                                                     "&since="
-                                                                     since))
-                                                      (when filter
-                                                        (concatenate 'string
-                                                                     "&filter="
-                                                                     filter)))))))
+  (let ((response (get-sync *account*
+                            :parameters
+                            (concatenate 'string
+                                         (when since
+                                           (concatenate 'string
+                                                        "&since="
+                                                        since))
+                                         (when filter
+                                           (concatenate 'string
+                                                        "&filter="
+                                                        filter))))))
     
     (values response (jsown:val response "next_batch"))))
 
@@ -158,14 +147,12 @@ This is really useful if the account is in a lot of rooms and sync will try retu
 (defun user-joined-rooms ()
   "Fetch rooms joined by the user. This is not filtered from sync, it's an actual api call."
 
-  (jsown:val (jsown:parse (get-joined-rooms *account*))
+  (jsown:val (get-joined-rooms *account*)
              "joined_rooms"))
 
 (defun room-joined-members (room)
   "Fetch a list of joined members for a room"
-  (let ((members
-         (jsown:parse (get-room-joined-members *account* room))))
-    members))
+  (get-room-joined-members *account* room))
 
 (defun rooms-joined-members (rooms)
   "Fetch the members information for all the supplied rooms"
@@ -188,17 +175,12 @@ This is really useful if the account is in a lot of rooms and sync will try retu
 
 (defun room-state (room-id &optional event-type state-key)
   "Get the state events for the current state of a room."
-  (let ((response (cond ((and event-type state-key)
-                         (get-room-state-key *account*
-                                             room-id
-                                             event-type
-                                             state-key
-                                             ))
+  (cond ((and event-type state-key)
+         (get-room-state-key *account* room-id event-type state-key))
 
-                        (event-type (get-room-state-event *account* room-id event-type))
-                        
-                        (t (get-room-state *account* room-id)))))
-    (funcall (get-state-callback) response)))
+        (event-type (get-room-state-event *account* room-id event-type))
+        
+        (t (get-room-state *account* room-id))))
 
 (defun rooms-state (rooms &optional event-type state-key)
   (cons ':obj (pairlis rooms
@@ -213,52 +195,33 @@ This is really useful if the account is in a lot of rooms and sync will try retu
     (put-room-state *account*
                     room
                     "m.room.power_levels"
-                    (jsown:to-json current-levels)
-                    :callback (generate-generic-callback #'change-power-level room user-id power))))
+                    (jsown:to-json current-levels))))
 
 (defun room-forget (room-id)
   "forget a room"
   (post-room-forget *account*
                     room-id
-                    "{}"
-                    :callback (generate-generic-callback #'room-forget room-id)))
+                    "{}"))
 
 (defun room-leave (room-id)
   "leave a room"
   (post-room-leave *account*
                    room-id
-                   "{}"
-                   :callback (generate-generic-callback #'room-leave room-id)))
+                   "{}"))
 
 (defun room-kick (user-id reason &rest room-ids)
   (let ((json (jsown:to-json (list* ':obj (pairlis
                                            '("reason" "user_id")
                                            (list reason user-id))))))
-
-    (labels ((room-kick-json (room-id json)
-               (post-room-kick *account*
-                               room-id
-                               json
-                               :callback (generate-generic-callback #'room-kick-json room-id json)))) 
-
-      (dolist (room-id room-ids)
-        (room-kick-json room-id
-                        json)))))
+    (dolist (room-id room-ids)
+      (post-room-kick *account* room-id json))))
 
 (defun room-ban (user-id reason &rest room-ids)
   (let ((json (jsown:to-json (cons ':obj (pairlis
                                            '("reason" "user_id")
                                            (list reason user-id))))))
-
-    (labels ((room-ban-json (room-id json)
-               (post-room-ban *account*
-                              room-id
-                              json
-                              :callback (generate-generic-callback #'room-ban-json room-id json))))
-
-      (dolist (room-id room-ids)
-        (room-ban-json room-id
-                       json)))))
+    (dolist (room-id room-ids)
+      (post-room-ban *account* room-id json))))
 
 (defun room-put-state (event-type content &rest room-ids)
   "add a state event to each room."
@@ -266,8 +229,7 @@ This is really useful if the account is in a lot of rooms and sync will try retu
     (put-room-state *account*
                     room-id
                     event-type
-                    content
-                    :callback (generate-generic-callback #'put-room-state *account* room-id event-type content))))
+                    content)))
 
 (defun room-messages (room-id from dir &key to limit filter)
   "see the spec for this one.
@@ -278,27 +240,27 @@ if moving forwards the most recent events will appear last in the chunk.
 
 This is because the paginator has to return the events nearest the from token first, ie, the events nearest the from token will be closer to the front."
   (let ((response
-         (jsown:parse (get-room-messages *account*
-                                         room-id
-                                         :parameters
-                                         (concatenate 'string
-                                                      "&from="
-                                                      from
-                                                      "&dir="
-                                                      dir
-                                                      (when to
-                                                        (concatenate 'string
-                                                                     "&to="
-                                                                     to))
-                                                      (when filter
-                                                        (concatenate 'string
-                                                                     "&filter="
-                                                                     filter))
+         (get-room-messages *account*
+                            room-id
+                            :parameters
+                            (concatenate 'string
+                                         "&from="
+                                         from
+                                         "&dir="
+                                         dir
+                                         (when to
+                                           (concatenate 'string
+                                                        "&to="
+                                                        to))
+                                         (when filter
+                                           (concatenate 'string
+                                                        "&filter="
+                                                        filter))
 
-                                                      (when limit
-                                                        (concatenate 'string
-                                                                     "&limit="
-                                                                     limit)))))))
+                                         (when limit
+                                           (concatenate 'string
+                                                        "&limit="
+                                                        limit))))))
 
     (values (jsown:val response "chunk") (jsown:val response "start") (jsown:val response "end"))))
 

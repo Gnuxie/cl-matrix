@@ -53,6 +53,8 @@
          #:homeserver
 
          #:*account*
+         #:get-state-callback
+         #:generate-generic-callback
 ))
 
 (in-package :cl-matrix)

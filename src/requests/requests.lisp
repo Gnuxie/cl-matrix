@@ -1,45 +1,5 @@
 #| This file is part of cl-matrix
    Copyright (C) 2018-2019 Gnuxie <Gnuxie@protonmail.com> |#
-(defpackage :matrix-requests
-  (:use :cl)
-  (:export
-   :get-login
-   :get-room-state-event
-   :post-room-leave
-   :get-sync
-   :post-room-forget
-   :post-user-filter
-   :get-user-filter
-   :post-join
-   :define-matrix-request
-   :get-room-messages
-   :post-login
-   :define-matrix-endpoint
-   :get-room-event
-   :put-room-redact-event
-   :post-room-invite
-   :get-room-state-key
-   :put-room-state
-   :post-create-room
-   :post-room-join
-   :get-joined-rooms
-   :matrix-post-request
-   :get-room-joined-members
-   :get-room-members
-   :matrix-get-request
-   :post-logout-all
-   :put-room-send-event
-   :get-room-state
-   :put-room-state-key
-   :post-logout
-   :post-room-kick
-   :post-room-ban
-   :post-room-unban
-   
-   auth
-   :access-token
-   :homeserver))
-
 (in-package :matrix-requests)
 
 (defclass auth ()
@@ -82,6 +42,28 @@
 (define-matrix-request matrix-put-request :put)
 (define-matrix-request matrix-get-request :get)
 
+(defmacro guard-request (request)
+  `(labels ((handle-request (request)
+              (let ((response (jsown:parse request)))
+                (if (jsown:keyp response "error")
+                    (let ((errcode (jsown:val response "errcode"))
+                          (error-msg (jsown:val response "error")))
+                      (cond ((search "M_LIMIT_EXCEEDED" errcode)
+                             (sleep (/ (jsown:val response "retry_after_ms") 1000))
+                             (handle-request ,request))
+
+                            ((search "FORBIDDEN" errcode)
+                             (error 'forbidden :description error-msg))
+
+                            ((search "BAD_STATE" errcode)
+                             (error 'bad-state :description error-msg))
+
+                            ((search "NOT_FOUND" errcode)
+                             nil)))
+                    response))))
+                   
+     (handle-request ,request)))
+
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (flet ((endpoint-seperation (endpoint)
            ;; splits the endpoint arguments with slashes
@@ -115,12 +97,10 @@
 
              `((declaim (inline ,new-name))
                (defun ,new-name (,@(remove-if #'null `(authentication ,@arguments ,(unless (equal type :get) 'content)
-                                                                   &key parameters
-                                                                   callback)))
+                                                                   &key parameters)))
                  ,(when documentation-p documentation)
-                 (if callback
-                     (funcall callback ,request)
-                     ,request))))))
+                 (guard-request ,request))))))
+    
 
     (defmacro define-matrix-endpoint (name accepted-methods endpoint &key (documentation nil))
       (let ((arguments (loop
