@@ -122,11 +122,13 @@ See filters in the spec /_matrix/client/r0/user/{userId}/filter"
              "filter_id"))
 
 
-(defun room-join (room-id)
+(defun room-join (&rest room-ids)
   "Join a Matrix room by id, not the same as alias, see the spec."
 
-  (post-room-join *account* room-id "{}"
-                  :callback (generate-generic-callback #'room-join room-id)))
+  (labels ((join-room (room-id)
+           (post-room-join *account* room-id "{}"
+                           :callback (generate-generic-callback #'join-room room-id))))
+    (mapc #'join-room room-ids)))
 
 (defun account-sync (&key since filter)
   "see the spec, read 8.2 syncing to understand how this works."
@@ -244,7 +246,7 @@ This is really useful if the account is in a lot of rooms and sync will try retu
                         json)))))
 
 (defun room-ban (user-id reason &rest room-ids)
-  (let ((jsown (jsown:to-json (cons ':obj (pairlis
+  (let ((json (jsown:to-json (cons ':obj (pairlis
                                            '("reason" "user_id")
                                            (list reason user-id))))))
 
@@ -256,7 +258,7 @@ This is really useful if the account is in a lot of rooms and sync will try retu
 
       (dolist (room-id room-ids)
         (room-ban-json room-id
-                       room-ban-json)))))
+                       json)))))
 
 (defun room-put-state (event-type content &rest room-ids)
   "add a state event to each room."

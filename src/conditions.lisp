@@ -12,3 +12,4 @@
 
 (define-condition forbidden (api-error) ())
 
+(define-condition bad-state (api-error) ())

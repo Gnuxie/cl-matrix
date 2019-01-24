@@ -38,7 +38,10 @@
    nil)
 
   ("FORBIDDEN"
-   (error 'forbidden :description error-msg)))
+   (error 'forbidden :description error-msg))
+
+  ("BAD_STATE"
+   (error 'bad-state :description error-msg)))
 
 
 

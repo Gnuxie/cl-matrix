@@ -1,57 +1,58 @@
 (defpackage :cl-matrix
-  (:use :cl :matrix-requests)
+  (:use #:cl #:matrix-requests)
         (:export 
-         :login
-         :logout
-         :logout-all
-         :room-create
-         :msg-send
-         :room-redact
-         :user-invite
-         :room-join
-         :account-sync
-         :account-sync-since
-         :user-joined-rooms
-         :room-joined-members
-         :rooms-joined-members
-         :rooms-joined-members-ids
-         :room-state
-         :rooms-state
-         :room-power-levels
-         :rooms-power-levels
-         :change-power-level
-         :room-forget
-         :room-leave
-         :room-kick
-         :room-ban
-         :room-unban
-         :room-put-state
-         :invitations
-         :upload-filter
-         :room-messages
-         :n-messages
-         :all-messages
-         :now-token
+         #:login
+         #:logout
+         #:logout-all
+         #:room-create
+         #:msg-send
+         #:room-redact
+         #:user-invite
+         #:room-join
+         #:account-sync
+         #:account-sync-since
+         #:user-joined-rooms
+         #:room-joined-members
+         #:rooms-joined-members
+         #:rooms-joined-members-ids
+         #:room-state
+         #:rooms-state
+         #:room-power-levels
+         #:rooms-power-levels
+         #:change-power-level
+         #:room-forget
+         #:room-leave
+         #:room-kick
+         #:room-ban
+         #:room-unban
+         #:room-put-state
+         #:invitations
+         #:upload-filter
+         #:room-messages
+         #:n-messages
+         #:all-messages
+         #:now-token
 
-         :id
-         :event-type
-         :msgtype
+         #:id
+         #:event-type
+         #:msgtype
          
-         account
+         #:account
 
-         cl-matrix-error
-         api-error
-         forbidden
+         #:cl-matrix-error
+         #:api-error
+         #:forbidden
+         #:bad-state
          
-         :get-hostname
-         :make-account
-         :with-account
-         :access-token
-         :username
-         :password
-         :homeserver
+         #:get-hostname
+         #:make-account
+         #:with-account
+         #:access-token
+         #:username
+         #:password
+         #:homeserver
 
-         *account*
+         #:*account*
 ))
 
 (in-package :cl-matrix)
