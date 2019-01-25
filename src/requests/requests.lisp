@@ -59,7 +59,9 @@
                              (error 'bad-state :description error-msg))
 
                             ((search "NOT_FOUND" errcode)
-                             nil)))
+                             nil)
+
+                            (t (error 'api-error :description (format nil "errcode: ~a~%errmsg: ~a~%" errcode error-msg)))))
                     response))))
                    
      (handle-request ,request)))

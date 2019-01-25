@@ -36,7 +36,7 @@ e.g. the api `PUT /_matrix/client/r0/rooms/{roomId}/send/{eventType}/{txnId}` ca
   (\"rooms\" room-id \"send\" event-type txnid))
 ```
 which should create a function with the signature
-`(PUT-ROOM-SEND ROOM-ID EVENT-TYPE TXNID CONTENT &KEY PARAMETERS CALLBACK ACCESS-TOKEN)`
+`(PUT-ROOM-SEND AUTHENTICATION ROOM-ID EVENT-TYPE TXNID CONTENT &KEY PARAMETERS)`
 
 the json is parsed by jsown and returned as their representation of the object, this was necessary so that errors could be detected properly and rate limiting could be handled.
 
