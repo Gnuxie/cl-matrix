@@ -33,34 +33,6 @@
                              cl-matrix:password
                              cl-matrix:homeserver
 
-                             matrix-requests:get-login
-                             matrix-requests:put-room-send-event
-                             matrix-requests:put-room-state-key
-                             matrix-requests:get-sync
-                             matrix-requests:get-room-messages
-                             matrix-requests:put-room-state
-                             matrix-requests:matrix-post-request
-                             matrix-requests:post-room-join
-                             matrix-requests:get-room-state-key
-                             matrix-requests:post-room-leave
-                             matrix-requests:post-user-filter
-                             matrix-requests:post-login
-                             matrix-requests:post-logout
-                             matrix-requests:matrix-get-request
-                             matrix-requests:get-joined-rooms
-                             matrix-requests:get-room-members
-                             matrix-requests:get-room-event
-                             matrix-requests:post-join
-                             matrix-requests:post-logout-all
-                             matrix-requests:post-create-room
-                             matrix-requests:get-room-joined-members
-                             matrix-requests:get-room-state
-                             matrix-requests:get-room-state-event
-                             matrix-requests:post-room-forget
-                             matrix-requests:put-room-redact-event
-                             matrix-requests:post-room-invite
-                             matrix-requests:get-user-filter
-
                              drakma:http-request))
 
 (defun report ()

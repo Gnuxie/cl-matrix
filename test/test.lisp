@@ -44,7 +44,7 @@
       (setf (cl-matrix:access-token *user-one*) token)
       (cl-matrix:with-account (*user-one*)
         (fail (cl-matrix:room-create)))
-      (setf (cl-matrix:access-token *user-one*) nil)
+      (setf (cl-matrix:access-token *user-one*) "")
       (setf *user-one* (cl-matrix:login (cl-matrix:username *user-one*) (cl-matrix:password *user-one*))))))
 
 (define-test room-create
