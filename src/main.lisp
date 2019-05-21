@@ -48,7 +48,7 @@ See with-account"
 Returns the room-id for the created room."
 
   (let ((json-to-submit (jsown:to-json
-                         (cons ':obj (alist-without-nulls
+                         (cons :obj (alist-without-nulls
                                       "room_alias_name" room-alias room-alias-p
                                       "visibility" visibility visibility-p
                                       "name" name room-name-p
@@ -65,7 +65,7 @@ Returns the room-id for the created room."
   "Send a text message to a specific room."
 
   (put-rooms/roomid/send/eventtype/txnid *account* room-id "m.room.message" (princ-to-string txid)
-                       (jsown:to-json (cons ':obj (pairlis
+                       (jsown:to-json (cons :obj (pairlis
                                                    (list "msgtype" "body")
                                                    (list type msg))))))
 
@@ -78,7 +78,7 @@ Returns the room-id for the created room."
   "Invite a user to a chat-room."
 
   (post-rooms/roomid/invite *account* room-id
-                    (jsown:to-json (cons ':obj (pairlis
+                    (jsown:to-json (cons :obj (pairlis
                                                 (list "user_id")
                                                 (list user-id))))))
 
@@ -206,7 +206,7 @@ This is really useful if the account is in a lot of rooms and sync will try retu
       (post-rooms/roomid/kick *account* room-id json))))
 
 (defun room-ban (user-id reason &rest room-ids)
-  (let ((json (jsown:to-json (cons ':obj (pairlis
+  (let ((json (jsown:to-json (cons :obj (pairlis
                                            '("reason" "user_id")
                                            (list reason user-id))))))
     (dolist (room-id room-ids)
@@ -258,7 +258,7 @@ maybe allow user defined predicates for terminating pagination."
                (setf morep nil)
                (progn
                  (setf messages (append messages new-messages))
-                 (setf current-number (+ current-number (length new-messages)))
+                 (incf current-number (length new-messages))
                  (setf from end)))))
 
     (values messages from current-number)))

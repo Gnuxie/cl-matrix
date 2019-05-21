@@ -1,4 +1,3 @@
-
 (asdf:defsystem "cl-matrix"
   :version "0.0"
   :author "Gnuxie <Gnuxie@protonmail.com> Jaidyn Lev <jadedctrl@teknik.io>"
