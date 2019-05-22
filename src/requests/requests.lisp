@@ -8,7 +8,8 @@
           matrix-autowrap.authentication:query-param) :matrix-requests)
 
 (defclass matrix-requests-schema (api-schema)
-  ((endpoint-area :initform "/_matrix/client/r0/")))
+  ((endpoint-area :initform "/_matrix/client/r0/")
+   (spec-file-pathname :initform (asdf:system-relative-pathname :matrix-requests "matrix-autowrap-spec.lisp"))))
 
 (defmethod request-guard ((schema matrix-requests-schema) request)
    `(labels ((handle-request (request)
@@ -34,6 +35,7 @@
                    
      (handle-request ,request)))
 
-(defmethod endpoints ((schema matrix-requests-schema))
+(defmethod produce-endpoints ((schema matrix-requests-schema))
   (let ((spec (plump:parse (drakma:http-request "https://matrix.org/docs/spec/client_server/r0.4.0.html"))))
-    (lquery:$ spec "tt[class*=docutils literal]" (text))))
+    (setf (endpoints schema)
+          (concatenate 'list (lquery:$ spec "tt[class*=docutils literal]" (text))))))

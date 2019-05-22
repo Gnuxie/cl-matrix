@@ -72,12 +72,15 @@
           (format t "~%:~a" (string-downcase (symbol-name sym)))
           (export sym package))))))
 
-(defmacro read-and-feed-spec (schema)
+(defun read-and-feed-spec (schema)
   (let ((endpoints-spec (endpoints schema)))
     (list* 'progn
            (map 'list (lambda (s) (funcall #'%read-and-define s schema)) endpoints-spec))))
 
 (defmacro define-api (schema package)
-  (let ((schema (make-instance schema)))
-    `(progn (read-and-feed-spec ,schema)
-            (export-auto-api ,package))))
+  `(let ((schema (make-instance ',schema)))
+     (update-spec-file schema)
+     (load-endpoints-from-spec-file schema)
+     (read-and-feed-spec schema)
+     (export-auto-api ,package)))
+
