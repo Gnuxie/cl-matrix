@@ -9,7 +9,8 @@
 
 (defclass matrix-requests-schema (api-schema)
   ((endpoint-area :initform "/_matrix/client/r0/")
-   (spec-file-pathname :initform (asdf:system-relative-pathname :matrix-requests "matrix-autowrap-spec.lisp"))))
+   (spec-file-pathname :initform (asdf:system-relative-pathname :matrix-requests "matrix-autowrap-spec.lisp"))
+   (api-pathname :initform (asdf:system-relative-pathname :matrix-requests "api.lisp"))))
 
 (defmethod request-guard ((schema matrix-requests-schema) request)
    `(labels ((handle-request (request)

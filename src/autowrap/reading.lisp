@@ -38,8 +38,8 @@
                                                                       (escape-slashes (endpoint-area schema)))
                                                               endpoint-spec)
     (let ((fun-sym (symbolise-uri uri)))
-      `(define-endpoint ,fun-sym (,(intern method :keyword)) ,schema
-         ,(let ((length (length uri))
+      (endpoint-definition fun-sym `(,(intern method :keyword)) schema
+         (let ((length (length uri))
                (i 0))
            (loop :while (> length i)
               :collect
@@ -77,10 +77,15 @@
     (list* 'progn
            (map 'list (lambda (s) (funcall #'%read-and-define s schema)) endpoints-spec))))
 
+(defun read-and-create-api (schema)
+  ;err yeah
+  (with-open-file (f (api-pathname schema) :direction :output :if-exists :supersede :if-does-not-exist :create)
+    (pprint (read-and-feed-spec schema) f)))
+
 (defmacro define-api (schema package)
   `(let ((schema (make-instance ',schema)))
      (update-spec-file schema)
      (load-endpoints-from-spec-file schema)
-     (read-and-feed-spec schema)
+     (read-and-create-api schema)
      (export-auto-api ,package)))
 

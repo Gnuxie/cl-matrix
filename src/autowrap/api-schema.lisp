@@ -8,7 +8,8 @@
    #:endpoints
    #:produce-endpoints
    #:endpoint-area
-   #:spec-file-pathname))
+   #:spec-file-pathname
+   #:api-pathname))
 
 (in-package :matrix-autowrap.api-schema)
 
@@ -38,7 +39,12 @@ See produce-endpoints")
               :initarg :endpoints
               :initform nil
               :type list
-              :documentation "the endpoint specification loaded from the spec-file for this schema.")))
+              :documentation "the endpoint specification loaded from the spec-file for this schema.")
+
+   (api-pathname :accessor api-pathname
+                 :initarg :api-pathname
+                 :initform (error "a pathname for the generated api must be supplied")
+                 :documentation "a pathname to store the generated api")))
 
 (defgeneric request-guard (schema request)
   (:documentation "return a guarded request, override this to place a json parser or check for errors."))
