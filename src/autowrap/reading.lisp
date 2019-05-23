@@ -59,18 +59,20 @@
                           (prog1 (subseq uri i)
                                  (setf i length)))))))))))
 
-(defun export-auto-api (package)
+(defun exports-from-auto-api (package)
   (flet ((endpoint-p (sym)
            (let ((pack (find-package package)))
              (and (eql (symbol-package sym) pack)
                   (cl-ppcre:scan-to-strings "^(?>GET|PUT|POST|DELETE).*"
                                             (symbol-name sym))))))
 
-    (let ((pack (find-package package)))
+    (let ((pack (find-package package))
+          (exports nil))
       (do-all-symbols (sym pack)
         (when (endpoint-p sym)
-          (format t "~%:~a" (string-downcase (symbol-name sym)))
-          (export sym package))))))
+          (push (string-downcase (symbol-name sym)) exports)))
+
+      exports)))
 
 (defun read-and-feed-spec (schema)
   (let ((endpoints-spec (endpoints schema)))
@@ -78,17 +80,24 @@
             (delete-if #'null
                        (map 'list (lambda (s) (funcall #'%read-and-define s schema)) endpoints-spec)))))
 
-(defun read-and-create-api (schema)
+(defun write-package-definition (stream package exports)
+  (format stream "(defpackage ~s ((:use :cl)~%(:export~{~%  #:~a~})))~%(in-package ~s)~%"
+          package
+          exports
+          package))
+
+(defun read-and-create-api (schema package)
   ;err yeah
   (with-open-file (f (api-pathname schema) :direction :output :if-exists :supersede :if-does-not-exist :create)
-    (format f "~%;;; generated requests")
-    (mapc (lambda (s) (pprint s f) (format f "~%"))
-          (read-and-feed-spec schema))))
+    (let ((definitions (read-and-feed-spec schema)))
+      (write-package-definition f package (concatenate 'list (exports-from-auto-api package)
+                                                       (additional-exports schema)))
+      (format f "~%;;; generated requests")
+      (mapc (lambda (s) (pprint s f) (format f "~%"))
+            definitions))))
 
-(defmacro define-api (schema package)
-  `(let ((schema (make-instance ',schema)))
-     (update-spec-file schema)
-     (load-endpoints-from-spec-file schema)
-     (read-and-create-api schema)
-     (export-auto-api ,package)))
+(defun define-api (schema package)
+  (update-spec-file schema)
+  (load-endpoints-from-spec-file schema)
+  (read-and-create-api schema package))
 

@@ -2,11 +2,6 @@
    Copyright (C) 2018-2019 Gnuxie <Gnuxie@protonmail.com> |#
 (in-package :matrix-requests)
 
-(export '(matrix-autowrap.authentication:auth
-          matrix-autowrap.authentication:access-token
-          matrix-autowrap.authentication:homeserver
-          matrix-autowrap.authentication:query-param) :matrix-requests)
-
 (defclass matrix-requests-schema (api-schema)
   ((endpoint-area :initform "/_matrix/client/r0/")
    (spec-file-pathname :initform (asdf:system-relative-pathname :matrix-requests "matrix-autowrap-spec.lisp"))
@@ -40,3 +35,10 @@
   (let ((spec (plump:parse (drakma:http-request "https://matrix.org/docs/spec/client_server/r0.4.0.html"))))
     (setf (endpoints schema)
           (concatenate 'list (lquery:$ spec "tt[class*=docutils literal]" (text))))))
+
+(let ((schema make-instance 'matrix-requests-schema :exports '(matrix-autowrap.authentication:auth
+                                                               matrix-autowrap.authentication:access-token
+                                                               matrix-autowrap.authentication:homeserver
+                                                               matrix-autowrap.authentication:query-param)))
+  
+  (matrix-autowrap:define-api schema :matrix-requests))

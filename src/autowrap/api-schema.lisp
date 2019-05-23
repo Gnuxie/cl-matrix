@@ -44,7 +44,13 @@ See produce-endpoints")
    (api-pathname :accessor api-pathname
                  :initarg :api-pathname
                  :initform (error "a pathname for the generated api must be supplied")
-                 :documentation "a pathname to store the generated api")))
+                 :documentation "a pathname to store the generated api")
+
+   (%additional-exports :accessor additional-exports
+                        :initarg :exports
+                        :type list
+                        :initform nil
+                        :documentation "additional symbols to export")))
 
 (defgeneric request-guard (schema request)
   (:documentation "return a guarded request, override this to place a json parser or check for errors."))
