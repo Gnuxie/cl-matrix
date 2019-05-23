@@ -74,13 +74,16 @@
 
 (defun read-and-feed-spec (schema)
   (let ((endpoints-spec (endpoints schema)))
-    (list* 'progn
-           (map 'list (lambda (s) (funcall #'%read-and-define s schema)) endpoints-spec))))
+    (reduce #'append
+            (delete-if #'null
+                       (map 'list (lambda (s) (funcall #'%read-and-define s schema)) endpoints-spec)))))
 
 (defun read-and-create-api (schema)
   ;err yeah
   (with-open-file (f (api-pathname schema) :direction :output :if-exists :supersede :if-does-not-exist :create)
-    (pprint (read-and-feed-spec schema) f)))
+    (format f "~%;;; generated requests")
+    (mapc (lambda (s) (pprint s f) (format f "~%"))
+          (read-and-feed-spec schema))))
 
 (defmacro define-api (schema package)
   `(let ((schema (make-instance ',schema)))
