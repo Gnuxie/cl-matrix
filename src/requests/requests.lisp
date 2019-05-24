@@ -36,9 +36,12 @@
     (setf (endpoints schema)
           (concatenate 'list (lquery:$ spec "tt[class*=docutils literal]" (text))))))
 
-(let ((schema make-instance 'matrix-requests-schema :exports '(matrix-autowrap.authentication:auth
-                                                               matrix-autowrap.authentication:access-token
-                                                               matrix-autowrap.authentication:homeserver
-                                                               matrix-autowrap.authentication:query-param)))
+(let ((schema (make-instance 'matrix-requests-schema
+                             :exports '(auth
+                                        access-token
+                                        homeserver
+                                        query-param)
+                             :imports '((:matrix-autowrap.authentication
+                                         auth access-token homeserver query-param)))))
   
   (matrix-autowrap:define-api schema :matrix-requests))

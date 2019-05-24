@@ -9,7 +9,9 @@
    #:produce-endpoints
    #:endpoint-area
    #:spec-file-pathname
-   #:api-pathname))
+   #:api-pathname
+   #:imports
+   #:additional-exports))
 
 (in-package :matrix-autowrap.api-schema)
 
@@ -50,7 +52,13 @@ See produce-endpoints")
                         :initarg :exports
                         :type list
                         :initform nil
-                        :documentation "additional symbols to export")))
+                        :documentation "additional symbols to export")
+
+   (%import-from-table :accessor imports
+                       :initarg :imports
+                       :type list
+                       :initform nil
+                       :documentation "assoc list of packages and symbols to import from there")))
 
 (defgeneric request-guard (schema request)
   (:documentation "return a guarded request, override this to place a json parser or check for errors."))

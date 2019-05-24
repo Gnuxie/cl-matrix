@@ -80,9 +80,18 @@
             (delete-if #'null
                        (map 'list (lambda (s) (funcall #'%read-and-define s schema)) endpoints-spec)))))
 
-(defun write-package-definition (stream package exports)
-  (format stream "(defpackage ~s ((:use :cl)~%(:export~{~%  #:~a~})))~%(in-package ~s)~%"
-          package
+(defun write-package-definition (stream package exports import-from-alist)
+  ;;; start defpackage
+  (format stream "(defpackage ~s ((:use #:cl)" package)
+
+  ;;; imports
+  (unless (null import-from-alist)
+    (dolist (package-imports import-from-alist)
+      (destructuring-bind (import-package &rest imports) package-imports
+        (format stream "~%  (:import-from ~s~{~%  #:~a~})" import-package imports))))
+
+  ;;; exports
+  (format stream "~%  (:export~{~%  #:~a~})))~%(in-package ~s)~%"
           exports
           package))
 
@@ -91,7 +100,8 @@
   (with-open-file (f (api-pathname schema) :direction :output :if-exists :supersede :if-does-not-exist :create)
     (let ((definitions (read-and-feed-spec schema)))
       (write-package-definition f package (concatenate 'list (exports-from-auto-api package)
-                                                       (additional-exports schema)))
+                                                       (additional-exports schema))
+                                (imports schema))
       (format f "~%;;; generated requests")
       (mapc (lambda (s) (pprint s f) (format f "~%"))
             definitions))))
