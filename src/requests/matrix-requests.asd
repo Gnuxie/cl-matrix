@@ -2,10 +2,10 @@
     :version "0.0"
     :author "Gnuxie <Gnuxie@protonmail.com>"
     :license "AGPL v3+"
-    :depends-on ("matrix-autowrap" "plump" "lquery" "jsown")
+    :depends-on ("matrix-autowrap" "documentation-utils" "jsown")
     :components ((:file "package")
                  (:file "conditions")
-                 (:file "requests")
+                 (:file "api")
 )
 
     :description

@@ -11,7 +11,8 @@
    #:spec-file-pathname
    #:api-pathname
    #:imports
-   #:additional-exports))
+   #:additional-exports
+   #:target-package))
 
 (in-package :matrix-autowrap.api-schema)
 
@@ -58,7 +59,13 @@ See produce-endpoints")
                        :initarg :imports
                        :type list
                        :initform nil
-                       :documentation "assoc list of packages and symbols to import from there")))
+                       :documentation "assoc list of packages and symbols to import from there")
+
+   (target-package :accessor target-package
+                   :initarg :target-package
+                   :type symbol
+                   :initform (error "must supply target-package designator")
+                   :documentation "a package designator for the target package")))
 
 (defgeneric request-guard (schema request)
   (:documentation "return a guarded request, override this to place a json parser or check for errors."))

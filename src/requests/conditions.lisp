@@ -34,3 +34,25 @@ See https://matrix.org/docs/spec/client_server/latest.html#api-standards")
     "A condition for the matrix api error of FORBIDDEN
 
 See https://matrix.org/docs/spec/client_server/latest.html#api-standards"))
+
+
+(defun handle-request (request)
+  (let ((response (jsown:parse (funcall request))))
+    (if (jsown:keyp response "error")
+        (let ((errcode (jsown:val response "errcode"))
+              (error-msg (jsown:val response "error")))
+          (cond ((search "M_LIMIT_EXCEEDED" errcode)
+                 (sleep (/ (jsown:val response "retry_after_ms") 1000))
+                 (handle-request request))
+
+                ((search "FORBIDDEN" errcode)
+                 (error 'forbidden :description error-msg))
+
+                ((search "BAD_STATE" errcode)
+                 (error 'bad-state :description error-msg))
+
+                ((search "NOT_FOUND" errcode)
+                 nil)
+
+                (t (error 'api-error :description (format nil "errcode: ~a~%errmsg: ~a~%" errcode error-msg)))))
+        response)))
