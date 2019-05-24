@@ -6,6 +6,7 @@
     :components ((:file "authentication")
                  (:file "api-schema")
                  (:file "core")
+                 (:file "produce-spec")
                  (:file "reading"))
 
     :description

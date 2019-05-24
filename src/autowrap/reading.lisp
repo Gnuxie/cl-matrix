@@ -15,8 +15,8 @@
          (array-bind (,@groups) ,array-sym
            ,@body)))))
 
-(defun symbolise-uri (uri)
-  (intern (string-upcase (remove-if (lambda (c) (or (char= c #\{) (char= c #\}))) (substitute #\- #\_ uri)))))
+(defun symbolise-uri (uri target-package)
+  (intern (string-upcase (remove-if (lambda (c) (or (char= c #\{) (char= c #\}))) (substitute #\- #\_ uri))) target-package))
 
 (defun add-index (array index item &optional (start 0))
   (concatenate 'string
@@ -34,50 +34,88 @@
 
 (defun %read-and-define (endpoint-spec schema)
   (declare (type string endpoint-spec))
-  (ppcre-bind (matchedp method uri) (cl-ppcre:scan-to-strings (format nil "^(GET|POST|PUT|DELETE)\\s*~a(\\S*)$"
-                                                                      (escape-slashes (endpoint-area schema)))
-                                                              endpoint-spec)
-    (let ((fun-sym (symbolise-uri uri)))
-      `(define-endpoint ,fun-sym (,(intern method :keyword)) ,schema
-         ,(let ((length (length uri))
-               (i 0))
-           (loop :while (> length i)
-              :collect
-                (if (char= #\{ (aref uri i))
-                    (let ((next-slash (search "/" uri :start2 i)))
-                      (if next-slash
-                          (prog1
-                              (intern (subseq uri (+ 1 i) (- next-slash 1)))
-                            (setf i (+ 1 next-slash)))
-                          (prog1 (intern (subseq uri (+ 1 i) (- length 1)))
-                                 (setf i length))))
-                    (let ((next-slash (search "/" uri :start2 i)))
-                      (if next-slash
-                          (prog1
-                              (subseq uri i next-slash)
-                            (setf i (+ 1 next-slash)))
-                          (prog1 (subseq uri i)
-                                 (setf i length)))))))))))
+  (let ((target-package (find-package (target-package schema))))
+    (ppcre-bind (matchedp method uri) (cl-ppcre:scan-to-strings (format nil "^(GET|POST|PUT|DELETE)\\s*~a(\\S*)$"
+                                                                        (escape-slashes (endpoint-area schema)))
+                                                                endpoint-spec)
+      (let ((fun-sym (symbolise-uri uri target-package)))
+        (endpoint-definition fun-sym `(,(intern method :keyword)) schema
+          (let ((length (length uri))
+                (i 0))
+            (loop :while (> length i) :collect
+              (if (char= #\{ (aref uri i))
+                  (let ((next-slash (search "/" uri :start2 i)))
+                    (if next-slash
+                        (prog1
+                            (intern (subseq uri (+ 1 i) (- next-slash 1)) target-package)
+                          (setf i (+ 1 next-slash)))
+                        (prog1 (intern (subseq uri (+ 1 i) (- length 1)) target-package)
+                          (setf i length))))
+                  (let ((next-slash (search "/" uri :start2 i)))
+                    (if next-slash
+                        (prog1
+                            (subseq uri i next-slash)
+                          (setf i (+ 1 next-slash)))
+                        (prog1 (subseq uri i)
+                          (setf i length))))))))))))
 
-(defun export-auto-api (package)
+(defun exports-from-auto-api (package)
   (flet ((endpoint-p (sym)
            (let ((pack (find-package package)))
              (and (eql (symbol-package sym) pack)
                   (cl-ppcre:scan-to-strings "^(?>GET|PUT|POST|DELETE).*"
                                             (symbol-name sym))))))
 
-    (let ((pack (find-package package)))
+    (let ((pack (find-package package))
+          (exports nil))
       (do-all-symbols (sym pack)
         (when (endpoint-p sym)
-          (format t "~%:~a" (string-downcase (symbol-name sym)))
-          (export sym package))))))
+          (push (string-downcase (symbol-name sym)) exports)))
 
-(defmacro read-and-feed-spec (schema)
+      exports)))
+
+(defun read-and-feed-spec (schema)
   (let ((endpoints-spec (endpoints schema)))
-    (list* 'progn
-           (map 'list (lambda (s) (funcall #'%read-and-define s schema)) endpoints-spec))))
+    (reduce #'append
+            (delete-if #'null
+                       (map 'list (lambda (s) (funcall #'%read-and-define s schema)) endpoints-spec)))))
 
-(defmacro define-api (schema package)
-  (let ((schema (make-instance schema)))
-    `(progn (read-and-feed-spec ,schema)
-            (export-auto-api ,package))))
+(defun write-package-definition (stream package exports import-from-alist)
+  ;;; start defpackage
+  (format stream "(defpackage ~s (:use #:cl #:matrix-autowrap #:matrix-autowrap.authentication)" package)
+
+  ;;; imports
+  (unless (null import-from-alist)
+    (dolist (package-imports import-from-alist)
+      (destructuring-bind (import-package &rest imports) package-imports
+        (format stream "~%  (:import-from ~s~{~%  #:~a~})" import-package imports))))
+
+  ;;; exports
+  (format stream "~%  (:export~{~%  #:~a~}))~%(in-package ~s)~%"
+          exports
+          package))
+
+(defun read-and-create-api (schema)
+
+  (let ((package (target-package schema)))
+    (with-open-file (f (merge-pathnames "api.lisp" (api-pathname schema))
+                       :direction :output :if-exists :supersede :if-does-not-exist :create)
+      (let ((definitions (read-and-feed-spec schema)))
+        (with-open-file (p (merge-pathnames "package.lisp" (api-pathname schema))
+                           :direction :output :if-exists :supersede :if-does-not-exist :create)
+          (write-package-definition p package (concatenate 'list (exports-from-auto-api package)
+                                                           (additional-exports schema))
+                                    (imports schema)))
+
+        (format f "(in-package ~s)~%" package)
+        (format f "~%;;; generated requests~%")
+        (mapc (lambda (s)
+                (format f "~%~%")
+                (write s :stream f :case :downcase))
+              definitions)))))
+
+(defun define-api (schema)
+  (update-spec-file schema)
+  (load-endpoints-from-spec-file schema)
+  (read-and-create-api schema))
+
