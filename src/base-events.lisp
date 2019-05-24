@@ -5,18 +5,18 @@
   (:use :cl :cl-matrix)
   (:nicknames "CL-M.BASE-EVENTS")
   (:export
-   base-event
-   sync
-   on-room
-   room-event
-   presence-event
-   invite-event
-   ephemeral-event
-   e-m.room.message
-   e-m.text
+   #:base-event
+   #:sync
+   #:on-room
+   #:room-event
+   #:presence-event
+   #:invite-event
+   #:ephemeral-event
+   #:e-m.room.message
+   #:e-m.text
    
 
-   :issue-sync-event
+   #:issue-sync-event
 ))
 (in-package :cl-matrix.base-events)
 ;;; e- means event
