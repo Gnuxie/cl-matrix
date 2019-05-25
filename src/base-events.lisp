@@ -70,8 +70,8 @@
     (m.text account room-id data)))
 
 ;;; we can't call the gf because we don't have any methods for it yet
-(method-hooks:defhook m.text temp-so-things-do-not-explode ((account account) room-id data)
-  nil)
+;;; this stops it from exploding
+(defmethod m.text ((account t) room-id data))
 
 (defun issue-sync-event (sync-data)
   (sync *account* sync-data))
