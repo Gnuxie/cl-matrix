@@ -30,7 +30,7 @@ See with-account"
   (setf (access-token *account*) ""))
 
 (defun logout-all ()
-  (post-logout-all *account* "{}")
+  (post-logout/all *account* "{}")
   (setf (access-token *account*) ""))
 
 (defun room-create (&key
@@ -69,7 +69,7 @@ Returns the room-id for the created room."
                                                    (list "msgtype" "body")
                                                    (list type msg))))))
 
-(defun room-redact (room-id event-id reason &key (txid random-timestamp))
+(defun room-redact (room-id event-id reason &key (txid (random-timestamp)))
   "redact an event in a room. txid is a `(random-timestamp)` by default."
   (let ((json (format nil "{\"reason\": \"~a\"}" reason)))
     (put-rooms/roomid/redact/eventid/txnid *account* room-id event-id txid json)))
@@ -254,6 +254,7 @@ maybe allow user defined predicates for terminating pagination."
         (morep t))
     (loop :while (and morep (> n current-number)) :do
          (multiple-value-bind (new-messages start end) (room-messages room-id from dir :to to :limit (princ-to-string (- n current-number)) :filter filter)
+           (declare (ignorable start))
            (if (null new-messages)
                (setf morep nil)
                (progn
@@ -268,6 +269,7 @@ maybe allow user defined predicates for terminating pagination."
         (morep t))
     (loop :while morep :do
          (multiple-value-bind (new-messages start end) (room-messages room-id from dir :to to :limit "1000" :filter filter)
+           (declare (ignorable start))
            (if (null new-messages)
                (setf morep nil)
                (progn (setf messages (append messages new-messages))
