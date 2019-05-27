@@ -5,6 +5,7 @@
     :depends-on ("drakma")
     :components ((:file "authentication")
                  (:file "api-schema")
+                 (:file "schema-module")
                  (:file "core")
                  (:file "produce-spec")
                  (:file "reading"))

@@ -5,7 +5,7 @@
 
 (defun get-login (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "login") authentication
@@ -13,7 +13,7 @@
 
 (defun post-login (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "login") authentication
@@ -21,7 +21,7 @@
 
 (defun post-logout (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "logout") authentication
@@ -29,7 +29,7 @@
 
 (defun post-logout/all (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "logout" "/" "all")
@@ -37,7 +37,7 @@
 
 (defun post-register (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "register") authentication
@@ -46,7 +46,7 @@
 (defun post-register/email/requesttoken
        (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "register" "/" "email" "/"
@@ -56,7 +56,7 @@
 (defun post-register/msisdn/requesttoken
        (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "register" "/" "msisdn" "/"
@@ -65,7 +65,7 @@
 
 (defun post-account/password (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "password")
@@ -74,7 +74,7 @@
 (defun post-account/password/email/requesttoken
        (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "password" "/"
@@ -84,7 +84,7 @@
 (defun post-account/password/msisdn/requesttoken
        (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "password" "/"
@@ -93,7 +93,7 @@
 
 (defun post-account/deactivate (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "deactivate")
@@ -101,7 +101,7 @@
 
 (defun get-register/available (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "register" "/" "available")
@@ -109,7 +109,7 @@
 
 (defun get-account/3pid (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "3pid")
@@ -117,7 +117,7 @@
 
 (defun post-account/3pid (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "3pid")
@@ -125,7 +125,7 @@
 
 (defun post-account/3pid/delete (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "3pid" "/"
@@ -135,7 +135,7 @@
 (defun post-account/3pid/email/requesttoken
        (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "3pid" "/"
@@ -145,7 +145,7 @@
 (defun post-account/3pid/msisdn/requesttoken
        (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "3pid" "/"
@@ -154,7 +154,7 @@
 
 (defun get-account/whoami (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "whoami")
@@ -163,7 +163,7 @@
 (defun post-user/userid/filter
        (authentication |userId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
@@ -173,7 +173,7 @@
 (defun get-user/userid/filter/filterid
        (authentication |userId| |filterId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
@@ -182,7 +182,7 @@
 
 (defun get-sync (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "sync") authentication
@@ -190,7 +190,7 @@
 
 (defun get-events (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "events") authentication
@@ -198,7 +198,7 @@
 
 (defun get-initialsync (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "initialSync") authentication
@@ -206,7 +206,7 @@
 
 (defun get-events/eventid (authentication |eventId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "events" "/" |eventId|)
@@ -215,7 +215,7 @@
 (defun get-rooms/roomid/event/eventid
        (authentication |roomId| |eventId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -225,7 +225,7 @@
 (defun get-rooms/roomid/state/eventtype/statekey
        (authentication |roomId| |eventType| |stateKey| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -235,7 +235,7 @@
 (defun get-rooms/roomid/state/eventtype
        (authentication |roomId| |eventType| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -244,7 +244,7 @@
 
 (defun get-rooms/roomid/state (authentication |roomId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -253,7 +253,7 @@
 
 (defun get-rooms/roomid/members (authentication |roomId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -263,7 +263,7 @@
 (defun get-rooms/roomid/joined-members
        (authentication |roomId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -272,7 +272,7 @@
 
 (defun get-rooms/roomid/messages (authentication |roomId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -281,7 +281,7 @@
 
 (defun get-rooms/roomid/initialsync (authentication |roomId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -291,7 +291,7 @@
 (defun put-rooms/roomid/state/eventtype/statekey
        (authentication |roomId| |eventType| |stateKey| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -301,7 +301,7 @@
 (defun put-rooms/roomid/state/eventtype
        (authentication |roomId| |eventType| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -311,7 +311,7 @@
 (defun put-rooms/roomid/send/eventtype/txnid
        (authentication |roomId| |eventType| |txnId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -321,7 +321,7 @@
 (defun put-rooms/roomid/redact/eventid/txnid
        (authentication |roomId| |eventId| |txnId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -330,7 +330,7 @@
 
 (defun post-createroom (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "createRoom") authentication
@@ -339,7 +339,7 @@
 (defun put-directory/room/roomalias
        (authentication |roomAlias| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "directory" "/" "room" "/"
@@ -349,7 +349,7 @@
 (defun get-directory/room/roomalias
        (authentication |roomAlias| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "directory" "/" "room" "/"
@@ -359,7 +359,7 @@
 (defun delete-directory/room/roomalias
        (authentication |roomAlias| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::delete-request
       (concatenate 'string "/_matrix/client/r0/" "directory" "/" "room" "/"
@@ -368,7 +368,7 @@
 
 (defun get-joined-rooms (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "joined_rooms") authentication
@@ -377,7 +377,7 @@
 (defun post-rooms/roomid/invite
        (authentication |roomId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -386,7 +386,7 @@
 
 (defun post-rooms/roomid/join (authentication |roomId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -396,7 +396,7 @@
 (defun post-join/roomidoralias
        (authentication |roomIdOrAlias| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "join" "/" |roomIdOrAlias|)
@@ -405,7 +405,7 @@
 (defun post-rooms/roomid/leave
        (authentication |roomId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -415,7 +415,7 @@
 (defun post-rooms/roomid/forget
        (authentication |roomId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -424,7 +424,7 @@
 
 (defun post-rooms/roomid/kick (authentication |roomId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -433,7 +433,7 @@
 
 (defun post-rooms/roomid/ban (authentication |roomId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -443,7 +443,7 @@
 (defun post-rooms/roomid/unban
        (authentication |roomId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -452,7 +452,7 @@
 
 (defun get-directory/list/room/roomid (authentication |roomId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "directory" "/" "list" "/"
@@ -462,7 +462,7 @@
 (defun put-directory/list/room/roomid
        (authentication |roomId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "directory" "/" "list" "/"
@@ -471,7 +471,7 @@
 
 (defun get-publicrooms (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "publicRooms") authentication
@@ -479,7 +479,7 @@
 
 (defun post-publicrooms (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "publicRooms") authentication
@@ -487,7 +487,7 @@
 
 (defun post-user-directory/search (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "user_directory" "/" "search")
@@ -496,7 +496,7 @@
 (defun put-profile/userid/displayname
        (authentication |userId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "profile" "/" |userId| "/"
@@ -505,7 +505,7 @@
 
 (defun get-profile/userid/displayname (authentication |userId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "profile" "/" |userId| "/"
@@ -515,7 +515,7 @@
 (defun put-profile/userid/avatar-url
        (authentication |userId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "profile" "/" |userId| "/"
@@ -524,7 +524,7 @@
 
 (defun get-profile/userid/avatar-url (authentication |userId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "profile" "/" |userId| "/"
@@ -533,7 +533,7 @@
 
 (defun get-profile/userid (authentication |userId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "profile" "/" |userId|)
@@ -541,7 +541,7 @@
 
 (defun get-voip/turnserver (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "voip" "/" "turnServer")
@@ -550,7 +550,7 @@
 (defun put-rooms/roomid/typing/userid
        (authentication |roomId| |userId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -561,7 +561,7 @@
        (authentication |roomId| |receiptType| |eventId| content
         &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -571,7 +571,7 @@
 (defun post-rooms/roomid/read-markers
        (authentication |roomId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -581,7 +581,7 @@
 (defun put-presence/userid/status
        (authentication |userId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "presence" "/" |userId| "/"
@@ -590,7 +590,7 @@
 
 (defun get-presence/userid/status (authentication |userId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "presence" "/" |userId| "/"
@@ -600,7 +600,7 @@
 (defun post-presence/list/userid
        (authentication |userId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "presence" "/" "list" "/"
@@ -609,17 +609,71 @@
 
 (defun get-presence/list/userid (authentication |userId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "presence" "/" "list" "/"
                    |userId|)
       authentication :parameters parameters))))
 
+(defun post-upload (authentication content &key parameters)
+  nil
+  (handle-http-request
+   (lambda ()
+     (matrix-autowrap::post-request
+      (concatenate 'string "/_matrix/media/r0/" "upload") authentication
+      content :parameters parameters))))
+
+(defun get-download/servername/mediaid
+       (authentication |serverName| |mediaId| &key parameters)
+  nil
+  (handle-http-request
+   (lambda ()
+     (matrix-autowrap::get-request
+      (concatenate 'string "/_matrix/media/r0/" "download" "/" |serverName| "/"
+                   |mediaId|)
+      authentication :parameters parameters))))
+
+(defun get-download/servername/mediaid/filename
+       (authentication |serverName| |mediaId| |fileName| &key parameters)
+  nil
+  (handle-http-request
+   (lambda ()
+     (matrix-autowrap::get-request
+      (concatenate 'string "/_matrix/media/r0/" "download" "/" |serverName| "/"
+                   |mediaId| "/" |fileName|)
+      authentication :parameters parameters))))
+
+(defun get-thumbnail/servername/mediaid
+       (authentication |serverName| |mediaId| &key parameters)
+  nil
+  (handle-http-request
+   (lambda ()
+     (matrix-autowrap::get-request
+      (concatenate 'string "/_matrix/media/r0/" "thumbnail" "/" |serverName|
+                   "/" |mediaId|)
+      authentication :parameters parameters))))
+
+(defun get-preview-url (authentication &key parameters)
+  nil
+  (handle-http-request
+   (lambda ()
+     (matrix-autowrap::get-request
+      (concatenate 'string "/_matrix/media/r0/" "preview_url") authentication
+      :parameters parameters))))
+
+(defun get-config (authentication &key parameters)
+  nil
+  (handle-http-request
+   (lambda ()
+     (matrix-autowrap::get-request
+      (concatenate 'string "/_matrix/media/r0/" "config") authentication
+      :parameters parameters))))
+
 (defun put-sendtodevice/eventtype/txnid
        (authentication |eventType| |txnId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "sendToDevice" "/" |eventType|
@@ -628,7 +682,7 @@
 
 (defun get-devices (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "devices") authentication
@@ -636,7 +690,7 @@
 
 (defun get-devices/deviceid (authentication |deviceId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "devices" "/" |deviceId|)
@@ -644,7 +698,7 @@
 
 (defun put-devices/deviceid (authentication |deviceId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "devices" "/" |deviceId|)
@@ -653,7 +707,7 @@
 (defun delete-devices/deviceid
        (authentication |deviceId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::delete-request
       (concatenate 'string "/_matrix/client/r0/" "devices" "/" |deviceId|)
@@ -661,7 +715,7 @@
 
 (defun post-delete-devices (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "delete_devices")
@@ -669,7 +723,7 @@
 
 (defun post-keys/upload (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "keys" "/" "upload")
@@ -677,7 +731,7 @@
 
 (defun post-keys/query (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "keys" "/" "query")
@@ -685,7 +739,7 @@
 
 (defun post-keys/claim (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "keys" "/" "claim")
@@ -693,7 +747,7 @@
 
 (defun get-keys/changes (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "keys" "/" "changes")
@@ -701,7 +755,7 @@
 
 (defun get-pushers (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "pushers") authentication
@@ -709,7 +763,7 @@
 
 (defun post-pushers/set (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "pushers" "/" "set")
@@ -717,7 +771,7 @@
 
 (defun get-notifications (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "notifications")
@@ -725,7 +779,7 @@
 
 (defun get-pushrules/ (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules") authentication
@@ -734,7 +788,7 @@
 (defun get-pushrules/scope/kind/ruleid
        (authentication |scope| |kind| |ruleId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
@@ -744,7 +798,7 @@
 (defun delete-pushrules/scope/kind/ruleid
        (authentication |scope| |kind| |ruleId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::delete-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
@@ -754,7 +808,7 @@
 (defun put-pushrules/scope/kind/ruleid
        (authentication |scope| |kind| |ruleId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
@@ -764,7 +818,7 @@
 (defun get-pushrules/scope/kind/ruleid/enabled
        (authentication |scope| |kind| |ruleId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
@@ -774,7 +828,7 @@
 (defun put-pushrules/scope/kind/ruleid/enabled
        (authentication |scope| |kind| |ruleId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
@@ -784,7 +838,7 @@
 (defun get-pushrules/scope/kind/ruleid/actions
        (authentication |scope| |kind| |ruleId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
@@ -794,7 +848,7 @@
 (defun put-pushrules/scope/kind/ruleid/actions
        (authentication |scope| |kind| |ruleId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
@@ -804,7 +858,7 @@
 (defun post-rooms/roomid/invite
        (authentication |roomId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -813,7 +867,7 @@
 
 (defun post-search (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "search") authentication
@@ -821,7 +875,7 @@
 
 (defun get-events (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "events") authentication
@@ -830,7 +884,7 @@
 (defun get-user/userid/rooms/roomid/tags
        (authentication |userId| |roomId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
@@ -840,7 +894,7 @@
 (defun put-user/userid/rooms/roomid/tags/tag
        (authentication |userId| |roomId| |tag| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
@@ -850,7 +904,7 @@
 (defun delete-user/userid/rooms/roomid/tags/tag
        (authentication |userId| |roomId| |tag| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::delete-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
@@ -860,7 +914,7 @@
 (defun put-user/userid/account-data/type
        (authentication |userId| |type| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
@@ -870,7 +924,7 @@
 (defun put-user/userid/rooms/roomid/account-data/type
        (authentication |userId| |roomId| |type| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
@@ -879,7 +933,7 @@
 
 (defun get-admin/whois/userid (authentication |userId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "admin" "/" "whois" "/"
@@ -889,7 +943,7 @@
 (defun get-rooms/roomid/context/eventid
        (authentication |roomId| |eventId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -898,7 +952,7 @@
 
 (defun get-login/cas/redirect (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "login" "/" "cas" "/"
@@ -907,7 +961,7 @@
 
 (defun get-login/cas/ticket (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "login" "/" "cas" "/"
@@ -917,7 +971,7 @@
 (defun post-rooms/roomid/report/eventid
        (authentication |roomId| |eventId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -926,7 +980,7 @@
 
 (defun get-thirdparty/protocols (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "thirdparty" "/" "protocols")
@@ -935,7 +989,7 @@
 (defun get-thirdparty/protocol/protocol
        (authentication |protocol| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "thirdparty" "/" "protocol"
@@ -945,7 +999,7 @@
 (defun get-thirdparty/location/protocol
        (authentication |protocol| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "thirdparty" "/" "location"
@@ -954,7 +1008,7 @@
 
 (defun get-thirdparty/user/protocol (authentication |protocol| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "thirdparty" "/" "user" "/"
@@ -963,7 +1017,7 @@
 
 (defun get-thirdparty/location (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "thirdparty" "/" "location")
@@ -971,7 +1025,7 @@
 
 (defun get-thirdparty/user (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "thirdparty" "/" "user")
@@ -980,7 +1034,7 @@
 (defun post-user/userid/openid/request-token
        (authentication |userId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
@@ -989,7 +1043,7 @@
 
 (defun get-login (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "login") authentication
@@ -997,7 +1051,7 @@
 
 (defun post-login (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "login") authentication
@@ -1005,7 +1059,7 @@
 
 (defun post-logout (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "logout") authentication
@@ -1013,7 +1067,7 @@
 
 (defun post-logout/all (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "logout" "/" "all")
@@ -1021,7 +1075,7 @@
 
 (defun post-register (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "register") authentication
@@ -1030,7 +1084,7 @@
 (defun post-register/email/requesttoken
        (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "register" "/" "email" "/"
@@ -1040,7 +1094,7 @@
 (defun post-register/msisdn/requesttoken
        (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "register" "/" "msisdn" "/"
@@ -1049,7 +1103,7 @@
 
 (defun post-account/password (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "password")
@@ -1058,7 +1112,7 @@
 (defun post-account/password/email/requesttoken
        (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "password" "/"
@@ -1068,7 +1122,7 @@
 (defun post-account/password/msisdn/requesttoken
        (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "password" "/"
@@ -1077,7 +1131,7 @@
 
 (defun post-account/deactivate (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "deactivate")
@@ -1085,7 +1139,7 @@
 
 (defun get-register/available (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "register" "/" "available")
@@ -1093,7 +1147,7 @@
 
 (defun get-account/3pid (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "3pid")
@@ -1101,7 +1155,7 @@
 
 (defun post-account/3pid (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "3pid")
@@ -1109,7 +1163,7 @@
 
 (defun post-account/3pid/delete (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "3pid" "/"
@@ -1119,7 +1173,7 @@
 (defun post-account/3pid/email/requesttoken
        (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "3pid" "/"
@@ -1129,7 +1183,7 @@
 (defun post-account/3pid/msisdn/requesttoken
        (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "3pid" "/"
@@ -1138,7 +1192,7 @@
 
 (defun get-account/whoami (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "whoami")
@@ -1147,7 +1201,7 @@
 (defun post-user/userid/filter
        (authentication |userId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
@@ -1157,7 +1211,7 @@
 (defun get-user/userid/filter/filterid
        (authentication |userId| |filterId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
@@ -1166,7 +1220,7 @@
 
 (defun get-sync (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "sync") authentication
@@ -1174,7 +1228,7 @@
 
 (defun get-events (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "events") authentication
@@ -1182,7 +1236,7 @@
 
 (defun get-initialsync (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "initialSync") authentication
@@ -1190,7 +1244,7 @@
 
 (defun get-events/eventid (authentication |eventId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "events" "/" |eventId|)
@@ -1199,7 +1253,7 @@
 (defun get-rooms/roomid/event/eventid
        (authentication |roomId| |eventId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -1209,7 +1263,7 @@
 (defun get-rooms/roomid/state/eventtype/statekey
        (authentication |roomId| |eventType| |stateKey| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -1219,7 +1273,7 @@
 (defun get-rooms/roomid/state/eventtype
        (authentication |roomId| |eventType| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -1228,7 +1282,7 @@
 
 (defun get-rooms/roomid/state (authentication |roomId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -1237,7 +1291,7 @@
 
 (defun get-rooms/roomid/members (authentication |roomId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -1247,7 +1301,7 @@
 (defun get-rooms/roomid/joined-members
        (authentication |roomId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -1256,7 +1310,7 @@
 
 (defun get-rooms/roomid/messages (authentication |roomId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -1265,7 +1319,7 @@
 
 (defun get-rooms/roomid/initialsync (authentication |roomId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -1275,7 +1329,7 @@
 (defun put-rooms/roomid/state/eventtype/statekey
        (authentication |roomId| |eventType| |stateKey| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -1285,7 +1339,7 @@
 (defun put-rooms/roomid/state/eventtype
        (authentication |roomId| |eventType| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -1295,7 +1349,7 @@
 (defun put-rooms/roomid/send/eventtype/txnid
        (authentication |roomId| |eventType| |txnId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -1305,7 +1359,7 @@
 (defun put-rooms/roomid/redact/eventid/txnid
        (authentication |roomId| |eventId| |txnId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -1314,7 +1368,7 @@
 
 (defun post-createroom (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "createRoom") authentication
@@ -1323,7 +1377,7 @@
 (defun put-directory/room/roomalias
        (authentication |roomAlias| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "directory" "/" "room" "/"
@@ -1333,7 +1387,7 @@
 (defun get-directory/room/roomalias
        (authentication |roomAlias| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "directory" "/" "room" "/"
@@ -1343,7 +1397,7 @@
 (defun delete-directory/room/roomalias
        (authentication |roomAlias| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::delete-request
       (concatenate 'string "/_matrix/client/r0/" "directory" "/" "room" "/"
@@ -1352,7 +1406,7 @@
 
 (defun get-joined-rooms (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "joined_rooms") authentication
@@ -1361,7 +1415,7 @@
 (defun post-rooms/roomid/invite
        (authentication |roomId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -1370,7 +1424,7 @@
 
 (defun post-rooms/roomid/join (authentication |roomId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -1380,7 +1434,7 @@
 (defun post-join/roomidoralias
        (authentication |roomIdOrAlias| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "join" "/" |roomIdOrAlias|)
@@ -1389,7 +1443,7 @@
 (defun post-rooms/roomid/leave
        (authentication |roomId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -1399,7 +1453,7 @@
 (defun post-rooms/roomid/forget
        (authentication |roomId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -1408,7 +1462,7 @@
 
 (defun post-rooms/roomid/kick (authentication |roomId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -1417,7 +1471,7 @@
 
 (defun post-rooms/roomid/ban (authentication |roomId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -1427,7 +1481,7 @@
 (defun post-rooms/roomid/unban
        (authentication |roomId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -1436,7 +1490,7 @@
 
 (defun get-directory/list/room/roomid (authentication |roomId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "directory" "/" "list" "/"
@@ -1446,7 +1500,7 @@
 (defun put-directory/list/room/roomid
        (authentication |roomId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "directory" "/" "list" "/"
@@ -1455,7 +1509,7 @@
 
 (defun get-publicrooms (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "publicRooms") authentication
@@ -1463,7 +1517,7 @@
 
 (defun post-publicrooms (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "publicRooms") authentication
@@ -1471,7 +1525,7 @@
 
 (defun post-user-directory/search (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "user_directory" "/" "search")
@@ -1480,7 +1534,7 @@
 (defun put-profile/userid/displayname
        (authentication |userId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "profile" "/" |userId| "/"
@@ -1489,7 +1543,7 @@
 
 (defun get-profile/userid/displayname (authentication |userId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "profile" "/" |userId| "/"
@@ -1499,7 +1553,7 @@
 (defun put-profile/userid/avatar-url
        (authentication |userId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "profile" "/" |userId| "/"
@@ -1508,7 +1562,7 @@
 
 (defun get-profile/userid/avatar-url (authentication |userId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "profile" "/" |userId| "/"
@@ -1517,7 +1571,7 @@
 
 (defun get-profile/userid (authentication |userId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "profile" "/" |userId|)
@@ -1525,7 +1579,7 @@
 
 (defun get-voip/turnserver (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "voip" "/" "turnServer")
@@ -1534,7 +1588,7 @@
 (defun put-rooms/roomid/typing/userid
        (authentication |roomId| |userId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -1545,7 +1599,7 @@
        (authentication |roomId| |receiptType| |eventId| content
         &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -1555,7 +1609,7 @@
 (defun post-rooms/roomid/read-markers
        (authentication |roomId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -1565,7 +1619,7 @@
 (defun put-presence/userid/status
        (authentication |userId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "presence" "/" |userId| "/"
@@ -1574,7 +1628,7 @@
 
 (defun get-presence/userid/status (authentication |userId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "presence" "/" |userId| "/"
@@ -1584,7 +1638,7 @@
 (defun post-presence/list/userid
        (authentication |userId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "presence" "/" "list" "/"
@@ -1593,17 +1647,71 @@
 
 (defun get-presence/list/userid (authentication |userId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "presence" "/" "list" "/"
                    |userId|)
       authentication :parameters parameters))))
 
+(defun post-upload (authentication content &key parameters)
+  nil
+  (handle-http-request
+   (lambda ()
+     (matrix-autowrap::post-request
+      (concatenate 'string "/_matrix/media/r0/" "upload") authentication
+      content :parameters parameters))))
+
+(defun get-download/servername/mediaid
+       (authentication |serverName| |mediaId| &key parameters)
+  nil
+  (handle-http-request
+   (lambda ()
+     (matrix-autowrap::get-request
+      (concatenate 'string "/_matrix/media/r0/" "download" "/" |serverName| "/"
+                   |mediaId|)
+      authentication :parameters parameters))))
+
+(defun get-download/servername/mediaid/filename
+       (authentication |serverName| |mediaId| |fileName| &key parameters)
+  nil
+  (handle-http-request
+   (lambda ()
+     (matrix-autowrap::get-request
+      (concatenate 'string "/_matrix/media/r0/" "download" "/" |serverName| "/"
+                   |mediaId| "/" |fileName|)
+      authentication :parameters parameters))))
+
+(defun get-thumbnail/servername/mediaid
+       (authentication |serverName| |mediaId| &key parameters)
+  nil
+  (handle-http-request
+   (lambda ()
+     (matrix-autowrap::get-request
+      (concatenate 'string "/_matrix/media/r0/" "thumbnail" "/" |serverName|
+                   "/" |mediaId|)
+      authentication :parameters parameters))))
+
+(defun get-preview-url (authentication &key parameters)
+  nil
+  (handle-http-request
+   (lambda ()
+     (matrix-autowrap::get-request
+      (concatenate 'string "/_matrix/media/r0/" "preview_url") authentication
+      :parameters parameters))))
+
+(defun get-config (authentication &key parameters)
+  nil
+  (handle-http-request
+   (lambda ()
+     (matrix-autowrap::get-request
+      (concatenate 'string "/_matrix/media/r0/" "config") authentication
+      :parameters parameters))))
+
 (defun put-sendtodevice/eventtype/txnid
        (authentication |eventType| |txnId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "sendToDevice" "/" |eventType|
@@ -1612,7 +1720,7 @@
 
 (defun get-devices (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "devices") authentication
@@ -1620,7 +1728,7 @@
 
 (defun get-devices/deviceid (authentication |deviceId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "devices" "/" |deviceId|)
@@ -1628,7 +1736,7 @@
 
 (defun put-devices/deviceid (authentication |deviceId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "devices" "/" |deviceId|)
@@ -1637,7 +1745,7 @@
 (defun delete-devices/deviceid
        (authentication |deviceId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::delete-request
       (concatenate 'string "/_matrix/client/r0/" "devices" "/" |deviceId|)
@@ -1645,7 +1753,7 @@
 
 (defun post-delete-devices (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "delete_devices")
@@ -1653,7 +1761,7 @@
 
 (defun post-keys/upload (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "keys" "/" "upload")
@@ -1661,7 +1769,7 @@
 
 (defun post-keys/query (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "keys" "/" "query")
@@ -1669,7 +1777,7 @@
 
 (defun post-keys/claim (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "keys" "/" "claim")
@@ -1677,7 +1785,7 @@
 
 (defun get-keys/changes (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "keys" "/" "changes")
@@ -1685,7 +1793,7 @@
 
 (defun get-pushers (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "pushers") authentication
@@ -1693,7 +1801,7 @@
 
 (defun post-pushers/set (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "pushers" "/" "set")
@@ -1701,7 +1809,7 @@
 
 (defun get-notifications (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "notifications")
@@ -1709,7 +1817,7 @@
 
 (defun get-pushrules/ (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules") authentication
@@ -1718,7 +1826,7 @@
 (defun get-pushrules/scope/kind/ruleid
        (authentication |scope| |kind| |ruleId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
@@ -1728,7 +1836,7 @@
 (defun delete-pushrules/scope/kind/ruleid
        (authentication |scope| |kind| |ruleId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::delete-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
@@ -1738,7 +1846,7 @@
 (defun put-pushrules/scope/kind/ruleid
        (authentication |scope| |kind| |ruleId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
@@ -1748,7 +1856,7 @@
 (defun get-pushrules/scope/kind/ruleid/enabled
        (authentication |scope| |kind| |ruleId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
@@ -1758,7 +1866,7 @@
 (defun put-pushrules/scope/kind/ruleid/enabled
        (authentication |scope| |kind| |ruleId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
@@ -1768,7 +1876,7 @@
 (defun get-pushrules/scope/kind/ruleid/actions
        (authentication |scope| |kind| |ruleId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
@@ -1778,7 +1886,7 @@
 (defun put-pushrules/scope/kind/ruleid/actions
        (authentication |scope| |kind| |ruleId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
@@ -1788,7 +1896,7 @@
 (defun post-rooms/roomid/invite
        (authentication |roomId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -1797,7 +1905,7 @@
 
 (defun post-search (authentication content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "search") authentication
@@ -1805,7 +1913,7 @@
 
 (defun get-events (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "events") authentication
@@ -1814,7 +1922,7 @@
 (defun get-user/userid/rooms/roomid/tags
        (authentication |userId| |roomId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
@@ -1824,7 +1932,7 @@
 (defun put-user/userid/rooms/roomid/tags/tag
        (authentication |userId| |roomId| |tag| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
@@ -1834,7 +1942,7 @@
 (defun delete-user/userid/rooms/roomid/tags/tag
        (authentication |userId| |roomId| |tag| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::delete-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
@@ -1844,7 +1952,7 @@
 (defun put-user/userid/account-data/type
        (authentication |userId| |type| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
@@ -1854,7 +1962,7 @@
 (defun put-user/userid/rooms/roomid/account-data/type
        (authentication |userId| |roomId| |type| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
@@ -1863,7 +1971,7 @@
 
 (defun get-admin/whois/userid (authentication |userId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "admin" "/" "whois" "/"
@@ -1873,7 +1981,7 @@
 (defun get-rooms/roomid/context/eventid
        (authentication |roomId| |eventId| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -1882,7 +1990,7 @@
 
 (defun get-login/cas/redirect (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "login" "/" "cas" "/"
@@ -1891,7 +1999,7 @@
 
 (defun get-login/cas/ticket (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "login" "/" "cas" "/"
@@ -1901,7 +2009,7 @@
 (defun post-rooms/roomid/report/eventid
        (authentication |roomId| |eventId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
@@ -1910,7 +2018,7 @@
 
 (defun get-thirdparty/protocols (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "thirdparty" "/" "protocols")
@@ -1919,7 +2027,7 @@
 (defun get-thirdparty/protocol/protocol
        (authentication |protocol| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "thirdparty" "/" "protocol"
@@ -1929,7 +2037,7 @@
 (defun get-thirdparty/location/protocol
        (authentication |protocol| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "thirdparty" "/" "location"
@@ -1938,7 +2046,7 @@
 
 (defun get-thirdparty/user/protocol (authentication |protocol| &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "thirdparty" "/" "user" "/"
@@ -1947,7 +2055,7 @@
 
 (defun get-thirdparty/location (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "thirdparty" "/" "location")
@@ -1955,7 +2063,7 @@
 
 (defun get-thirdparty/user (authentication &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "thirdparty" "/" "user")
@@ -1964,7 +2072,7 @@
 (defun post-user/userid/openid/request-token
        (authentication |userId| content &key parameters)
   nil
-  (handle-request
+  (handle-json-only-request
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"

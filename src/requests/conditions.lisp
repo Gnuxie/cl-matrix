@@ -33,24 +33,36 @@ See https://matrix.org/docs/spec/client_server/latest.html#api-standards")
 
 See https://matrix.org/docs/spec/client_server/latest.html#api-standards"))
 
+(defmacro json-parsing (recurse-form json)
+  `(if (jsown:keyp ,json "error")
+       (let ((errcode (jsown:val ,json "errcode"))
+             (error-msg (jsown:val ,json "error")))
+         (cond ((search "M_LIMIT_EXCEEDED" errcode)
+                (sleep (/ (jsown:val ,json "retry_after_ms") 1000))
+                ,recurse-form)
 
-(defun handle-request (request)
+               ((search "FORBIDDEN" errcode)
+                (error 'forbidden :description error-msg))
+
+               ((search "BAD_STATE" errcode)
+                (error 'bad-state :description error-msg))
+
+               ((search "NOT_FOUND" errcode)
+                nil)
+
+               (t (error 'api-error :description (format nil "errcode: ~a~%errmsg: ~a~%" errcode error-msg)))))
+        ,json))
+
+(defun handle-http-request (request)
+  (multiple-value-bind (data status headers) (funcall request)
+    (let ((content-type (cdr (assoc :content-type headers))))
+      (cond ((string= "application/json" content-type)
+             (let ((response (jsown:parse data)))
+               (json-parsing (handle-http-request request) response)))
+            (t (case status
+                 (200 data)
+                 (t (error 'api-error :description (format nil "http status: ~a~%with no error json given" status)))))))))
+
+(defun handle-json-only-request (request)
   (let ((response (jsown:parse (funcall request))))
-    (if (jsown:keyp response "error")
-        (let ((errcode (jsown:val response "errcode"))
-              (error-msg (jsown:val response "error")))
-          (cond ((search "M_LIMIT_EXCEEDED" errcode)
-                 (sleep (/ (jsown:val response "retry_after_ms") 1000))
-                 (handle-request request))
-
-                ((search "FORBIDDEN" errcode)
-                 (error 'forbidden :description error-msg))
-
-                ((search "BAD_STATE" errcode)
-                 (error 'bad-state :description error-msg))
-
-                ((search "NOT_FOUND" errcode)
-                 nil)
-
-                (t (error 'api-error :description (format nil "errcode: ~a~%errmsg: ~a~%" errcode error-msg)))))
-        response)))
+    (json-parsing (handle-json-only-request request) response)))
