@@ -20,7 +20,13 @@
                              :exports '(auth
                                         access-token
                                         homeserver
-                                        query-param)
+                                        query-param
+                                        
+                                        cl-matrix-error
+                                        api-error
+                                        forbidden
+                                        bad-state
+                                        erorr-description)
                              :imports '((:matrix-autowrap.authentication
                                          auth access-token homeserver query-param)))))
   

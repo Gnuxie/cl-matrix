@@ -14,8 +14,6 @@
 
 (define-condition bad-state (api-error) ())
 
-(export '(api-error cl-matrix-error forbidden bad-state))
-
 (docs:define-docs
   (type cl-matrix-error
         "Base Condition for all conditions defined in this package.")
