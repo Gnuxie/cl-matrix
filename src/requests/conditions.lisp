@@ -53,6 +53,8 @@ See https://matrix.org/docs/spec/client_server/latest.html#api-standards"))
                (t (error 'api-error :description (format nil "errcode: ~a~%errmsg: ~a~%" errcode error-msg)))))
         ,json))
 
+;;; as i understand, if the result is expected to not be json, then even if there is an error, as long as it's rate limited
+;;; the end request will be of the original content type, so we shouldn't have to worry about the mismatch in values.
 (defun handle-http-request (request)
   (multiple-value-bind (data status headers) (funcall request)
     (let ((content-type (cdr (assoc :content-type headers))))
@@ -60,7 +62,7 @@ See https://matrix.org/docs/spec/client_server/latest.html#api-standards"))
              (let ((response (jsown:parse data)))
                (json-parsing (handle-http-request request) response)))
             (t (case status
-                 (200 data)
+                 (200 (values data headers))
                  (t (error 'api-error :description (format nil "http status: ~a~%with no error json given" status)))))))))
 
 (defun handle-json-only-request (request)
