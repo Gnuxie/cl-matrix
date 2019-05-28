@@ -33,6 +33,12 @@
          #:all-messages
          #:now-token
 
+         ;; media
+         #:download-media
+         #:upload-media
+         #:thumbnail
+         #:preview-url
+
          #:id
          #:event-type
          #:msgtype

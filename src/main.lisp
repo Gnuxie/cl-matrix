@@ -16,7 +16,7 @@ See with-account"
 
   (let ((new-account (make-instance 'account :username username :password password :homeserver (get-hostname username))))
     (let ((response (post-login new-account
-                                (jsown:to-json (cons ':obj (pairlis
+                                (jsown:to-json (cons :obj (pairlis
                                                             (list "type" "user" "password" "initial_device_display_name")
                                                             (list "m.login.password" username password "(λ () 'cl-matrix)")))))))
 
@@ -219,6 +219,51 @@ This is really useful if the account is in a lot of rooms and sync will try retu
                     room-id
                     event-type
                     content)))
+
+;;; we aren't doing anything if this fails? is that good or bad? should come back to it.
+;;; maybe let the user do the unless part? bind the other syms to nil unless capture.
+(defmacro destructure-mxc-uri ((capture-sym domain-sym id-sym) mxc-uri &body body)
+  `(let ((,capture-sym (nth-value 1 (cl-ppcre:scan-to-strings "mxc:\\/\\/([^\\/]*)\\/(\\S*)" ,mxc-uri))))
+     (unless (null ,capture-sym)
+       (let ((,domain-sym (aref ,capture-sym 0))
+             (,id-sym (aref ,capture-sym 1)))
+         ,@body))))
+
+(defun download-media (mxc-url &optional filename)
+  (declare (type string mxc-url))
+  (destructure-mxc-uri (result domain id) mxc-url
+    (if filename
+        (matrix-requests:get-download/servername/mediaid/filename *account* domain id filename)
+        (matrix-requests:get-download/servername/mediaid *account* domain id))))
+
+;;; maybe we could fetch the media config and check it's within the upload size?
+;;; doesn't matter really, we do have a condition for it either way.
+(defun upload-media (content &key (content-type "application/json") filename)
+  (if filename
+      (matrix-requests:post-upload *account* content :content-type content-type :parameters `(("filename" . ,filename)))
+      (matrix-requests:post-upload *account* content :content-type content-type)))
+
+;;; also for this and download-media, do we need to return all the headers or just the ones that are important in the spec
+;;; and we could also return these as values not as the assoc list from drakma / dexador
+(defun thumbnail (mxc-url &key width height method)
+  "get a thumbnail, method must be one of \"crop\" or \"scale\""
+  (declare (type string mxc-url))
+  (destructure-mxc-uri (result domain id) mxc-url
+    (get-thumbnail/servername/mediaid *account* domain id
+                                      :parameters
+                                      (delete-if #'null
+                                                 `(("width" . ,width)
+                                                   ("height" . ,height)
+                                                   ("method" . ,method))
+                                                 :key #'cdr))))
+
+(defun preview-url (url &optional ts)
+  (declare (type string url))
+  (get-preview-url *account* :parameters
+                   (delete-if #'null
+                              `(("url" . ,url)
+                                ("ts" . ,ts))
+                              :key #'cdr)))
 
 (defun room-messages (room-id from dir &key to limit filter)
   "see the spec for this one.
