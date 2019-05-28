@@ -17,10 +17,10 @@
 (push '("application" . "json") drakma:*text-content-types*)
 
 (defmacro define-request (name type)
-  `(defun ,name ,(remove-if #'null `(url authentication ,(unless (equal type ':get) 'the-json)
+  `(defun ,name ,(remove-if #'null `(url authentication ,(unless (equal type :get) 'the-json)
                                          &key
                                         (parameters nil)
-                                        ,(unless (equal type ':get)
+                                        ,(unless (equal type :get)
                                           '(content-type "application/json"))))
 
   (with-accessors ((homeserver homeserver) (access-token access-token)) authentication
@@ -35,7 +35,7 @@
                         :additional-headers (when (not (string= "" access-token))
                                               `(("Authorization" . ,(format nil "Bearer ~a" access-token))))
                         :parameters parameters)
-                      (unless (equal type ':get)
+                      (unless (equal type :get)
                         '(:content the-json
                           :content-type content-type)))))))))
 
@@ -60,7 +60,8 @@
   "creates a function for the endpoint with the http method given in type"
   (let ((authentication-sym (intern "AUTHENTICATION" (target-package schema)))
         (parameters-sym (intern "PARAMETERS" (target-package schema)))
-        (content-sym (intern "CONTENT" (target-package schema))))
+        (content-sym (intern "CONTENT" (target-package schema)))
+        (content-type-sym (intern "CONTENT-TYPE" (target-package schema))))
     (let ((request
            `(,(cond ((equal type :post) 'post-request)
                     ((equal type :put) 'put-request)
@@ -78,10 +79,15 @@
 
       (setf request (if (equal type :get)
                         (append request `(,authentication-sym :parameters ,parameters-sym))
-                        (append request `(,authentication-sym ,content-sym :parameters ,parameters-sym))))
+                        (append request `(,authentication-sym ,content-sym :parameters ,parameters-sym :content-type ,content-type-sym))))
 
-      `(defun ,new-name (,@(remove-if #'null `(,authentication-sym ,@arguments ,(unless (equal type :get) content-sym)
-                                                              &key ,parameters-sym)))
+      `(defun ,new-name
+           (,@(remove-if #'null `(,authentication-sym
+                                  ,@arguments
+                                  ,(unless (equal type :get) content-sym)
+                                  &key ,parameters-sym ,(unless (eql type :get)
+                                                          `(,content-type-sym "application/json")))))
+         
          ,(when documentation-p documentation)
          ,(request-guard module request)))))
 
