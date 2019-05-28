@@ -9,7 +9,6 @@
   #:get-voip/turnserver
   #:get-register/available
   #:get-directory/list/room/roomid
-  #:get-pushrules/scope/kind/ruleid/actions
   #:put-directory/room/roomalias
   #:get-joined-rooms
   #:put-pushrules/scope/kind/ruleid
@@ -28,7 +27,6 @@
   #:post-login
   #:get-rooms/roomid/state
   #:put-rooms/roomid/typing/userid
-  #:post-keys/query
   #:post-keys/claim
   #:delete-devices/deviceid
   #:get-admin/whois/userid
@@ -46,6 +44,7 @@
   #:get-rooms/roomid/context/eventid
   #:put-pushrules/scope/kind/ruleid/enabled
   #:get-thirdparty/location/protocol
+  #:post-keys/query
   #:get-rooms/roomid/state/eventtype
   #:put-user/userid/account-data/type
   #:get-profile/userid
@@ -80,10 +79,10 @@
   #:put-user/userid/rooms/roomid/tags/tag
   #:get-initialsync
   #:get-rooms/roomid/event/eventid
+  #:get-pushrules/scope/kind/ruleid/actions
   #:get-user/userid/rooms/roomid/tags
   #:post-upload
   #:post-rooms/roomid/receipt/receipttype/eventid
-  #:post-rooms/roomid/leave
   #:put-pushrules/scope/kind/ruleid/actions
   #:get-thirdparty/user
   #:post-publicrooms
@@ -102,6 +101,7 @@
   #:get-pushrules/
   #:get-account/3pid
   #:post-account/3pid
+  #:post-rooms/roomid/leave
   #:put-profile/userid/displayname
   #:delete-user/userid/rooms/roomid/tags/tag
   #:get-pushrules/scope/kind/ruleid
@@ -126,5 +126,12 @@
   #:API-ERROR
   #:FORBIDDEN
   #:BAD-STATE
-  #:ERORR-DESCRIPTION))
+  #:ERROR-DESCRIPTION
+  #:GDPR-CONSENT
+  #:CONSENT-URI
+  #:ROOM-IN-USE
+  #:INVALID-ROOM-STATE
+  #:GUEST-ACCESS-FORBIDDEN
+  #:TOO-LARGE
+  #:UNKNOWN-TOKEN))
 (in-package :MATRIX-REQUESTS)

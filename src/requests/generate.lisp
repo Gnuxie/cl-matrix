@@ -34,7 +34,16 @@
                                         api-error
                                         forbidden
                                         bad-state
-                                        erorr-description)
+                                        error-description
+
+                                        gdpr-consent
+                                        consent-uri
+
+                                        room-in-use
+                                        invalid-room-state
+                                        guest-access-forbidden
+                                        too-large
+                                        unknown-token)
                              :imports '((:matrix-autowrap.authentication
                                          auth access-token homeserver query-param)))))
   

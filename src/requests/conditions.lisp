@@ -14,6 +14,16 @@
 
 (define-condition bad-state (api-error) ())
 
+(define-condition gdpr-consent (api-error)
+  ((consent-uri :initarg :consent-uri
+                :reader consent-uri)))
+
+(define-condition room-in-use (api-error) ())
+(define-condition invalid-room-state (api-error) ())
+(define-condition guest-access-forbidden (api-error) ())
+(define-condition too-large (api-error) ())
+(define-condition unknown-token (api-error) ())
+
 (docs:define-docs
   (type cl-matrix-error
         "Base Condition for all conditions defined in this package.")
@@ -37,18 +47,37 @@ See https://matrix.org/docs/spec/client_server/latest.html#api-standards"))
   `(if (jsown:keyp ,json "error")
        (let ((errcode (jsown:val ,json "errcode"))
              (error-msg (jsown:val ,json "error")))
-         (cond ((search "M_LIMIT_EXCEEDED" errcode)
+         (cond ((string= "M_LIMIT_EXCEEDED" errcode)
                 (sleep (/ (jsown:val ,json "retry_after_ms") 1000))
                 ,recurse-form)
 
-               ((search "FORBIDDEN" errcode)
+               ((string= "M_NOT_FOUND" errcode)
+                nil)
+
+               ((string= "M_FORBIDDEN" errcode)
                 (error 'forbidden :description error-msg))
 
-               ((search "BAD_STATE" errcode)
+               ((string= "M_BAD_STATE" errcode)
                 (error 'bad-state :description error-msg))
 
-               ((search "NOT_FOUND" errcode)
-                nil)
+               ((string= "M_ROOM_IN_USE" errcode)
+                (error 'room-in-use :description error-msg))
+
+               ((string= "M_INVALID_ROOM_STATE" errcode)
+                (error 'invalid-room-state :description error-msg))
+
+               ((string= "M_GUEST_ACCESS_FORBIDDEN" errcode)
+                (error 'guest-access-forbidden :description error-msg))
+
+               ((string= "M_TOO_LARGE" errcode)
+                (error 'too-large :description error-msg))
+
+               ((string= "M_UNKNOWN_TOKEN" errcode)
+                (error 'unknown-token :description error-msg))
+
+               ((string= "M_CONSENT_NOT_GIVEN" errcode)
+                (error 'gdpr-consent :description error-msg
+                       :consent-uri (jsown:val ,json "consent_uri")))
 
                (t (error 'api-error :description (format nil "errcode: ~a~%errmsg: ~a~%" errcode error-msg)))))
         ,json))
