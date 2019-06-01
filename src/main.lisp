@@ -145,8 +145,8 @@ This is really useful if the account is in a lot of rooms and sync will try retu
 (defun rooms-joined-members ( rooms)
   "Fetch the members information for all the supplied rooms"
   (let ((members (mapcar #'room-joined-members rooms)))
-    (cons ':obj (pairlis rooms
-                         members))))
+    (cons :obj (pairlis rooms
+                        members))))
 
 (defun rooms-joined-members-ids (rooms)
   "Fetch the joined members as user-ids"
@@ -154,8 +154,8 @@ This is really useful if the account is in a lot of rooms and sync will try retu
   (let ((members (rooms-joined-members rooms)))
 
     
-    (cons ':obj (pairlis rooms
-                         (mapcar #'(lambda (x)
+    (cons :obj (pairlis rooms
+                        (mapcar #'(lambda (x)
                                      (list (jsown:keywords (jsown:val
                                                             (cdr x)
                                                             "joined"))))
@@ -171,8 +171,8 @@ This is really useful if the account is in a lot of rooms and sync will try retu
         (t (get-rooms/roomid/state *account* room-id))))
 
 (defun rooms-state (rooms &optional event-type state-key)
-  (cons ':obj (pairlis rooms
-                       (mapcar #'(lambda (x) (room-state x (when event-type event-type) (when state-key state-key))) rooms))))
+  (cons :obj (pairlis rooms
+                      (mapcar #'(lambda (x) (room-state x (when event-type event-type) (when state-key state-key))) rooms))))
 
 (defun change-power-level (room user-id power)
   "change the power level of a user"

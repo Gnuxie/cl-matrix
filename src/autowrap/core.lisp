@@ -16,6 +16,16 @@
 (in-package :matrix-autowrap)
 (push '("application" . "json") drakma:*text-content-types*)
 
+(defun check-parameters (drakma-parameter-list)
+  "this will be used to intercept drakma when someone gives a number as a query parameter
+and drakma expects only string."
+  (mapcar (lambda (p)
+            (typecase (cdr p)
+              (number (cons (car p) (princ-to-string (cdr p))))
+              (symbol (cons (car p) (symbol-name (cdr p))))
+              (t p)))
+          drakma-parameter-list))
+
 (defmacro define-request (name type)
   `(defun ,name ,(remove-if #'null `(url authentication ,(unless (equal type :get) 'the-json)
                                          &key
@@ -78,8 +88,8 @@
                             (target-package schema))))
 
       (setf request (if (equal type :get)
-                        (append request `(,authentication-sym :parameters ,parameters-sym))
-                        (append request `(,authentication-sym ,content-sym :parameters ,parameters-sym :content-type ,content-type-sym))))
+                        (append request `(,authentication-sym :parameters (check-parameters ,parameters-sym)))
+                        (append request `(,authentication-sym ,content-sym :parameters (check-parameters ,parameters-sym) :content-type ,content-type-sym))))
 
       `(defun ,new-name
            (,@(remove-if #'null `(,authentication-sym

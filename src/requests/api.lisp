@@ -9,7 +9,7 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "login") authentication
-      :parameters parameters))))
+      :parameters (matrix-autowrap::check-parameters parameters)))))
 
 (defun post-login
        (authentication content
@@ -19,7 +19,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "login") authentication
-      content :parameters parameters :content-type content-type))))
+      content :parameters (matrix-autowrap::check-parameters parameters)
+      :content-type content-type))))
 
 (defun post-logout
        (authentication content
@@ -29,7 +30,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "logout") authentication
-      content :parameters parameters :content-type content-type))))
+      content :parameters (matrix-autowrap::check-parameters parameters)
+      :content-type content-type))))
 
 (defun post-logout/all
        (authentication content
@@ -39,7 +41,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "logout" "/" "all")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-register
@@ -50,7 +53,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "register") authentication
-      content :parameters parameters :content-type content-type))))
+      content :parameters (matrix-autowrap::check-parameters parameters)
+      :content-type content-type))))
 
 (defun post-register/email/requesttoken
        (authentication content
@@ -61,7 +65,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "register" "/" "email" "/"
                    "requestToken")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-register/msisdn/requesttoken
@@ -73,7 +78,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "register" "/" "msisdn" "/"
                    "requestToken")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-account/password
@@ -84,7 +90,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "password")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-account/password/email/requesttoken
@@ -96,7 +103,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "password" "/"
                    "email" "/" "requestToken")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-account/password/msisdn/requesttoken
@@ -108,7 +116,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "password" "/"
                    "msisdn" "/" "requestToken")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-account/deactivate
@@ -119,7 +128,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "deactivate")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-register/available (authentication &key parameters)
@@ -128,7 +138,8 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "register" "/" "available")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-account/3pid (authentication &key parameters)
   nil
@@ -136,7 +147,8 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "3pid")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun post-account/3pid
        (authentication content
@@ -146,7 +158,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "3pid")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-account/3pid/delete
@@ -158,7 +171,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "3pid" "/"
                    "delete")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-account/3pid/email/requesttoken
@@ -170,7 +184,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "3pid" "/"
                    "email" "/" "requestToken")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-account/3pid/msisdn/requesttoken
@@ -182,7 +197,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "3pid" "/"
                    "msisdn" "/" "requestToken")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-account/whoami (authentication &key parameters)
@@ -191,7 +207,8 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "whoami")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun post-user/userid/filter
        (authentication |userId| content
@@ -202,7 +219,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
                    "filter")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-user/userid/filter/filterid
@@ -213,7 +231,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
                    "filter" "/" |filterId|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-sync (authentication &key parameters)
   nil
@@ -221,7 +240,7 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "sync") authentication
-      :parameters parameters))))
+      :parameters (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-events (authentication &key parameters)
   nil
@@ -229,7 +248,7 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "events") authentication
-      :parameters parameters))))
+      :parameters (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-initialsync (authentication &key parameters)
   nil
@@ -237,7 +256,7 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "initialSync") authentication
-      :parameters parameters))))
+      :parameters (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-events/eventid (authentication |eventId| &key parameters)
   nil
@@ -245,7 +264,8 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "events" "/" |eventId|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-rooms/roomid/event/eventid
        (authentication |roomId| |eventId| &key parameters)
@@ -255,7 +275,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "event" "/" |eventId|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-rooms/roomid/state/eventtype/statekey
        (authentication |roomId| |eventType| |stateKey| &key parameters)
@@ -265,7 +286,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "state" "/" |eventType| "/" |stateKey|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-rooms/roomid/state/eventtype
        (authentication |roomId| |eventType| &key parameters)
@@ -275,7 +297,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "state" "/" |eventType|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-rooms/roomid/state (authentication |roomId| &key parameters)
   nil
@@ -284,7 +307,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "state")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-rooms/roomid/members (authentication |roomId| &key parameters)
   nil
@@ -293,7 +317,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "members")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-rooms/roomid/joined-members
        (authentication |roomId| &key parameters)
@@ -303,7 +328,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "joined_members")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-rooms/roomid/messages (authentication |roomId| &key parameters)
   nil
@@ -312,7 +338,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "messages")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-rooms/roomid/initialsync (authentication |roomId| &key parameters)
   nil
@@ -321,7 +348,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "initialSync")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun put-rooms/roomid/state/eventtype/statekey
        (authentication |roomId| |eventType| |stateKey| content
@@ -332,7 +360,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "state" "/" |eventType| "/" |stateKey|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun put-rooms/roomid/state/eventtype
@@ -344,7 +373,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "state" "/" |eventType|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun put-rooms/roomid/send/eventtype/txnid
@@ -356,7 +386,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "send" "/" |eventType| "/" |txnId|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun put-rooms/roomid/redact/eventid/txnid
@@ -368,7 +399,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "redact" "/" |eventId| "/" |txnId|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-createroom
@@ -379,7 +411,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "createRoom") authentication
-      content :parameters parameters :content-type content-type))))
+      content :parameters (matrix-autowrap::check-parameters parameters)
+      :content-type content-type))))
 
 (defun put-directory/room/roomalias
        (authentication |roomAlias| content
@@ -390,7 +423,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "directory" "/" "room" "/"
                    |roomAlias|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-directory/room/roomalias
@@ -401,7 +435,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "directory" "/" "room" "/"
                    |roomAlias|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun delete-directory/room/roomalias
        (authentication |roomAlias| content
@@ -412,7 +447,8 @@
      (matrix-autowrap::delete-request
       (concatenate 'string "/_matrix/client/r0/" "directory" "/" "room" "/"
                    |roomAlias|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-joined-rooms (authentication &key parameters)
@@ -421,7 +457,7 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "joined_rooms") authentication
-      :parameters parameters))))
+      :parameters (matrix-autowrap::check-parameters parameters)))))
 
 (defun post-rooms/roomid/invite
        (authentication |roomId| content
@@ -432,7 +468,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "invite")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-rooms/roomid/join
@@ -444,7 +481,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "join")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-join/roomidoralias
@@ -455,7 +493,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "join" "/" |roomIdOrAlias|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-rooms/roomid/leave
@@ -467,7 +506,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "leave")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-rooms/roomid/forget
@@ -479,7 +519,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "forget")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-rooms/roomid/kick
@@ -491,7 +532,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "kick")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-rooms/roomid/ban
@@ -503,7 +545,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "ban")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-rooms/roomid/unban
@@ -515,7 +558,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "unban")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-directory/list/room/roomid (authentication |roomId| &key parameters)
@@ -525,7 +569,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "directory" "/" "list" "/"
                    "room" "/" |roomId|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun put-directory/list/room/roomid
        (authentication |roomId| content
@@ -536,7 +581,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "directory" "/" "list" "/"
                    "room" "/" |roomId|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-publicrooms (authentication &key parameters)
@@ -545,7 +591,7 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "publicRooms") authentication
-      :parameters parameters))))
+      :parameters (matrix-autowrap::check-parameters parameters)))))
 
 (defun post-publicrooms
        (authentication content
@@ -555,7 +601,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "publicRooms") authentication
-      content :parameters parameters :content-type content-type))))
+      content :parameters (matrix-autowrap::check-parameters parameters)
+      :content-type content-type))))
 
 (defun post-user-directory/search
        (authentication content
@@ -565,7 +612,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "user_directory" "/" "search")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun put-profile/userid/displayname
@@ -577,7 +625,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "profile" "/" |userId| "/"
                    "displayname")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-profile/userid/displayname (authentication |userId| &key parameters)
@@ -587,7 +636,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "profile" "/" |userId| "/"
                    "displayname")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun put-profile/userid/avatar-url
        (authentication |userId| content
@@ -598,7 +648,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "profile" "/" |userId| "/"
                    "avatar_url")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-profile/userid/avatar-url (authentication |userId| &key parameters)
@@ -608,7 +659,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "profile" "/" |userId| "/"
                    "avatar_url")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-profile/userid (authentication |userId| &key parameters)
   nil
@@ -616,7 +668,8 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "profile" "/" |userId|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-voip/turnserver (authentication &key parameters)
   nil
@@ -624,7 +677,8 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "voip" "/" "turnServer")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun put-rooms/roomid/typing/userid
        (authentication |roomId| |userId| content
@@ -635,7 +689,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "typing" "/" |userId|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-rooms/roomid/receipt/receipttype/eventid
@@ -647,7 +702,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "receipt" "/" |receiptType| "/" |eventId|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-rooms/roomid/read-markers
@@ -659,7 +715,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "read_markers")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun put-presence/userid/status
@@ -671,7 +728,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "presence" "/" |userId| "/"
                    "status")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-presence/userid/status (authentication |userId| &key parameters)
@@ -681,7 +739,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "presence" "/" |userId| "/"
                    "status")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun post-presence/list/userid
        (authentication |userId| content
@@ -692,7 +751,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "presence" "/" "list" "/"
                    |userId|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-presence/list/userid (authentication |userId| &key parameters)
@@ -702,7 +762,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "presence" "/" "list" "/"
                    |userId|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun post-upload
        (authentication content
@@ -712,7 +773,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/media/r0/" "upload") authentication
-      content :parameters parameters :content-type content-type))))
+      content :parameters (matrix-autowrap::check-parameters parameters)
+      :content-type content-type))))
 
 (defun get-download/servername/mediaid
        (authentication |serverName| |mediaId| &key parameters)
@@ -722,7 +784,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/media/r0/" "download" "/" |serverName| "/"
                    |mediaId|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-download/servername/mediaid/filename
        (authentication |serverName| |mediaId| |fileName| &key parameters)
@@ -732,7 +795,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/media/r0/" "download" "/" |serverName| "/"
                    |mediaId| "/" |fileName|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-thumbnail/servername/mediaid
        (authentication |serverName| |mediaId| &key parameters)
@@ -742,7 +806,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/media/r0/" "thumbnail" "/" |serverName|
                    "/" |mediaId|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-preview-url (authentication &key parameters)
   nil
@@ -750,7 +815,7 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/media/r0/" "preview_url") authentication
-      :parameters parameters))))
+      :parameters (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-config (authentication &key parameters)
   nil
@@ -758,7 +823,7 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/media/r0/" "config") authentication
-      :parameters parameters))))
+      :parameters (matrix-autowrap::check-parameters parameters)))))
 
 (defun put-sendtodevice/eventtype/txnid
        (authentication |eventType| |txnId| content
@@ -769,7 +834,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "sendToDevice" "/" |eventType|
                    "/" |txnId|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-devices (authentication &key parameters)
@@ -778,7 +844,7 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "devices") authentication
-      :parameters parameters))))
+      :parameters (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-devices/deviceid (authentication |deviceId| &key parameters)
   nil
@@ -786,7 +852,8 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "devices" "/" |deviceId|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun put-devices/deviceid
        (authentication |deviceId| content
@@ -796,7 +863,8 @@
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "devices" "/" |deviceId|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun delete-devices/deviceid
@@ -807,7 +875,8 @@
    (lambda ()
      (matrix-autowrap::delete-request
       (concatenate 'string "/_matrix/client/r0/" "devices" "/" |deviceId|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-delete-devices
@@ -818,7 +887,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "delete_devices")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-keys/upload
@@ -829,7 +899,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "keys" "/" "upload")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-keys/query
@@ -840,7 +911,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "keys" "/" "query")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-keys/claim
@@ -851,7 +923,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "keys" "/" "claim")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-keys/changes (authentication &key parameters)
@@ -860,7 +933,8 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "keys" "/" "changes")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-pushers (authentication &key parameters)
   nil
@@ -868,7 +942,7 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "pushers") authentication
-      :parameters parameters))))
+      :parameters (matrix-autowrap::check-parameters parameters)))))
 
 (defun post-pushers/set
        (authentication content
@@ -878,7 +952,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "pushers" "/" "set")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-notifications (authentication &key parameters)
@@ -887,7 +962,8 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "notifications")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-pushrules/ (authentication &key parameters)
   nil
@@ -895,7 +971,7 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules") authentication
-      :parameters parameters))))
+      :parameters (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-pushrules/scope/kind/ruleid
        (authentication |scope| |kind| |ruleId| &key parameters)
@@ -905,7 +981,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
                    |kind| "/" |ruleId|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun delete-pushrules/scope/kind/ruleid
        (authentication |scope| |kind| |ruleId| content
@@ -916,7 +993,8 @@
      (matrix-autowrap::delete-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
                    |kind| "/" |ruleId|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun put-pushrules/scope/kind/ruleid
@@ -928,7 +1006,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
                    |kind| "/" |ruleId|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-pushrules/scope/kind/ruleid/enabled
@@ -939,7 +1018,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
                    |kind| "/" |ruleId| "/" "enabled")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun put-pushrules/scope/kind/ruleid/enabled
        (authentication |scope| |kind| |ruleId| content
@@ -950,7 +1030,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
                    |kind| "/" |ruleId| "/" "enabled")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-pushrules/scope/kind/ruleid/actions
@@ -961,7 +1042,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
                    |kind| "/" |ruleId| "/" "actions")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun put-pushrules/scope/kind/ruleid/actions
        (authentication |scope| |kind| |ruleId| content
@@ -972,7 +1054,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
                    |kind| "/" |ruleId| "/" "actions")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-rooms/roomid/invite
@@ -984,7 +1067,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "invite")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-search
@@ -995,7 +1079,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "search") authentication
-      content :parameters parameters :content-type content-type))))
+      content :parameters (matrix-autowrap::check-parameters parameters)
+      :content-type content-type))))
 
 (defun get-events (authentication &key parameters)
   nil
@@ -1003,7 +1088,7 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "events") authentication
-      :parameters parameters))))
+      :parameters (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-user/userid/rooms/roomid/tags
        (authentication |userId| |roomId| &key parameters)
@@ -1013,7 +1098,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
                    "rooms" "/" |roomId| "/" "tags")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun put-user/userid/rooms/roomid/tags/tag
        (authentication |userId| |roomId| |tag| content
@@ -1024,7 +1110,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
                    "rooms" "/" |roomId| "/" "tags" "/" |tag|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun delete-user/userid/rooms/roomid/tags/tag
@@ -1036,7 +1123,8 @@
      (matrix-autowrap::delete-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
                    "rooms" "/" |roomId| "/" "tags" "/" |tag|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun put-user/userid/account-data/type
@@ -1048,7 +1136,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
                    "account_data" "/" |type|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun put-user/userid/rooms/roomid/account-data/type
@@ -1060,7 +1149,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
                    "rooms" "/" |roomId| "/" "account_data" "/" |type|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-admin/whois/userid (authentication |userId| &key parameters)
@@ -1070,7 +1160,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "admin" "/" "whois" "/"
                    |userId|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-rooms/roomid/context/eventid
        (authentication |roomId| |eventId| &key parameters)
@@ -1080,7 +1171,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "context" "/" |eventId|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-login/cas/redirect (authentication &key parameters)
   nil
@@ -1089,7 +1181,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "login" "/" "cas" "/"
                    "redirect")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-login/cas/ticket (authentication &key parameters)
   nil
@@ -1098,7 +1191,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "login" "/" "cas" "/"
                    "ticket")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun post-rooms/roomid/report/eventid
        (authentication |roomId| |eventId| content
@@ -1109,7 +1203,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "report" "/" |eventId|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-thirdparty/protocols (authentication &key parameters)
@@ -1118,7 +1213,8 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "thirdparty" "/" "protocols")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-thirdparty/protocol/protocol
        (authentication |protocol| &key parameters)
@@ -1128,7 +1224,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "thirdparty" "/" "protocol"
                    "/" |protocol|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-thirdparty/location/protocol
        (authentication |protocol| &key parameters)
@@ -1138,7 +1235,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "thirdparty" "/" "location"
                    "/" |protocol|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-thirdparty/user/protocol (authentication |protocol| &key parameters)
   nil
@@ -1147,7 +1245,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "thirdparty" "/" "user" "/"
                    |protocol|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-thirdparty/location (authentication &key parameters)
   nil
@@ -1155,7 +1254,8 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "thirdparty" "/" "location")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-thirdparty/user (authentication &key parameters)
   nil
@@ -1163,7 +1263,8 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "thirdparty" "/" "user")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun post-user/userid/openid/request-token
        (authentication |userId| content
@@ -1174,7 +1275,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
                    "openid" "/" "request_token")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-login (authentication &key parameters)
@@ -1183,7 +1285,7 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "login") authentication
-      :parameters parameters))))
+      :parameters (matrix-autowrap::check-parameters parameters)))))
 
 (defun post-login
        (authentication content
@@ -1193,7 +1295,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "login") authentication
-      content :parameters parameters :content-type content-type))))
+      content :parameters (matrix-autowrap::check-parameters parameters)
+      :content-type content-type))))
 
 (defun post-logout
        (authentication content
@@ -1203,7 +1306,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "logout") authentication
-      content :parameters parameters :content-type content-type))))
+      content :parameters (matrix-autowrap::check-parameters parameters)
+      :content-type content-type))))
 
 (defun post-logout/all
        (authentication content
@@ -1213,7 +1317,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "logout" "/" "all")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-register
@@ -1224,7 +1329,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "register") authentication
-      content :parameters parameters :content-type content-type))))
+      content :parameters (matrix-autowrap::check-parameters parameters)
+      :content-type content-type))))
 
 (defun post-register/email/requesttoken
        (authentication content
@@ -1235,7 +1341,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "register" "/" "email" "/"
                    "requestToken")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-register/msisdn/requesttoken
@@ -1247,7 +1354,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "register" "/" "msisdn" "/"
                    "requestToken")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-account/password
@@ -1258,7 +1366,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "password")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-account/password/email/requesttoken
@@ -1270,7 +1379,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "password" "/"
                    "email" "/" "requestToken")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-account/password/msisdn/requesttoken
@@ -1282,7 +1392,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "password" "/"
                    "msisdn" "/" "requestToken")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-account/deactivate
@@ -1293,7 +1404,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "deactivate")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-register/available (authentication &key parameters)
@@ -1302,7 +1414,8 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "register" "/" "available")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-account/3pid (authentication &key parameters)
   nil
@@ -1310,7 +1423,8 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "3pid")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun post-account/3pid
        (authentication content
@@ -1320,7 +1434,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "3pid")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-account/3pid/delete
@@ -1332,7 +1447,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "3pid" "/"
                    "delete")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-account/3pid/email/requesttoken
@@ -1344,7 +1460,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "3pid" "/"
                    "email" "/" "requestToken")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-account/3pid/msisdn/requesttoken
@@ -1356,7 +1473,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "3pid" "/"
                    "msisdn" "/" "requestToken")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-account/whoami (authentication &key parameters)
@@ -1365,7 +1483,8 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "account" "/" "whoami")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun post-user/userid/filter
        (authentication |userId| content
@@ -1376,7 +1495,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
                    "filter")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-user/userid/filter/filterid
@@ -1387,7 +1507,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
                    "filter" "/" |filterId|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-sync (authentication &key parameters)
   nil
@@ -1395,7 +1516,7 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "sync") authentication
-      :parameters parameters))))
+      :parameters (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-events (authentication &key parameters)
   nil
@@ -1403,7 +1524,7 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "events") authentication
-      :parameters parameters))))
+      :parameters (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-initialsync (authentication &key parameters)
   nil
@@ -1411,7 +1532,7 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "initialSync") authentication
-      :parameters parameters))))
+      :parameters (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-events/eventid (authentication |eventId| &key parameters)
   nil
@@ -1419,7 +1540,8 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "events" "/" |eventId|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-rooms/roomid/event/eventid
        (authentication |roomId| |eventId| &key parameters)
@@ -1429,7 +1551,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "event" "/" |eventId|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-rooms/roomid/state/eventtype/statekey
        (authentication |roomId| |eventType| |stateKey| &key parameters)
@@ -1439,7 +1562,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "state" "/" |eventType| "/" |stateKey|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-rooms/roomid/state/eventtype
        (authentication |roomId| |eventType| &key parameters)
@@ -1449,7 +1573,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "state" "/" |eventType|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-rooms/roomid/state (authentication |roomId| &key parameters)
   nil
@@ -1458,7 +1583,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "state")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-rooms/roomid/members (authentication |roomId| &key parameters)
   nil
@@ -1467,7 +1593,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "members")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-rooms/roomid/joined-members
        (authentication |roomId| &key parameters)
@@ -1477,7 +1604,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "joined_members")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-rooms/roomid/messages (authentication |roomId| &key parameters)
   nil
@@ -1486,7 +1614,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "messages")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-rooms/roomid/initialsync (authentication |roomId| &key parameters)
   nil
@@ -1495,7 +1624,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "initialSync")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun put-rooms/roomid/state/eventtype/statekey
        (authentication |roomId| |eventType| |stateKey| content
@@ -1506,7 +1636,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "state" "/" |eventType| "/" |stateKey|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun put-rooms/roomid/state/eventtype
@@ -1518,7 +1649,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "state" "/" |eventType|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun put-rooms/roomid/send/eventtype/txnid
@@ -1530,7 +1662,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "send" "/" |eventType| "/" |txnId|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun put-rooms/roomid/redact/eventid/txnid
@@ -1542,7 +1675,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "redact" "/" |eventId| "/" |txnId|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-createroom
@@ -1553,7 +1687,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "createRoom") authentication
-      content :parameters parameters :content-type content-type))))
+      content :parameters (matrix-autowrap::check-parameters parameters)
+      :content-type content-type))))
 
 (defun put-directory/room/roomalias
        (authentication |roomAlias| content
@@ -1564,7 +1699,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "directory" "/" "room" "/"
                    |roomAlias|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-directory/room/roomalias
@@ -1575,7 +1711,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "directory" "/" "room" "/"
                    |roomAlias|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun delete-directory/room/roomalias
        (authentication |roomAlias| content
@@ -1586,7 +1723,8 @@
      (matrix-autowrap::delete-request
       (concatenate 'string "/_matrix/client/r0/" "directory" "/" "room" "/"
                    |roomAlias|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-joined-rooms (authentication &key parameters)
@@ -1595,7 +1733,7 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "joined_rooms") authentication
-      :parameters parameters))))
+      :parameters (matrix-autowrap::check-parameters parameters)))))
 
 (defun post-rooms/roomid/invite
        (authentication |roomId| content
@@ -1606,7 +1744,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "invite")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-rooms/roomid/join
@@ -1618,7 +1757,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "join")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-join/roomidoralias
@@ -1629,7 +1769,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "join" "/" |roomIdOrAlias|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-rooms/roomid/leave
@@ -1641,7 +1782,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "leave")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-rooms/roomid/forget
@@ -1653,7 +1795,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "forget")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-rooms/roomid/kick
@@ -1665,7 +1808,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "kick")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-rooms/roomid/ban
@@ -1677,7 +1821,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "ban")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-rooms/roomid/unban
@@ -1689,7 +1834,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "unban")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-directory/list/room/roomid (authentication |roomId| &key parameters)
@@ -1699,7 +1845,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "directory" "/" "list" "/"
                    "room" "/" |roomId|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun put-directory/list/room/roomid
        (authentication |roomId| content
@@ -1710,7 +1857,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "directory" "/" "list" "/"
                    "room" "/" |roomId|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-publicrooms (authentication &key parameters)
@@ -1719,7 +1867,7 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "publicRooms") authentication
-      :parameters parameters))))
+      :parameters (matrix-autowrap::check-parameters parameters)))))
 
 (defun post-publicrooms
        (authentication content
@@ -1729,7 +1877,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "publicRooms") authentication
-      content :parameters parameters :content-type content-type))))
+      content :parameters (matrix-autowrap::check-parameters parameters)
+      :content-type content-type))))
 
 (defun post-user-directory/search
        (authentication content
@@ -1739,7 +1888,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "user_directory" "/" "search")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun put-profile/userid/displayname
@@ -1751,7 +1901,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "profile" "/" |userId| "/"
                    "displayname")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-profile/userid/displayname (authentication |userId| &key parameters)
@@ -1761,7 +1912,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "profile" "/" |userId| "/"
                    "displayname")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun put-profile/userid/avatar-url
        (authentication |userId| content
@@ -1772,7 +1924,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "profile" "/" |userId| "/"
                    "avatar_url")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-profile/userid/avatar-url (authentication |userId| &key parameters)
@@ -1782,7 +1935,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "profile" "/" |userId| "/"
                    "avatar_url")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-profile/userid (authentication |userId| &key parameters)
   nil
@@ -1790,7 +1944,8 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "profile" "/" |userId|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-voip/turnserver (authentication &key parameters)
   nil
@@ -1798,7 +1953,8 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "voip" "/" "turnServer")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun put-rooms/roomid/typing/userid
        (authentication |roomId| |userId| content
@@ -1809,7 +1965,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "typing" "/" |userId|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-rooms/roomid/receipt/receipttype/eventid
@@ -1821,7 +1978,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "receipt" "/" |receiptType| "/" |eventId|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-rooms/roomid/read-markers
@@ -1833,7 +1991,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "read_markers")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun put-presence/userid/status
@@ -1845,7 +2004,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "presence" "/" |userId| "/"
                    "status")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-presence/userid/status (authentication |userId| &key parameters)
@@ -1855,7 +2015,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "presence" "/" |userId| "/"
                    "status")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun post-presence/list/userid
        (authentication |userId| content
@@ -1866,7 +2027,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "presence" "/" "list" "/"
                    |userId|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-presence/list/userid (authentication |userId| &key parameters)
@@ -1876,7 +2038,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "presence" "/" "list" "/"
                    |userId|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun post-upload
        (authentication content
@@ -1886,7 +2049,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/media/r0/" "upload") authentication
-      content :parameters parameters :content-type content-type))))
+      content :parameters (matrix-autowrap::check-parameters parameters)
+      :content-type content-type))))
 
 (defun get-download/servername/mediaid
        (authentication |serverName| |mediaId| &key parameters)
@@ -1896,7 +2060,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/media/r0/" "download" "/" |serverName| "/"
                    |mediaId|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-download/servername/mediaid/filename
        (authentication |serverName| |mediaId| |fileName| &key parameters)
@@ -1906,7 +2071,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/media/r0/" "download" "/" |serverName| "/"
                    |mediaId| "/" |fileName|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-thumbnail/servername/mediaid
        (authentication |serverName| |mediaId| &key parameters)
@@ -1916,7 +2082,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/media/r0/" "thumbnail" "/" |serverName|
                    "/" |mediaId|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-preview-url (authentication &key parameters)
   nil
@@ -1924,7 +2091,7 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/media/r0/" "preview_url") authentication
-      :parameters parameters))))
+      :parameters (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-config (authentication &key parameters)
   nil
@@ -1932,7 +2099,7 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/media/r0/" "config") authentication
-      :parameters parameters))))
+      :parameters (matrix-autowrap::check-parameters parameters)))))
 
 (defun put-sendtodevice/eventtype/txnid
        (authentication |eventType| |txnId| content
@@ -1943,7 +2110,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "sendToDevice" "/" |eventType|
                    "/" |txnId|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-devices (authentication &key parameters)
@@ -1952,7 +2120,7 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "devices") authentication
-      :parameters parameters))))
+      :parameters (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-devices/deviceid (authentication |deviceId| &key parameters)
   nil
@@ -1960,7 +2128,8 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "devices" "/" |deviceId|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun put-devices/deviceid
        (authentication |deviceId| content
@@ -1970,7 +2139,8 @@
    (lambda ()
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "devices" "/" |deviceId|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun delete-devices/deviceid
@@ -1981,7 +2151,8 @@
    (lambda ()
      (matrix-autowrap::delete-request
       (concatenate 'string "/_matrix/client/r0/" "devices" "/" |deviceId|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-delete-devices
@@ -1992,7 +2163,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "delete_devices")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-keys/upload
@@ -2003,7 +2175,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "keys" "/" "upload")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-keys/query
@@ -2014,7 +2187,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "keys" "/" "query")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-keys/claim
@@ -2025,7 +2199,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "keys" "/" "claim")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-keys/changes (authentication &key parameters)
@@ -2034,7 +2209,8 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "keys" "/" "changes")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-pushers (authentication &key parameters)
   nil
@@ -2042,7 +2218,7 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "pushers") authentication
-      :parameters parameters))))
+      :parameters (matrix-autowrap::check-parameters parameters)))))
 
 (defun post-pushers/set
        (authentication content
@@ -2052,7 +2228,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "pushers" "/" "set")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-notifications (authentication &key parameters)
@@ -2061,7 +2238,8 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "notifications")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-pushrules/ (authentication &key parameters)
   nil
@@ -2069,7 +2247,7 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules") authentication
-      :parameters parameters))))
+      :parameters (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-pushrules/scope/kind/ruleid
        (authentication |scope| |kind| |ruleId| &key parameters)
@@ -2079,7 +2257,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
                    |kind| "/" |ruleId|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun delete-pushrules/scope/kind/ruleid
        (authentication |scope| |kind| |ruleId| content
@@ -2090,7 +2269,8 @@
      (matrix-autowrap::delete-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
                    |kind| "/" |ruleId|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun put-pushrules/scope/kind/ruleid
@@ -2102,7 +2282,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
                    |kind| "/" |ruleId|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-pushrules/scope/kind/ruleid/enabled
@@ -2113,7 +2294,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
                    |kind| "/" |ruleId| "/" "enabled")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun put-pushrules/scope/kind/ruleid/enabled
        (authentication |scope| |kind| |ruleId| content
@@ -2124,7 +2306,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
                    |kind| "/" |ruleId| "/" "enabled")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-pushrules/scope/kind/ruleid/actions
@@ -2135,7 +2318,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
                    |kind| "/" |ruleId| "/" "actions")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun put-pushrules/scope/kind/ruleid/actions
        (authentication |scope| |kind| |ruleId| content
@@ -2146,7 +2330,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "pushrules" "/" |scope| "/"
                    |kind| "/" |ruleId| "/" "actions")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-rooms/roomid/invite
@@ -2158,7 +2343,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "invite")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun post-search
@@ -2169,7 +2355,8 @@
    (lambda ()
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "search") authentication
-      content :parameters parameters :content-type content-type))))
+      content :parameters (matrix-autowrap::check-parameters parameters)
+      :content-type content-type))))
 
 (defun get-events (authentication &key parameters)
   nil
@@ -2177,7 +2364,7 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "events") authentication
-      :parameters parameters))))
+      :parameters (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-user/userid/rooms/roomid/tags
        (authentication |userId| |roomId| &key parameters)
@@ -2187,7 +2374,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
                    "rooms" "/" |roomId| "/" "tags")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun put-user/userid/rooms/roomid/tags/tag
        (authentication |userId| |roomId| |tag| content
@@ -2198,7 +2386,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
                    "rooms" "/" |roomId| "/" "tags" "/" |tag|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun delete-user/userid/rooms/roomid/tags/tag
@@ -2210,7 +2399,8 @@
      (matrix-autowrap::delete-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
                    "rooms" "/" |roomId| "/" "tags" "/" |tag|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun put-user/userid/account-data/type
@@ -2222,7 +2412,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
                    "account_data" "/" |type|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun put-user/userid/rooms/roomid/account-data/type
@@ -2234,7 +2425,8 @@
      (matrix-autowrap::put-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
                    "rooms" "/" |roomId| "/" "account_data" "/" |type|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-admin/whois/userid (authentication |userId| &key parameters)
@@ -2244,7 +2436,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "admin" "/" "whois" "/"
                    |userId|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-rooms/roomid/context/eventid
        (authentication |roomId| |eventId| &key parameters)
@@ -2254,7 +2447,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "context" "/" |eventId|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-login/cas/redirect (authentication &key parameters)
   nil
@@ -2263,7 +2457,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "login" "/" "cas" "/"
                    "redirect")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-login/cas/ticket (authentication &key parameters)
   nil
@@ -2272,7 +2467,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "login" "/" "cas" "/"
                    "ticket")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun post-rooms/roomid/report/eventid
        (authentication |roomId| |eventId| content
@@ -2283,7 +2479,8 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "rooms" "/" |roomId| "/"
                    "report" "/" |eventId|)
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
 
 (defun get-thirdparty/protocols (authentication &key parameters)
@@ -2292,7 +2489,8 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "thirdparty" "/" "protocols")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-thirdparty/protocol/protocol
        (authentication |protocol| &key parameters)
@@ -2302,7 +2500,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "thirdparty" "/" "protocol"
                    "/" |protocol|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-thirdparty/location/protocol
        (authentication |protocol| &key parameters)
@@ -2312,7 +2511,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "thirdparty" "/" "location"
                    "/" |protocol|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-thirdparty/user/protocol (authentication |protocol| &key parameters)
   nil
@@ -2321,7 +2521,8 @@
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "thirdparty" "/" "user" "/"
                    |protocol|)
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-thirdparty/location (authentication &key parameters)
   nil
@@ -2329,7 +2530,8 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "thirdparty" "/" "location")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun get-thirdparty/user (authentication &key parameters)
   nil
@@ -2337,7 +2539,8 @@
    (lambda ()
      (matrix-autowrap::get-request
       (concatenate 'string "/_matrix/client/r0/" "thirdparty" "/" "user")
-      authentication :parameters parameters))))
+      authentication :parameters
+      (matrix-autowrap::check-parameters parameters)))))
 
 (defun post-user/userid/openid/request-token
        (authentication |userId| content
@@ -2348,5 +2551,6 @@
      (matrix-autowrap::post-request
       (concatenate 'string "/_matrix/client/r0/" "user" "/" |userId| "/"
                    "openid" "/" "request_token")
-      authentication content :parameters parameters :content-type
+      authentication content :parameters
+      (matrix-autowrap::check-parameters parameters) :content-type
       content-type))))
