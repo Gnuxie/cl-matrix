@@ -90,7 +90,6 @@ See ACCOUNT-SYNC
 See filters in the spec /_matrix/client/r0/user/{userId}/filter"
 
   (let ((invitations-filter (upload-filter
-                             (username *account*)
                              (if from-p
                                  (format nil
                                          "{\"event_fields\":[\"m.room.member\"], \"account_data\":{\"limit\":0, \"not_types\":[\"*\"]},\"room\":{\"account_data\":{\"senders\":[~s]}, \"state\":{\"lazy_load_members\":true},\"timeline\":{\"limit\":0}}}"
@@ -103,9 +102,9 @@ See filters in the spec /_matrix/client/r0/user/{userId}/filter"
                                      "rooms" "invite")))
       invitations)))
 
-(defun upload-filter (user-id filter)
+(defun upload-filter (filter)
   (jsown:val (post-user/userid/filter *account*
-                                user-id
+                                (cl-matrix:username *account*)
                                 filter)
              "filter_id"))
 
@@ -130,7 +129,7 @@ See filters in the spec /_matrix/client/r0/user/{userId}/filter"
 
 This is really useful if the account is in a lot of rooms and sync will try return GiB's of messages with no filter."
 
-  (let ((filter (upload-filter (username *account*) "{\"room\":{\"state\":{\"lazy_load_members\":true},\"timeline\":{\"limit\":0}}}")))
+  (let ((filter (upload-filter "{\"room\":{\"state\":{\"lazy_load_members\":true},\"timeline\":{\"limit\":0}}}")))
     (nth-value 1 (account-sync :filter filter))))
 
 (defun user-joined-rooms ()
@@ -143,7 +142,7 @@ This is really useful if the account is in a lot of rooms and sync will try retu
   "Fetch a list of joined members for a room"
   (get-rooms/roomid/members *account* room))
 
-(defun rooms-joined-members (rooms)
+(defun rooms-joined-members ( rooms)
   "Fetch the members information for all the supplied rooms"
   (let ((members (mapcar #'room-joined-members rooms)))
     (cons ':obj (pairlis rooms
@@ -246,7 +245,10 @@ This is really useful if the account is in a lot of rooms and sync will try retu
 ;;; also for this and download-media, do we need to return all the headers or just the ones that are important in the spec
 ;;; and we could also return these as values not as the assoc list from drakma / dexador
 (defun thumbnail (mxc-url &key width height method)
-  "get a thumbnail, method must be one of \"crop\" or \"scale\""
+  "get a thumbnail, method must be one of \"crop\" or \"scale\"
+
+the arguments have to be string
+will return the headers as a second value."
   (declare (type string mxc-url))
   (destructure-mxc-uri (result domain id) mxc-url
     (get-thumbnail/servername/mediaid *account* domain id
