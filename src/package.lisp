@@ -58,6 +58,10 @@
          #:password
          #:homeserver
 
+         ;; room-messages
+         #:get-creation-event
+         #:history-generator
+
          #:*account*
          #:get-state-callback
          #:generate-generic-callback

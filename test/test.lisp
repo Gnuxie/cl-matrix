@@ -149,7 +149,7 @@
         (send-lots-of-test-messages *pagination-chat* :amount 10 :start 20)
         (format t "done~%fetching new messages~%")
         
-        (let* ((new-events (reverse (cl-matrix:all-messages *pagination-chat* token-before "f")))
+        (let* ((new-events (reverse (cl-matrix:room-messages *pagination-chat* token-before "f")))
                (events-after-forwards (append new-events events-before)))
           (format t "events differance~%~s" (set-difference events-after-forwards events-before))
           (format t "~%end of events differance~%")

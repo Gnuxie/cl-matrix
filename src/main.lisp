@@ -295,7 +295,9 @@ alright, i don't think this is necessary.
 returns values the event-list, the end of the chunk and the number of messages returned.
 
 TODO maybe make n optional, returning all messages by default?
-maybe allow user defined predicates for terminating pagination."
+maybe allow user defined predicates for terminating pagination.
+
+This is deprecated in favour of the history-generator, which is much easier to use."
   (let ((messages nil)
         (current-number 0)
         (morep t))
@@ -311,17 +313,24 @@ maybe allow user defined predicates for terminating pagination."
 
     (values messages from current-number)))
 
-(defun all-messages (room-id from dir &key to filter)
-  (let ((messages nil)
-        (morep t))
-    (loop :while morep :do
-         (multiple-value-bind (new-messages start end) (room-messages room-id from dir :to to :limit "1000" :filter filter)
-           (declare (ignorable start))
-           (if (null new-messages)
-               (setf morep nil)
-               (progn (setf messages (append messages new-messages))
-                      (setf from end)))))
-    (values messages from)))
+(defun get-creation-event (room-id)
+  "the room-creation event and the pagination token that will be the very start of the rooms timeline."
+  (multiple-value-bind (chunk start next)
+      (room-messages room-id "END" "b" :filter "{\"types\":[\"m.room.create\"]}")
+    (declare (ignore start))
+    (values (car chunk) next)))
+
+(defun history-generator (room-id &key start-token filter to)
+  "returns a closure that accepts a limit and returns a list of events.
+When no more events can be found, will return NIL."
+  (let ((start-token (if start-token start-token (nth-value 1 (get-creation-event room-id))))
+        (room-id room-id))
+    (lambda (&optional (limit "50"))
+      (multiple-value-bind (chunk start next)
+          (room-messages room-id start-token "f" :limit limit :filter filter :to to)
+        (declare (ignore start))
+        (setf start-token next)
+        chunk))))
 
 (defun random-timestamp ()
   (+ (* 100000 (get-universal-time)) (random 100000)))
