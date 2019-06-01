@@ -1,123 +1,123 @@
-(defpackage :MATRIX-REQUESTS (:use #:cl #:matrix-autowrap #:matrix-autowrap.authentication)
-  (:import-from :MATRIX-AUTOWRAP.AUTHENTICATION
+(defpackage :MATRIX-REQUESTS (:use #:cl #:cl-matrix.autowrap.runtime #:cl-matrix.autowrap.authentication)
+  (:import-from :CL-MATRIX.AUTOWRAP.AUTHENTICATION
   #:AUTH
   #:ACCESS-TOKEN
   #:HOMESERVER
   #:QUERY-PARAM)
   (:export
-  #:post-presence/list/userid
-  #:get-voip/turnserver
-  #:get-register/available
-  #:get-directory/list/room/roomid
-  #:put-directory/room/roomalias
-  #:get-joined-rooms
-  #:put-pushrules/scope/kind/ruleid
-  #:post-delete-devices
-  #:post-register
-  #:put-devices/deviceid
-  #:post-createroom
-  #:get-publicrooms
   #:post-rooms/roomid/kick
-  #:post-join/roomidoralias
-  #:post-account/3pid/delete
-  #:post-rooms/roomid/join
+  #:post-user/userid/openid/request-token
   #:post-rooms/roomid/ban
-  #:get-rooms/roomid/initialsync
-  #:get-notifications
-  #:post-login
+  #:post-rooms/roomid/invite
   #:get-rooms/roomid/state
-  #:put-rooms/roomid/typing/userid
-  #:post-keys/claim
+  #:put-pushrules/scope/kind/ruleid/enabled
+  #:get-rooms/roomid/event/eventid
+  #:put-user/userid/rooms/roomid/account-data/type
+  #:get-rooms/roomid/context/eventid
+  #:post-upload
+  #:get-pushers
+  #:get-login/cas/redirect
+  #:get-download/servername/mediaid
+  #:get-config
+  #:get-pushrules/scope/kind/ruleid/actions
+  #:post-pushers/set
   #:delete-devices/deviceid
   #:get-admin/whois/userid
-  #:get-sync
-  #:post-user/userid/filter
-  #:get-events/eventid
-  #:post-pushers/set
-  #:get-presence/list/userid
-  #:post-rooms/roomid/report/eventid
-  #:put-profile/userid/avatar-url
-  #:put-rooms/roomid/state/eventtype/statekey
-  #:get-rooms/roomid/members
-  #:get-download/servername/mediaid/filename
-  #:post-keys/upload
-  #:get-rooms/roomid/context/eventid
-  #:put-pushrules/scope/kind/ruleid/enabled
-  #:get-thirdparty/location/protocol
-  #:post-keys/query
-  #:get-rooms/roomid/state/eventtype
-  #:put-user/userid/account-data/type
-  #:get-profile/userid
-  #:get-directory/room/roomalias
-  #:get-devices
-  #:put-rooms/roomid/state/eventtype
-  #:post-logout/all
-  #:post-rooms/roomid/read-markers
-  #:get-download/servername/mediaid
-  #:get-profile/userid/displayname
-  #:get-login
-  #:get-thirdparty/location
-  #:delete-devices
-  #:post-rooms/roomid/invite
-  #:post-user/userid/openid/request-token
-  #:get-rooms/roomid/state/eventtype/statekey
-  #:post-rooms/roomid/unban
-  #:get-rooms/roomid/messages
-  #:put-directory/list/room/roomid
-  #:delete-directory/room/roomalias
-  #:put-rooms/roomid/send/eventtype/txnid
-  #:get-config
-  #:put-user/userid/rooms/roomid/account-data/type
-  #:get-thirdparty/protocol/protocol
-  #:get-login/cas/redirect
-  #:post-register/email/requesttoken
-  #:get-thumbnail/servername/mediaid
-  #:get-pushers
-  #:get-profile/userid/avatar-url
-  #:post-account/password/msisdn/requesttoken
-  #:post-account/3pid/msisdn/requesttoken
-  #:put-user/userid/rooms/roomid/tags/tag
-  #:get-initialsync
-  #:get-rooms/roomid/event/eventid
-  #:get-pushrules/scope/kind/ruleid/actions
-  #:get-user/userid/rooms/roomid/tags
-  #:post-upload
-  #:post-rooms/roomid/receipt/receipttype/eventid
-  #:put-pushrules/scope/kind/ruleid/actions
   #:get-thirdparty/user
-  #:post-publicrooms
-  #:get-events
-  #:post-logout
-  #:post-user-directory/search
-  #:get-preview-url
-  #:post-account/password
-  #:post-register/msisdn/requesttoken
-  #:post-rooms/roomid/forget
-  #:get-account/whoami
-  #:put-rooms/roomid/redact/eventid/txnid
-  #:get-pushrules/scope/kind/ruleid/enabled
-  #:get-user/userid/filter/filterid
-  #:get-presence/userid/status
-  #:get-pushrules/
-  #:get-account/3pid
-  #:post-account/3pid
-  #:post-rooms/roomid/leave
-  #:put-profile/userid/displayname
-  #:delete-user/userid/rooms/roomid/tags/tag
-  #:get-pushrules/scope/kind/ruleid
   #:post-account/password/email/requesttoken
+  #:post-rooms/roomid/join
+  #:post-user-directory/search
+  #:get-sync
+  #:get-pushrules/scope/kind/ruleid/enabled
+  #:post-account/password
+  #:get-presence/userid/status
+  #:post-keys/query
+  #:get-thirdparty/user/protocol
+  #:get-download/servername/mediaid/filename
   #:get-thirdparty/protocols
   #:get-login/cas/ticket
-  #:get-devices/deviceid
   #:post-search
+  #:get-thumbnail/servername/mediaid
+  #:get-account/whoami
+  #:delete-directory/room/roomalias
+  #:put-devices/deviceid
+  #:get-user/userid/rooms/roomid/tags
+  #:get-profile/userid/displayname
+  #:put-user/userid/rooms/roomid/tags/tag
+  #:post-createroom
+  #:put-rooms/roomid/state/eventtype/statekey
+  #:put-rooms/roomid/state/eventtype
+  #:get-notifications
+  #:post-keys/upload
+  #:post-account/3pid/delete
+  #:post-rooms/roomid/report/eventid
+  #:put-pushrules/scope/kind/ruleid
+  #:post-rooms/roomid/leave
+  #:post-rooms/roomid/read-markers
+  #:get-thirdparty/protocol/protocol
   #:get-rooms/roomid/joined-members
-  #:post-account/3pid/email/requesttoken
-  #:get-thirdparty/user/protocol
-  #:delete-pushrules/scope/kind/ruleid
-  #:post-account/deactivate
+  #:post-account/3pid
+  #:delete-devices
+  #:get-voip/turnserver
+  #:post-account/3pid/msisdn/requesttoken
+  #:post-logout
   #:put-presence/userid/status
-  #:get-keys/changes
+  #:get-publicrooms
+  #:post-register/email/requesttoken
+  #:post-register
+  #:post-keys/claim
+  #:post-account/3pid/email/requesttoken
+  #:put-directory/list/room/roomid
+  #:get-rooms/roomid/state/eventtype
+  #:post-delete-devices
+  #:post-logout/all
+  #:post-register/msisdn/requesttoken
+  #:post-presence/list/userid
+  #:post-rooms/roomid/unban
+  #:get-register/available
+  #:get-profile/userid/avatar-url
+  #:delete-pushrules/scope/kind/ruleid
+  #:post-login
+  #:get-events
+  #:put-rooms/roomid/typing/userid
+  #:post-rooms/roomid/receipt/receipttype/eventid
+  #:get-user/userid/filter/filterid
+  #:put-profile/userid/avatar-url
+  #:get-directory/list/room/roomid
+  #:get-profile/userid
+  #:get-account/3pid
+  #:get-events/eventid
+  #:delete-user/userid/rooms/roomid/tags/tag
+  #:get-directory/room/roomalias
+  #:get-presence/list/userid
+  #:post-publicrooms
+  #:get-pushrules/scope/kind/ruleid
+  #:put-pushrules/scope/kind/ruleid/actions
+  #:get-thirdparty/location/protocol
+  #:get-joined-rooms
+  #:put-user/userid/account-data/type
+  #:post-join/roomidoralias
+  #:put-profile/userid/displayname
+  #:get-rooms/roomid/state/eventtype/statekey
+  #:get-preview-url
+  #:get-initialsync
+  #:get-devices/deviceid
+  #:put-rooms/roomid/send/eventtype/txnid
   #:put-sendtodevice/eventtype/txnid
+  #:get-keys/changes
+  #:post-rooms/roomid/forget
+  #:get-rooms/roomid/members
+  #:get-login
+  #:post-account/deactivate
+  #:get-pushrules/
+  #:get-thirdparty/location
+  #:put-rooms/roomid/redact/eventid/txnid
+  #:put-directory/room/roomalias
+  #:get-devices
+  #:get-rooms/roomid/initialsync
+  #:post-user/userid/filter
+  #:post-account/password/msisdn/requesttoken
+  #:get-rooms/roomid/messages
   #:AUTH
   #:ACCESS-TOKEN
   #:HOMESERVER

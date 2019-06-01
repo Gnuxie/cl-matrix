@@ -15,11 +15,12 @@ See make-account
 See with-account"
 
   (let ((new-account (make-instance 'account :username username :password password :homeserver (get-hostname username))))
-    (let ((response (post-login new-account
-                                (jsown:to-json (cons :obj (pairlis
-                                                            (list "type" "user" "password" "initial_device_display_name")
-                                                            (list "m.login.password" username password "(λ () 'cl-matrix)")))))))
-
+    (let ((response
+           (post-login new-account
+                       (jsown:to-json
+                        (cons :obj (pairlis
+                                    (list "type" "user" "password" "initial_device_display_name")
+                                    (list "m.login.password" username password "(λ () 'cl-matrix)")))))))
       
       (setf (access-token new-account) (jsown:val response "access_token"))
       new-account)))

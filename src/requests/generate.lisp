@@ -44,7 +44,7 @@
                                         guest-access-forbidden
                                         too-large
                                         unknown-token)
-                             :imports '((:matrix-autowrap.authentication
+                             :imports '((:cl-matrix.autowrap.authentication
                                          auth access-token homeserver query-param)))))
   
-  (matrix-autowrap:define-api schema))
+  (cl-matrix.autowrap:define-api schema))

@@ -1,19 +1,6 @@
 #| Copyright (C) 2018-2019 Gnuxie <Gnuxie@protonmail.com> |#
 
-(in-package :matrix-autowrap)
-(defmacro array-bind ((&rest vars) array &body body)
-  (let ((i 0))
-    `(let (,@(loop :for var in vars
-                :collect `(,var (aref ,array ,i))
-                :do (incf i)))
-       ,@body)))
-
-(defmacro ppcre-bind ((matchedp &rest groups) expression &body body)
-  (let ((array-sym (gensym)))
-    `(multiple-value-bind (,matchedp ,array-sym) ,expression
-       (when ,matchedp
-         (array-bind (,@groups) ,array-sym
-           ,@body)))))
+(in-package #:cl-matrix.autowrap)
 
 (defun symbolise-uri (uri target-package)
   (intern (string-upcase (remove-if (lambda (c) (or (char= c #\{) (char= c #\}))) (substitute #\- #\_ uri))) target-package))
@@ -104,7 +91,7 @@
 
 (defun write-package-definition (stream package exports import-from-alist)
   ;;; start defpackage
-  (format stream "(defpackage ~s (:use #:cl #:matrix-autowrap #:matrix-autowrap.authentication)" package)
+  (format stream "(defpackage ~s (:use #:cl #:cl-matrix.autowrap.runtime #:cl-matrix.autowrap.authentication)" package)
 
   ;;; imports
   (unless (null import-from-alist)

@@ -1,6 +1,6 @@
 #| Copyright (C) 2019 Gnuxie <Gnuxie@protonmail.com> |#
 
-(defpackage matrix-autowrap.api-schema
+(defpackage #:cl-matrix.autowrap.api-schema
   (:use :cl)
   (:export
    #:api-schema
@@ -16,7 +16,7 @@
    #:modules
    #:module))
 
-(in-package :matrix-autowrap.api-schema)
+(in-package #:cl-matrix.autowrap.api-schema)
 
 ;;; you know, I don't really agree with putting modules in the same package.
 ;;; each module should have it's own package.

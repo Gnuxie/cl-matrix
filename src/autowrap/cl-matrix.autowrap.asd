@@ -1,11 +1,13 @@
-(asdf:defsystem "matrix-autowrap"
+(asdf:defsystem "cl-matrix.autowrap"
     :version "0.0"
     :author "Gnuxie <Gnuxie@protonmail.com>"
     :license "AGPL v3+"
-    :depends-on ("drakma")
-    :components ((:file "authentication")
-                 (:file "api-schema")
+    :depends-on ("cl-matrix.autowrap.runtime")
+    :serial T
+    :components ((:file "api-schema")
                  (:file "schema-module")
+                 (:file "package")
+                 (:file "macro-utils")
                  (:file "core")
                  (:file "produce-spec")
                  (:file "reading"))

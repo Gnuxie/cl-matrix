@@ -1,59 +1,6 @@
 #| Copyright (C) 2018-2019 Gnuxie <Gnuxie@protonmail.com> |#
 
-(defpackage :matrix-autowrap
-  (:use :cl :matrix-autowrap.api-schema :matrix-autowrap.authentication)
-  (:export
-
-   #:define-request
-   #:guard-request
-   #:define-endpoint
-
-   #:build-package
-   #:export-auto-api
-   #:define-api
-))
-
-(in-package :matrix-autowrap)
-(push '("application" . "json") drakma:*text-content-types*)
-
-(defun check-parameters (drakma-parameter-list)
-  "this will be used to intercept drakma when someone gives a number as a query parameter
-and drakma expects only string."
-  (mapcar (lambda (p)
-            (typecase (cdr p)
-              (number (cons (car p) (princ-to-string (cdr p))))
-              (symbol (cons (car p) (symbol-name (cdr p))))
-              (t p)))
-          drakma-parameter-list))
-
-(defmacro define-request (name type)
-  `(defun ,name ,(remove-if #'null `(url authentication ,(unless (equal type :get) 'the-json)
-                                         &key
-                                        (parameters nil)
-                                        ,(unless (equal type :get)
-                                          '(content-type "application/json"))))
-
-  (with-accessors ((homeserver homeserver) (access-token access-token)) authentication
-    (let ((url (concatenate 'string
-                            "https://" homeserver url)))
-
-      (drakma:http-request
-       ,@ (remove-if #'null
-                     (append 
-                      `(url
-                        :method ,type
-                        :additional-headers (when (not (string= "" access-token))
-                                              `(("Authorization" . ,(format nil "Bearer ~a" access-token))))
-                        :parameters parameters)
-                      (unless (equal type :get)
-                        '(:content the-json
-                          :content-type content-type)))))))))
-
-
-(define-request post-request :post)
-(define-request put-request :put)
-(define-request get-request :get)
-(define-request delete-request :delete)
+(in-package #:cl-matrix.autowrap)
 
 (defun endpoint-seperation (endpoint)
   "add slashes to the endpoint arguments, this will be a list of symbols and strings"

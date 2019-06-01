@@ -1,6 +1,6 @@
 #| Copyright (C) 2018-2019 Gnuxie <Gnuxie@protonmail.com> |#
 
-(in-package :matrix-autowrap)
+(in-package #:cl-matrix.autowrap)
 
 (defmacro with-safetly-produced-endpoints (endpoint-schema-sym schema &body body)
    `(let ((,endpoint-schema-sym

@@ -1,6 +1,6 @@
 #| Copyright (C) 2019 Gnuxie <Gnuxie@protonmail.com> |#
 
-(in-package :matrix-autowrap.api-schema)
+(in-package #:cl-matrix.autowrap.api-schema)
 
 (defclass module ()
   ((endpoint-area :accessor endpoint-area

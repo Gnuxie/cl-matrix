@@ -1,6 +1,6 @@
 #| Copyright (C) 2018-2019 Gnuxie <Gnuxie@protonmail.com> |#
 
-(in-package :matrix-autowrap)
+(in-package #:cl-matrix.autowrap)
 (defmacro array-bind ((&rest vars) array &body body)
   (let ((i 0))
     `(let (,@(loop :for var in vars

@@ -1,6 +1,6 @@
 #| Copyright (C) 2019 Gnuxie <Gnuxie@protonmail.com> |#
 
-(defpackage matrix-autowrap.authentication
+(defpackage #:cl-matrix.autowrap.authentication
   (:use :cl)
   (:export
    #:auth
@@ -8,7 +8,7 @@
    #:homeserver
    #:query-param))
 
-(in-package :matrix-autowrap.authentication)
+(in-package :cl-matrix.autowrap.authentication)
 
 (defclass auth ()
   ((access-token :accessor access-token
