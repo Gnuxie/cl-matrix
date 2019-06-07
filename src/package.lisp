@@ -38,6 +38,7 @@
          #:upload-media
          #:thumbnail
          #:preview-url
+         #:destructure-mxc-uri
 
          #:id
          #:event-type
