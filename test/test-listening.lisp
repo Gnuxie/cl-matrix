@@ -24,7 +24,7 @@
     (set-up-listening)
 
     (let ((test-worked-p nil))
-      (deeds:define-handler (room-event-test cl-m.base-events:room-event) (event room-id data)
+      (method-hooks:defhook cl-m.base-events:room-event room-event-test ((account cl-matrix:account) room-id data)
         (when (string= "m.room.message" (cl-matrix:event-type data))
           (when (string= (cl-matrix:username *user-two*) (jsown:val data "sender"))
             (setf test-worked-p t))))
@@ -33,8 +33,7 @@
         (cl-matrix:room-join *listening-room*)
         (cl-matrix:msg-send "listener test message" *listening-room*))
 
-      (deeds:define-handler (test-worked-h cl-m.base-events:sync) (event data)
-        :after '(:main)
+      (method-hooks:defhook cl-m.base-events:sync test-worked-h :after ((account cl-matrix:account) data)
         (true test-worked-p))
       
       (cl-matrix:with-account (*user-one*)

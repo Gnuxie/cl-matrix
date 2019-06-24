@@ -17,8 +17,7 @@ Here is a hello world example
 ## What is supported?
 At the moment most apis are usable
 
-There is an example of event listening on account-sync,
-I'm still unsure if this should be a part of the library since it's simple to setup and you might want to use an event framework different to deeds.
+There is an example of event listening on account-sync, with method-hooks.
 
 ## Why did you make this?
 I made this so I could write my own bots and tools for matrix, I am planning on sharing them as soon as this library has a release since most of them rely on it one change in this repo is going to break the others.

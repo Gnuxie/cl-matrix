@@ -4,7 +4,7 @@
   :maintainer "Gnuxie <Gnuxie@protonmail.com>"
   :license "AGPL v3+"
   :homepage  "https://gnuxie.gitlab.io/cl-matrix/"
-  :depends-on ("jsown" "drakma" "deeds" "documentation-utils" "matrix-requests")
+  :depends-on ("jsown" "drakma" "method-hooks" "documentation-utils" "matrix-requests")
   :components ((:module "src"
                 :components
                 (
