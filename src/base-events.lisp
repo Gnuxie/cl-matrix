@@ -63,15 +63,13 @@
     (m.room.message account room-id data)))
 
 ;;; ¬ msgtypes
-(defgeneric m.text (account room-id data))
+(method-hooks:define-hook-generic m.text (account room-id data)
+  (:method-combination standard)
+  (:hook-point t))
 
 (method-hooks:defhook m.room.message issue-m.text ((account account) room-id data)
   (when (string= "m.text" (msgtype data))
     (m.text account room-id data)))
-
-;;; we can't call the gf because we don't have any methods for it yet
-;;; this stops it from exploding
-(defmethod m.text ((account t) room-id data))
 
 (defun issue-sync-event (sync-data)
   (sync *account* sync-data))

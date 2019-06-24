@@ -21,6 +21,7 @@ image : daewok/lisp-devel
 
 before_script:
         - ln -s "${CI_PROJECT_DIR}" ~/quicklisp/local-projects/cl-matrix
+	- git clone https://gitlab.com/Gnuxie/method-hooks.git ~/quicklisp/local-projects/method-hooks
 
 test:
     stage: test
