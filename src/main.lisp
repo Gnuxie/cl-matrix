@@ -62,13 +62,17 @@ Returns the room-id for the created room."
 
     (jsown:val (post-createroom *account* json-to-submit) "room_id")))
 
-(defun msg-send (msg room-id &key (txid (random-timestamp)) (type "m.text"))
+(defun msg-send (msg room-id &key (txid (random-timestamp)) (type "m.text") event-id)
   "Send a text message to a specific room."
 
-  (put-rooms/roomid/send/eventtype/txnid *account* room-id "m.room.message" (princ-to-string txid)
-                       (jsown:to-json (cons :obj (pairlis
-                                                   (list "msgtype" "body")
-                                                   (list type msg))))))
+  (let ((json
+         (remove-if #'null `(:obj ("msgtype" . ,type)
+                             ("body" . ,msg)
+                             ,(when event-id
+                               `("m.relates_to" . (:obj ("m.in_reply_to" . (:obj ("event_id" . ,event-id))))))))))
+    
+    (put-rooms/roomid/send/eventtype/txnid *account* room-id "m.room.message" (princ-to-string txid)
+                                           (jsown:to-json json))))
 
 (defun room-redact (room-id event-id reason &key (txid (random-timestamp)))
   "redact an event in a room. txid is a `(random-timestamp)` by default."
