@@ -28,11 +28,17 @@
 
 (defgeneric room-event (account room-id data))
 
-(defgeneric presence-event (account data))
+(method-hooks:define-hook-generic presence-event (account data)
+  (:method-combination standard)
+  (:hook-point t))
 
-(defgeneric invite-event (account room-id room-data))
+(method-hooks:define-hook-generic invite-event (account room-id room-data)
+  (:method-combination standard)
+  (:hook-point t))
 
-(defgeneric ephemeral-event (account room-id data))
+(method-hooks:define-hook-generic ephemeral-event (account room-id data)
+  (:method-combination standard)
+  (:hook-point t))
 
 (method-hooks:defhook sync issue-on-room ((account account) data)
   (jsown:do-json-keys (room-id room-data) (jsown:filter data "rooms" "join")

@@ -325,14 +325,14 @@ This is deprecated in favour of the history-generator, which is much easier to u
     (declare (ignore start))
     (values (car chunk) next)))
 
-(defun history-generator (room-id &key start-token filter to)
+(defun history-generator (room-id &key start-token filter to (direction "f"))
   "returns a closure that accepts a limit and returns a list of events.
 When no more events can be found, will return NIL."
-  (let ((start-token (if start-token start-token (nth-value 1 (get-creation-event room-id))))
+  (let ((start-token (or start-token (nth-value 1 (get-creation-event room-id))))
         (room-id room-id))
     (lambda (&optional (limit "50"))
       (multiple-value-bind (chunk start next)
-          (room-messages room-id start-token "f" :limit limit :filter filter :to to)
+          (room-messages room-id start-token direction :limit limit :filter filter :to to)
         (declare (ignore start))
         (setf start-token next)
         chunk))))
