@@ -1,5 +1,5 @@
 (defpackage :cl-matrix
-  (:use #:cl #:matrix-requests #:cl-matrix.autowrap.authentication #:cl-matrix.autowrap.runtime)
+  (:use #:cl #:cl-matrix.api.base #:cl-matrix.api.client #:cl-matrix.api.media #:cl-matrix.autowrap.authentication #:cl-matrix.autowrap.runtime)
         (:export 
          #:login
          #:logout

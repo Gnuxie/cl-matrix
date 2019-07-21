@@ -237,15 +237,15 @@ This is really useful if the account is in a lot of rooms and sync will try retu
   (declare (type string mxc-url))
   (destructure-mxc-uri (result domain id) mxc-url
     (if filename
-        (matrix-requests:get-download/servername/mediaid/filename *account* domain id filename)
-        (matrix-requests:get-download/servername/mediaid *account* domain id))))
+        (cl-matrix.api.media:get-download/servername/mediaid/filename *account* domain id filename)
+        (cl-matrix.api.media:get-download/servername/mediaid *account* domain id))))
 
 ;;; maybe we could fetch the media config and check it's within the upload size?
 ;;; doesn't matter really, we do have a condition for it either way.
 (defun upload-media (content &key (content-type "application/json") filename)
   (if filename
-      (matrix-requests:post-upload *account* content :content-type content-type :parameters `(("filename" . ,filename)))
-      (matrix-requests:post-upload *account* content :content-type content-type)))
+      (cl-matrix.api.media:post-upload *account* content :content-type content-type :parameters `(("filename" . ,filename)))
+      (cl-matrix.api.media:post-upload *account* content :content-type content-type)))
 
 ;;; also for this and download-media, do we need to return all the headers or just the ones that are important in the spec
 ;;; and we could also return these as values not as the assoc list from drakma / dexador

@@ -26,6 +26,7 @@ and drakma expects only string."
           drakma-parameter-list))
 
 (defmacro define-request (name type)
+  "Macro that will create a function wrapping a drakma:http-request with the name provided and of the type specified"
   `(defun ,name ,(remove-if #'null `(url authentication ,(unless (equal type :get) 'the-json)
                                          &key
                                         (parameters nil)
