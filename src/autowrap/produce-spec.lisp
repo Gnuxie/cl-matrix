@@ -2,21 +2,15 @@
 
 (in-package #:cl-matrix.autowrap)
 
-(defmacro with-safetly-produced-endpoints (endpoint-schema-sym schema &body body)
-   `(let ((,endpoint-schema-sym
-         (handler-case (produce-endpoints ,schema) 
-           (error (c)
-             (warn "Caught condition when producing endpoints. ~&" c)
-             nil))))
-      (unless (null ,endpoint-schema-sym)
-        ,@body)))
-
 (defun update-spec-file (schema &key (if-exists :supersede))
-  (with-safetly-produced-endpoints endpoint-schema schema
-    (with-open-file (f (spec-file-pathname schema) :direction :output
-                       :if-exists if-exists
-                       :if-does-not-exist :create)
-      (pprint endpoint-schema f))))
+  (produce-endpoints schema)
+  (with-accessors ((endpoints endpoints)) schema
+    (if endpoints
+        (with-open-file (f (spec-file-pathname schema) :direction :output
+                           :if-exists if-exists
+                           :if-does-not-exist :create)
+          (pprint endpoints f))
+        (error "could not produce endpoints ~a" endpoints))))
 
 (defun load-endpoints-from-spec-file (schema)
   (with-open-file (f (spec-file-pathname schema) :direction :input)

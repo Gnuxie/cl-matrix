@@ -9,4 +9,8 @@
    #:build-package
    #:export-auto-api
    #:define-api
+
+   #:update-spec-file
+   #:load-endpoints-from-spec-file
+   #:read-and-create-api
 ))

@@ -1,6 +1,6 @@
 #| This file is part of cl-matrix
    Copyright (C) 2018-2019 Gnuxie <Gnuxie@protonmail.com> |#
-(in-package :matrix-requests)
+(in-package #:cl-matrix.api.base)
 
 (define-condition cl-matrix-error (error)
   ((description :initarg :description

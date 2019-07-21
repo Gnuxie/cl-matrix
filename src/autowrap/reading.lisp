@@ -32,7 +32,7 @@
    position))
 
 (declaim (inline %consume-string-from-uri))
-(defun %consume-string-from-uri (uri position target-package length)
+(defun %consume-string-from-uri (uri position length)
   (values
    (let ((next-slash (search "/" uri :start2 position)))
      (if next-slash
@@ -43,14 +43,14 @@
            (setf position length))))
    position))
 
-(defun %read-and-define (endpoint-spec schema module)
+(defun %read-and-define (endpoint-spec schema)
   (declare (type string endpoint-spec))
-  (let ((target-package (find-package (target-package schema))))
-    (ppcre-bind (matchedp method uri) (cl-ppcre:scan-to-strings (format nil "^(GET|POST|PUT|DELETE)\\s*~a(\\S*)$"
-                                                                        (escape-slashes (endpoint-area module)))
-                                                                endpoint-spec)
+  (let ((target-package (or (find-package (target-package schema)) (make-package (target-package schema) :use '(:cl)))))
+    (cl-ppcre:register-groups-bind (method uri)
+        ((format nil "^(GET|POST|PUT|DELETE)\\s*~a(\\S*)$" (escape-slashes (endpoint-area schema)))
+         endpoint-spec)
       (let ((fun-sym (symbolise-uri uri target-package)))
-        (endpoint-definition fun-sym `(,(intern method :keyword)) schema module
+        (endpoint-definition fun-sym `(,(intern method :keyword)) schema
           (let ((length (length uri))
                 (i 0))
             (loop :while (> length i) :collect
@@ -58,10 +58,9 @@
                      (multiple-value-bind (sym position) (%consume-argument-from-uri uri i target-package length)
                        (setf i position)
                        sym)
-                     (multiple-value-bind (stringy position) (%consume-string-from-uri uri i target-package length)
+                     (multiple-value-bind (stringy position) (%consume-string-from-uri uri i length)
                        (setf i position)
                        stringy)))))))))
-
 
 (defun exports-from-auto-api (package)
   (flet ((endpoint-p (sym)
@@ -86,7 +85,7 @@
     (cleanup-list
      (map 'list
           (lambda (s)
-            (cleanup-list (mapcar (lambda (m) (funcall #'%read-and-define s schema m)) (modules schema))))
+            (%read-and-define s schema))
           endpoints-spec))))
 
 (defun write-package-definition (stream package exports import-from-alist)

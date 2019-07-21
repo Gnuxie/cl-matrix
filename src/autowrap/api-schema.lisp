@@ -13,8 +13,7 @@
    #:imports
    #:additional-exports
    #:target-package
-   #:modules
-   #:module))
+))
 
 (in-package #:cl-matrix.autowrap.api-schema)
 
@@ -61,12 +60,17 @@ See produce-endpoints")
                    :initform (error "must supply target-package designator")
                    :documentation "a package designator for the target package")
 
-   (modules :accessor modules
-            :initarg :modules
-            :type list
-            :initform (error "must supply at least one module")
-            :documentation "a list of modules the schema is implementing
-See module")))
+   (endpoint-area :accessor endpoint-area
+                  :initarg :endpoint-area
+                  :initform ""
+                  :type string
+                  :documentation "I don't know the formal name for this.
+
+Baically it's a string representing an area of endpoints on a server, so for example, matrix's client server api
+starts with `/_matrix/client/r0/` and media is `/_matrix/media/r0/`
+
+See produce-endpoints")
+))
 
 
 (defgeneric produce-endpoints (schema)
@@ -78,3 +82,9 @@ as of writing, requests should match the regex \"^(GET|POST|PUT|DELETE)\\s*~a(\\
 See api-schema
 See endpoint-area
 "))
+
+(defgeneric request-guard (api-schema request)
+  (:documentation "return a guarded request, override this to place a json parser or check for errors."))
+
+(defmethod request-guard ((schema api-schema) request)
+  'request)

@@ -5,9 +5,7 @@
     :depends-on ("cl-matrix.autowrap.runtime")
     :serial T
     :components ((:file "api-schema")
-                 (:file "schema-module")
                  (:file "package")
-                 (:file "macro-utils")
                  (:file "core")
                  (:file "produce-spec")
                  (:file "reading"))
