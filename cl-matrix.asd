@@ -1,5 +1,5 @@
 (asdf:defsystem "cl-matrix"
-  :version "0.0"
+  :version "0.1"
   :author "Gnuxie <Gnuxie@protonmail.com> Jaidyn Lev <jadedctrl@teknik.io>"
   :maintainer "Gnuxie <Gnuxie@protonmail.com>"
   :license "AGPL v3+"
