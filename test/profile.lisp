@@ -30,7 +30,6 @@
                              cl-matrix:with-account
                              cl-matrix:access-token
                              cl-matrix:username
-                             cl-matrix:password
                              cl-matrix:homeserver
 
                              drakma:http-request))

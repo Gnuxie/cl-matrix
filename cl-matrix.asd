@@ -1,10 +1,10 @@
 (asdf:defsystem "cl-matrix"
-  :version "0.1"
+  :version "0.2.0"
   :author "Gnuxie <Gnuxie@protonmail.com> Jaidyn Lev <jadedctrl@teknik.io>"
   :maintainer "Gnuxie <Gnuxie@protonmail.com>"
   :license "AGPL v3+"
   :homepage  "https://gnuxie.gitlab.io/cl-matrix/"
-  :depends-on ("jsown" "drakma" "deeds" "documentation-utils" "matrix-requests")
+  :depends-on ("jsown" "drakma" "method-hooks" "documentation-utils" "cl-matrix.api.client" "cl-matrix.api.media")
   :components ((:module "src"
                 :components
                 (
@@ -17,7 +17,6 @@
                  (:module "docstrings"
                           :components
                           ((:file "cl-matrix-doc")
-                           (:file "matrix-requests-doc")
                            )))))
   :description
         "A WIP Matrix library for Common Lisp.")

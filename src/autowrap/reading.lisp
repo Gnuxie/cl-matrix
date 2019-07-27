@@ -1,19 +1,6 @@
 #| Copyright (C) 2018-2019 Gnuxie <Gnuxie@protonmail.com> |#
 
-(in-package :matrix-autowrap)
-(defmacro array-bind ((&rest vars) array &body body)
-  (let ((i 0))
-    `(let (,@(loop :for var in vars
-                :collect `(,var (aref ,array ,i))
-                :do (incf i)))
-       ,@body)))
-
-(defmacro ppcre-bind ((matchedp &rest groups) expression &body body)
-  (let ((array-sym (gensym)))
-    `(multiple-value-bind (,matchedp ,array-sym) ,expression
-       (when ,matchedp
-         (array-bind (,@groups) ,array-sym
-           ,@body)))))
+(in-package #:cl-matrix.autowrap)
 
 (defun symbolise-uri (uri target-package)
   (intern (string-upcase (remove-if (lambda (c) (or (char= c #\{) (char= c #\}))) (substitute #\- #\_ uri))) target-package))
@@ -32,32 +19,48 @@
          (setf next-slash (search "/" thing :start2 (+ 2 next-slash))))
     thing))
 
+(declaim (inline %consume-argument-from-uri))
+(defun %consume-argument-from-uri (uri position target-package length)
+  (values
+   (let ((next-slash (search "/" uri :start2 position)))
+     (if next-slash
+         (prog1
+             (intern (subseq uri (+ 1 position) (- next-slash 1)) target-package)
+           (setf position (+ 1 next-slash)))
+         (prog1 (intern (subseq uri (+ 1 position) (- length 1)) target-package)
+           (setf position length))))
+   position))
+
+(declaim (inline %consume-string-from-uri))
+(defun %consume-string-from-uri (uri position length)
+  (values
+   (let ((next-slash (search "/" uri :start2 position)))
+     (if next-slash
+         (prog1
+             (subseq uri position next-slash)
+           (setf position (+ 1 next-slash)))
+         (prog1 (subseq uri position)
+           (setf position length))))
+   position))
+
 (defun %read-and-define (endpoint-spec schema)
   (declare (type string endpoint-spec))
-  (let ((target-package (find-package (target-package schema))))
-    (ppcre-bind (matchedp method uri) (cl-ppcre:scan-to-strings (format nil "^(GET|POST|PUT|DELETE)\\s*~a(\\S*)$"
-                                                                        (escape-slashes (endpoint-area schema)))
-                                                                endpoint-spec)
+  (let ((target-package (or (find-package (target-package schema)) (make-package (target-package schema) :use '(:cl)))))
+    (cl-ppcre:register-groups-bind (method uri)
+        ((format nil "^(GET|POST|PUT|DELETE)\\s*~a(\\S*)$" (escape-slashes (endpoint-area schema)))
+         endpoint-spec)
       (let ((fun-sym (symbolise-uri uri target-package)))
         (endpoint-definition fun-sym `(,(intern method :keyword)) schema
           (let ((length (length uri))
                 (i 0))
             (loop :while (> length i) :collect
-              (if (char= #\{ (aref uri i))
-                  (let ((next-slash (search "/" uri :start2 i)))
-                    (if next-slash
-                        (prog1
-                            (intern (subseq uri (+ 1 i) (- next-slash 1)) target-package)
-                          (setf i (+ 1 next-slash)))
-                        (prog1 (intern (subseq uri (+ 1 i) (- length 1)) target-package)
-                          (setf i length))))
-                  (let ((next-slash (search "/" uri :start2 i)))
-                    (if next-slash
-                        (prog1
-                            (subseq uri i next-slash)
-                          (setf i (+ 1 next-slash)))
-                        (prog1 (subseq uri i)
-                          (setf i length))))))))))))
+                 (if (char= #\{ (aref uri i))
+                     (multiple-value-bind (sym position) (%consume-argument-from-uri uri i target-package length)
+                       (setf i position)
+                       sym)
+                     (multiple-value-bind (stringy position) (%consume-string-from-uri uri i length)
+                       (setf i position)
+                       stringy)))))))))
 
 (defun exports-from-auto-api (package)
   (flet ((endpoint-p (sym)
@@ -74,15 +77,20 @@
 
       exports)))
 
+(defun cleanup-list (list)
+  (reduce #'append (delete-if #'null list)))
+
 (defun read-and-feed-spec (schema)
   (let ((endpoints-spec (endpoints schema)))
-    (reduce #'append
-            (delete-if #'null
-                       (map 'list (lambda (s) (funcall #'%read-and-define s schema)) endpoints-spec)))))
+    (cleanup-list
+     (map 'list
+          (lambda (s)
+            (%read-and-define s schema))
+          endpoints-spec))))
 
 (defun write-package-definition (stream package exports import-from-alist)
   ;;; start defpackage
-  (format stream "(defpackage ~s (:use #:cl #:matrix-autowrap #:matrix-autowrap.authentication)" package)
+  (format stream "(defpackage ~s (:use #:cl #:cl-matrix.autowrap.runtime #:cl-matrix.autowrap.authentication)" package)
 
   ;;; imports
   (unless (null import-from-alist)

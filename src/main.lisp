@@ -5,7 +5,7 @@
 
 (defparameter *account* (make-instance 'auth :homeserver "matrix.org"))
 
-(defun login (username password)
+(defun login (username password &key (homeserver (get-hostname username)) (scheme "https://"))
   "calls the api endpoint post-login with the username and password.
 makes a new cl-matrix:account object with the username and password.
 sets the access-token slot of the account object to the one returned in the response.
@@ -14,12 +14,14 @@ returns the account object.
 See make-account
 See with-account"
 
-  (let ((new-account (make-instance 'account :username username :password password :homeserver (get-hostname username))))
-    (let ((response (post-login new-account
-                                (jsown:to-json (cons ':obj (pairlis
-                                                            (list "type" "user" "password" "initial_device_display_name")
-                                                            (list "m.login.password" username password "(λ () 'cl-matrix)")))))))
-
+  (let ((new-account (make-instance 'account :username username :homeserver homeserver
+                                    :protocol scheme)))
+    (let ((response
+           (post-login new-account
+                       (jsown:to-json
+                        (cons :obj (pairlis
+                                    (list "type" "user" "password" "initial_device_display_name")
+                                    (list "m.login.password" username password "(λ () 'cl-matrix)")))))))
       
       (setf (access-token new-account) (jsown:val response "access_token"))
       new-account)))
@@ -61,13 +63,17 @@ Returns the room-id for the created room."
 
     (jsown:val (post-createroom *account* json-to-submit) "room_id")))
 
-(defun msg-send (msg room-id &key (txid (random-timestamp)) (type "m.text"))
+(defun msg-send (msg room-id &key (txid (random-timestamp)) (type "m.text") event-id)
   "Send a text message to a specific room."
 
-  (put-rooms/roomid/send/eventtype/txnid *account* room-id "m.room.message" (princ-to-string txid)
-                       (jsown:to-json (cons :obj (pairlis
-                                                   (list "msgtype" "body")
-                                                   (list type msg))))))
+  (let ((json
+         (remove-if #'null `(:obj ("msgtype" . ,type)
+                             ("body" . ,msg)
+                             ,(when event-id
+                               `("m.relates_to" . (:obj ("m.in_reply_to" . (:obj ("event_id" . ,event-id))))))))))
+    
+    (put-rooms/roomid/send/eventtype/txnid *account* room-id "m.room.message" (princ-to-string txid)
+                                           (jsown:to-json json))))
 
 (defun room-redact (room-id event-id reason &key (txid (random-timestamp)))
   "redact an event in a room. txid is a `(random-timestamp)` by default."
@@ -90,7 +96,6 @@ See ACCOUNT-SYNC
 See filters in the spec /_matrix/client/r0/user/{userId}/filter"
 
   (let ((invitations-filter (upload-filter
-                             (username *account*)
                              (if from-p
                                  (format nil
                                          "{\"event_fields\":[\"m.room.member\"], \"account_data\":{\"limit\":0, \"not_types\":[\"*\"]},\"room\":{\"account_data\":{\"senders\":[~s]}, \"state\":{\"lazy_load_members\":true},\"timeline\":{\"limit\":0}}}"
@@ -103,9 +108,9 @@ See filters in the spec /_matrix/client/r0/user/{userId}/filter"
                                      "rooms" "invite")))
       invitations)))
 
-(defun upload-filter (user-id filter)
+(defun upload-filter (filter)
   (jsown:val (post-user/userid/filter *account*
-                                user-id
+                                (cl-matrix:username *account*)
                                 filter)
              "filter_id"))
 
@@ -130,7 +135,7 @@ See filters in the spec /_matrix/client/r0/user/{userId}/filter"
 
 This is really useful if the account is in a lot of rooms and sync will try return GiB's of messages with no filter."
 
-  (let ((filter (upload-filter (username *account*) "{\"room\":{\"state\":{\"lazy_load_members\":true},\"timeline\":{\"limit\":0}}}")))
+  (let ((filter (upload-filter "{\"room\":{\"state\":{\"lazy_load_members\":true},\"timeline\":{\"limit\":0}}}")))
     (nth-value 1 (account-sync :filter filter))))
 
 (defun user-joined-rooms ()
@@ -143,11 +148,11 @@ This is really useful if the account is in a lot of rooms and sync will try retu
   "Fetch a list of joined members for a room"
   (get-rooms/roomid/members *account* room))
 
-(defun rooms-joined-members (rooms)
+(defun rooms-joined-members ( rooms)
   "Fetch the members information for all the supplied rooms"
   (let ((members (mapcar #'room-joined-members rooms)))
-    (cons ':obj (pairlis rooms
-                         members))))
+    (cons :obj (pairlis rooms
+                        members))))
 
 (defun rooms-joined-members-ids (rooms)
   "Fetch the joined members as user-ids"
@@ -155,8 +160,8 @@ This is really useful if the account is in a lot of rooms and sync will try retu
   (let ((members (rooms-joined-members rooms)))
 
     
-    (cons ':obj (pairlis rooms
-                         (mapcar #'(lambda (x)
+    (cons :obj (pairlis rooms
+                        (mapcar #'(lambda (x)
                                      (list (jsown:keywords (jsown:val
                                                             (cdr x)
                                                             "joined"))))
@@ -172,8 +177,8 @@ This is really useful if the account is in a lot of rooms and sync will try retu
         (t (get-rooms/roomid/state *account* room-id))))
 
 (defun rooms-state (rooms &optional event-type state-key)
-  (cons ':obj (pairlis rooms
-                       (mapcar #'(lambda (x) (room-state x (when event-type event-type) (when state-key state-key))) rooms))))
+  (cons :obj (pairlis rooms
+                      (mapcar #'(lambda (x) (room-state x (when event-type event-type) (when state-key state-key))) rooms))))
 
 (defun change-power-level (room user-id power)
   "change the power level of a user"
@@ -220,6 +225,54 @@ This is really useful if the account is in a lot of rooms and sync will try retu
                     event-type
                     content)))
 
+;;; we aren't doing anything if this fails? is that good or bad? should come back to it.
+;;; maybe let the user do the unless part? bind the other syms to nil unless capture.
+(defmacro destructure-mxc-uri ((capture-sym domain-sym id-sym) mxc-uri &body body)
+  `(let ((,capture-sym (nth-value 1 (cl-ppcre:scan-to-strings "mxc:\\/\\/([^\\/]*)\\/(\\S*)" ,mxc-uri))))
+     (unless (null ,capture-sym)
+       (let ((,domain-sym (aref ,capture-sym 0))
+             (,id-sym (aref ,capture-sym 1)))
+         ,@body))))
+
+(defun download-media (mxc-url &optional filename)
+  (declare (type string mxc-url))
+  (destructure-mxc-uri (result domain id) mxc-url
+    (if filename
+        (cl-matrix.api.media:get-download/servername/mediaid/filename *account* domain id filename)
+        (cl-matrix.api.media:get-download/servername/mediaid *account* domain id))))
+
+;;; maybe we could fetch the media config and check it's within the upload size?
+;;; doesn't matter really, we do have a condition for it either way.
+(defun upload-media (content &key (content-type "application/json") filename)
+  (if filename
+      (cl-matrix.api.media:post-upload *account* content :content-type content-type :parameters `(("filename" . ,filename)))
+      (cl-matrix.api.media:post-upload *account* content :content-type content-type)))
+
+;;; also for this and download-media, do we need to return all the headers or just the ones that are important in the spec
+;;; and we could also return these as values not as the assoc list from drakma / dexador
+(defun thumbnail (mxc-url &key width height method)
+  "get a thumbnail, method must be one of \"crop\" or \"scale\"
+
+the arguments have to be string
+will return the headers as a second value."
+  (declare (type string mxc-url))
+  (destructure-mxc-uri (result domain id) mxc-url
+    (get-thumbnail/servername/mediaid *account* domain id
+                                      :parameters
+                                      (delete-if #'null
+                                                 `(("width" . ,width)
+                                                   ("height" . ,height)
+                                                   ("method" . ,method))
+                                                 :key #'cdr))))
+
+(defun preview-url (url &optional ts)
+  (declare (type string url))
+  (get-preview-url *account* :parameters
+                   (delete-if #'null
+                              `(("url" . ,url)
+                                ("ts" . ,ts))
+                              :key #'cdr)))
+
 (defun room-messages (room-id from dir &key to limit filter)
   "see the spec for this one.
 returns the response, the start token and then the end token
@@ -248,7 +301,9 @@ alright, i don't think this is necessary.
 returns values the event-list, the end of the chunk and the number of messages returned.
 
 TODO maybe make n optional, returning all messages by default?
-maybe allow user defined predicates for terminating pagination."
+maybe allow user defined predicates for terminating pagination.
+
+This is deprecated in favour of the history-generator, which is much easier to use."
   (let ((messages nil)
         (current-number 0)
         (morep t))
@@ -264,17 +319,24 @@ maybe allow user defined predicates for terminating pagination."
 
     (values messages from current-number)))
 
-(defun all-messages (room-id from dir &key to filter)
-  (let ((messages nil)
-        (morep t))
-    (loop :while morep :do
-         (multiple-value-bind (new-messages start end) (room-messages room-id from dir :to to :limit "1000" :filter filter)
-           (declare (ignorable start))
-           (if (null new-messages)
-               (setf morep nil)
-               (progn (setf messages (append messages new-messages))
-                      (setf from end)))))
-    (values messages from)))
+(defun get-creation-event (room-id)
+  "the room-creation event and the pagination token that will be the very start of the rooms timeline."
+  (multiple-value-bind (chunk start next)
+      (room-messages room-id "END" "b" :filter "{\"types\":[\"m.room.create\"]}")
+    (declare (ignore start))
+    (values (car chunk) next)))
+
+(defun history-generator (room-id &key start-token filter to (direction "f"))
+  "returns a closure that accepts a limit and returns a list of events.
+When no more events can be found, will return NIL."
+  (let ((start-token (or start-token (nth-value 1 (get-creation-event room-id))))
+        (room-id room-id))
+    (lambda (&optional (limit "50"))
+      (multiple-value-bind (chunk start next)
+          (room-messages room-id start-token direction :limit limit :filter filter :to to)
+        (declare (ignore start))
+        (setf start-token next)
+        chunk))))
 
 (defun random-timestamp ()
   (+ (* 100000 (get-universal-time)) (random 100000)))

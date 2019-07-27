@@ -1,49 +1,6 @@
 #| Copyright (C) 2018-2019 Gnuxie <Gnuxie@protonmail.com> |#
 
-(defpackage :matrix-autowrap
-  (:use :cl :matrix-autowrap.api-schema :matrix-autowrap.authentication)
-  (:export
-
-   #:define-request
-   #:guard-request
-   #:define-endpoint
-
-   #:build-package
-   #:export-auto-api
-   #:define-api
-))
-
-(in-package :matrix-autowrap)
-(push '("application" . "json") drakma:*text-content-types*)
-
-(defmacro define-request (name type)
-  `(defun ,name ,(remove-if #'null `(url authentication ,(unless (equal type ':get) 'the-json)
-                                         &key
-                                        (parameters nil)
-                                        ,(unless (equal type ':get)
-                                          '(content-type "application/json"))))
-
-  (with-accessors ((homeserver homeserver) (access-token access-token)) authentication
-    (let ((url (concatenate 'string
-                            "https://" homeserver url)))
-
-      (drakma:http-request
-       ,@ (remove-if #'null
-                     (append 
-                      `(url
-                        :method ,type
-                        :additional-headers (when (not (string= "" access-token))
-                                              `(("Authorization" . ,(format nil "Bearer ~a" access-token))))
-                        :parameters parameters)
-                      (unless (equal type ':get)
-                        '(:content the-json
-                          :content-type content-type)))))))))
-
-
-(define-request post-request :post)
-(define-request put-request :put)
-(define-request get-request :get)
-(define-request delete-request :delete)
+(in-package #:cl-matrix.autowrap)
 
 (defun endpoint-seperation (endpoint)
   "add slashes to the endpoint arguments, this will be a list of symbols and strings"
@@ -60,7 +17,8 @@
   "creates a function for the endpoint with the http method given in type"
   (let ((authentication-sym (intern "AUTHENTICATION" (target-package schema)))
         (parameters-sym (intern "PARAMETERS" (target-package schema)))
-        (content-sym (intern "CONTENT" (target-package schema))))
+        (content-sym (intern "CONTENT" (target-package schema)))
+        (content-type-sym (intern "CONTENT-TYPE" (target-package schema))))
     (let ((request
            `(,(cond ((equal type :post) 'post-request)
                     ((equal type :put) 'put-request)
@@ -77,11 +35,16 @@
                             (target-package schema))))
 
       (setf request (if (equal type :get)
-                        (append request `(,authentication-sym :parameters ,parameters-sym))
-                        (append request `(,authentication-sym ,content-sym :parameters ,parameters-sym))))
+                        (append request `(,authentication-sym :parameters (check-parameters ,parameters-sym)))
+                        (append request `(,authentication-sym ,content-sym :parameters (check-parameters ,parameters-sym) :content-type ,content-type-sym))))
 
-      `(defun ,new-name (,@(remove-if #'null `(,authentication-sym ,@arguments ,(unless (equal type :get) content-sym)
-                                                              &key ,parameters-sym)))
+      `(defun ,new-name
+           (,@(remove-if #'null `(,authentication-sym
+                                  ,@arguments
+                                  ,(unless (equal type :get) content-sym)
+                                  &key ,parameters-sym ,(unless (eql type :get)
+                                                          `(,content-type-sym "application/json")))))
+         
          ,(when documentation-p documentation)
          ,(request-guard schema request)))))
 

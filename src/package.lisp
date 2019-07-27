@@ -1,5 +1,5 @@
 (defpackage :cl-matrix
-  (:use #:cl #:matrix-requests)
+  (:use #:cl #:cl-matrix.api.base #:cl-matrix.api.client #:cl-matrix.api.media #:cl-matrix.autowrap.authentication #:cl-matrix.autowrap.runtime)
         (:export 
          #:login
          #:logout
@@ -33,24 +33,36 @@
          #:all-messages
          #:now-token
 
+         ;; media
+         #:download-media
+         #:upload-media
+         #:thumbnail
+         #:preview-url
+         #:destructure-mxc-uri
+
          #:id
          #:event-type
          #:msgtype
          
-         #:account
 
          #:cl-matrix-error
          #:api-error
          #:forbidden
          #:bad-state
-         
+
+         ;; account
+         #:account
          #:get-hostname
          #:make-account
          #:with-account
          #:access-token
          #:username
-         #:password
          #:homeserver
+         #:protocol
+
+         ;; room-messages
+         #:get-creation-event
+         #:history-generator
 
          #:*account*
          #:get-state-callback

@@ -1,14 +1,15 @@
 #| Copyright (C) 2019 Gnuxie <Gnuxie@protonmail.com> |#
 
-(defpackage matrix-autowrap.authentication
+(defpackage #:cl-matrix.autowrap.authentication
   (:use :cl)
   (:export
    #:auth
    #:access-token
    #:homeserver
-   #:query-param))
+   #:query-param
+   #:protocol))
 
-(in-package :matrix-autowrap.authentication)
+(in-package :cl-matrix.autowrap.authentication)
 
 (defclass auth ()
   ((access-token :accessor access-token
@@ -22,4 +23,9 @@
                  :initform ""
                  :type string
                  :documentation "the domain to use in the endpoint calls e.g. `matrix.org`")
-   ))
+
+   (protocol :accessor protocol
+             :initarg :protocol
+             :initform "https://"
+             :type string
+             :documentation "This is here because drakma requires you to specify the scheme for the url and we want people to be able to use http or https because you might need http in a test environment.")))

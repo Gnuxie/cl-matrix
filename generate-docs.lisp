@@ -1,5 +1,7 @@
 (ql:quickload :staple-markdown)
 
+(sleep 0.5)
+
 (staple:generate :cl-matrix :packages '(:cl-matrix :cl-matrix.base-events :matrix-requests)
                  :if-exists ':SUPERSEDE
                  :documents (list (asdf:system-relative-pathname :cl-matrix "README.md"))

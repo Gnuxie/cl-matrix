@@ -33,19 +33,7 @@
   (cl-matrix:with-account (*user-one*)
     (true (< 0 (length (cl-matrix:access-token *user-one*)))))
   (cl-matrix:with-account (*user-two*)
-    (true (< 0 (length (cl-matrix:access-token *user-two*)))))
-
-  (define-test logout
-    (let ((token nil))
-      (cl-matrix:with-account (*user-one*)
-        (setf token (cl-matrix:access-token *user-one*))
-        (cl-matrix:logout))
-
-      (setf (cl-matrix:access-token *user-one*) token)
-      (cl-matrix:with-account (*user-one*)
-        (fail (cl-matrix:room-create)))
-      (setf (cl-matrix:access-token *user-one*) "")
-      (setf *user-one* (cl-matrix:login (cl-matrix:username *user-one*) (cl-matrix:password *user-one*))))))
+    (true (< 0 (length (cl-matrix:access-token *user-two*))))))
 
 (define-test room-create
   :parent cl-matrix-test
@@ -149,7 +137,7 @@
         (send-lots-of-test-messages *pagination-chat* :amount 10 :start 20)
         (format t "done~%fetching new messages~%")
         
-        (let* ((new-events (reverse (cl-matrix:all-messages *pagination-chat* token-before "f")))
+        (let* ((new-events (reverse (cl-matrix:n-messages *pagination-chat* token-before "f" 40)))
                (events-after-forwards (append new-events events-before)))
           (format t "events differance~%~s" (set-difference events-after-forwards events-before))
           (format t "~%end of events differance~%")

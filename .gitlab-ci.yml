@@ -7,6 +7,7 @@ pages:
     stage: deploy
     script:
         - mkdir .public
+        - sbcl --load generate-docs.lisp --disable-debuger --quit
         - cp -r ./doc/* .public
         - mv .public public
     artifacts:
