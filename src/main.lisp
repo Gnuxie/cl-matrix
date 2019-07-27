@@ -5,7 +5,7 @@
 
 (defparameter *account* (make-instance 'auth :homeserver "matrix.org"))
 
-(defun login (username password &optional (scheme "https://"))
+(defun login (username password &key (homeserver (get-hostname username)) (scheme "https://"))
   "calls the api endpoint post-login with the username and password.
 makes a new cl-matrix:account object with the username and password.
 sets the access-token slot of the account object to the one returned in the response.
@@ -14,7 +14,7 @@ returns the account object.
 See make-account
 See with-account"
 
-  (let ((new-account (make-instance 'account :username username :homeserver (get-hostname username)
+  (let ((new-account (make-instance 'account :username username :homeserver homeserver
                                     :protocol scheme)))
     (let ((response
            (post-login new-account
