@@ -44,20 +44,21 @@
          #:event-type
          #:msgtype
          
-         #:account
 
          #:cl-matrix-error
          #:api-error
          #:forbidden
          #:bad-state
-         
+
+         ;; account
+         #:account
          #:get-hostname
          #:make-account
          #:with-account
          #:access-token
          #:username
-         #:password
          #:homeserver
+         #:protocol
 
          ;; room-messages
          #:get-creation-event

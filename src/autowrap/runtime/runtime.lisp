@@ -27,15 +27,14 @@ and drakma expects only string."
 
 (defmacro define-request (name type)
   "Macro that will create a function wrapping a drakma:http-request with the name provided and of the type specified"
-  `(defun ,name ,(remove-if #'null `(url authentication ,(unless (equal type :get) 'the-json)
+  `(defun ,name ,(remove-if #'null `(uri authentication ,(unless (equal type :get) 'the-json)
                                          &key
                                         (parameters nil)
                                         ,(unless (equal type :get)
                                           '(content-type "application/json"))))
 
-  (with-accessors ((homeserver homeserver) (access-token access-token)) authentication
-    (let ((url (concatenate 'string
-                            "https://" homeserver url)))
+  (with-accessors ((homeserver homeserver) (access-token access-token) (protocol protocol)) authentication
+    (let ((url (concatenate 'string protocol homeserver uri)))
 
       (drakma:http-request
        ,@ (remove-if #'null
