@@ -1,4 +1,5 @@
 (ql:quickload :staple-markdown)
+(ql:quickload :cl-matrix)
 
 (sleep 0.5)
 
