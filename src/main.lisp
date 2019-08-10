@@ -63,22 +63,26 @@ Returns the room-id for the created room."
 
     (jsown:val (post-createroom *account* json-to-submit) "room_id")))
 
-(defun msg-send (msg room-id &key (txid (random-timestamp)) (type "m.text") event-id)
+(defun msg-send (msg room-id &key (txid (random-timestamp)) (type "m.text") format formatted-body event-id)
   "Send a text message to a specific room."
 
   (let ((json
          (remove-if #'null `(:obj ("msgtype" . ,type)
                              ("body" . ,msg)
                              ,(when event-id
-                               `("m.relates_to" . (:obj ("m.in_reply_to" . (:obj ("event_id" . ,event-id))))))))))
+                                `("m.relates_to" . (:obj ("m.in_reply_to" . (:obj ("event_id" . ,event-id))))))
+                             ,@(when (and format formatted-body)
+                                 `(("format" . ,format)
+                                   ("formatted_body" . ,formatted-body)))))))
     
     (put-rooms/roomid/send/eventtype/txnid *account* room-id "m.room.message" (princ-to-string txid)
                                            (jsown:to-json json))))
 
-(defun room-redact (room-id event-id reason &key (txid (random-timestamp)))
+(defun room-redact (room-id event-id &key (txid (random-timestamp)) reason)
   "redact an event in a room. txid is a `(random-timestamp)` by default."
-  (let ((json (format nil "{\"reason\": \"~a\"}" reason)))
-    (put-rooms/roomid/redact/eventid/txnid *account* room-id event-id txid json)))
+  (put-rooms/roomid/redact/eventid/txnid *account* room-id event-id (princ-to-string txid)
+                                         (or (and reason (format nil "{\"reason\": ~s}" reason))
+                                             "{}")))
 
 (defun user-invite (user-id room-id)
   "Invite a user to a chat-room."
