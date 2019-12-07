@@ -27,16 +27,12 @@
 
 (defvar *client-schema*
   (make-instance 'matrix-client
-                 :imports '((:cl-matrix.autowrap.authentication
-                             auth access-token homeserver query-param))
                  :endpoint-area "/_matrix/client/r0/"
                  :target-package :cl-matrix.api.client
                  :api-pathname (asdf:system-relative-pathname :cl-matrix.api.generation "../client/")))
 
 (defvar *media-schema* 
   (make-instance 'matrix-media
-                 :imports '((:cl-matrix.autowrap.authentication
-                             auth access-token homeserver query-param))
                  :endpoint-area "/_matrix/media/r0/"
                  :target-package :cl-matrix.api.media
                  :api-pathname (asdf:system-relative-pathname :cl-matrix.api.generation "../media/")))

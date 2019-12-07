@@ -1,9 +1,4 @@
 (defpackage :CL-MATRIX.API.CLIENT (:use #:cl #:cl-matrix.autowrap.runtime #:cl-matrix.autowrap.authentication)
-  (:import-from :CL-MATRIX.AUTOWRAP.AUTHENTICATION
-  #:AUTH
-  #:ACCESS-TOKEN
-  #:HOMESERVER
-  #:QUERY-PARAM)
   (:export
   #:delete-pushrules/scope/kind/ruleid
   #:get-account/3pid

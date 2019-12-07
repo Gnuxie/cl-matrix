@@ -5,18 +5,15 @@
   :license "AGPL v3+"
   :homepage  "https://gnuxie.gitlab.io/cl-matrix/"
   :depends-on ("jsown" "drakma" "method-hooks" "documentation-utils" "cl-matrix.api.client" "cl-matrix.api.media")
+  :serial t
   :components ((:module "src"
                 :components
-                (
-                 (:file "package")
-                 (:file "main")
+                ((:file "package")
                  (:file "utils")
                  (:file "account")
+                 (:file "main")
                  (:file "events")
                  (:file "base-events")
-                 (:module "docstrings"
-                          :components
-                          ((:file "cl-matrix-doc")
-                           )))))
+)))
   :description
         "A WIP Matrix library for Common Lisp.")

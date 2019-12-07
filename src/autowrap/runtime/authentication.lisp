@@ -5,9 +5,8 @@
   (:export
    #:auth
    #:access-token
-   #:homeserver
    #:query-param
-   #:protocol))
+   #:origin))
 
 (in-package :cl-matrix.autowrap.authentication)
 
@@ -17,15 +16,8 @@
                  :initform ""
                  :type string)
 
-   (homeserver   :accessor homeserver
-                 :accessor domain
-                 :initarg :homeserver
-                 :initform ""
-                 :type string
-                 :documentation "the domain to use in the endpoint calls e.g. `matrix.org`")
-
-   (protocol :accessor protocol
-             :initarg :protocol
-             :initform "https://"
-             :type string
-             :documentation "This is here because drakma requires you to specify the scheme for the url and we want people to be able to use http or https because you might need http in a test environment.")))
+   (origin :accessor origin
+           :initarg :origin
+           :initform ""
+           :type string
+           :documentation "scheme://hostname:port to make requests against.")))
