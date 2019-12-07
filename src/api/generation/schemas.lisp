@@ -1,7 +1,7 @@
 #| This file is part of cl-matrix
    Copyright (C) 2018-2019 Gnuxie <Gnuxie@protonmail.com> |#
 (in-package #:cl-matrix.api.generation)
-(defvar *spec-url* "https://matrix.org/docs/spec/client_server/r0.4.0.html")
+(defvar *spec-url* "https://matrix.org/docs/spec/client_server/r0.6.0.html")
 
 (defclass matrix-cs-schema (api-schema)
   ((spec-file-pathname :initform (asdf:system-relative-pathname :cl-matrix.api.generation "cs-api-specfile.lisp"))))

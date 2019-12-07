@@ -17,9 +17,6 @@
 
 (in-package #:cl-matrix.autowrap.api-schema)
 
-;;; you know, I don't really agree with putting modules in the same package.
-;;; each module should have it's own package.
-;;; that's going to take a little bit of jiggling around and this is a much much simpler fix atm.
 (defclass api-schema ()
   ((spec-file-pathname :accessor spec-file-pathname
                         :initarg :spec-file-pathname
