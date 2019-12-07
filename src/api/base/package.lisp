@@ -2,6 +2,7 @@
   (:use #:cl)
   (:export
    #:cl-matrix-error
+   #:api-error
    #:forbidden
    #:bad-state
    #:gdp-consent

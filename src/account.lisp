@@ -20,7 +20,6 @@
 
 (defmacro with-account ((this-account) &body body)
   `(let ((*account* ,this-account))
-     (declare (special *account*))
      (if (not (typep *account* 'account))
          (error 'cl-matrix-error :description "invalid input to with-account")
          (progn ,@body))))
