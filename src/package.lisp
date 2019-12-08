@@ -26,6 +26,10 @@
          #:upload-filter
          #:room-messages
          #:now-token
+         #:room-members
+         #:joined-rooms
+         #:room-leave
+         #:room-forget
 
          ;; media
          #:download-media

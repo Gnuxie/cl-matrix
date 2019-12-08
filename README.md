@@ -8,15 +8,20 @@ Here is a hello world example
 
 ```
 
-(defvar *user-one* (cl-matrix:login "@me:myhomeserver" "******"))
-
-(cl-matrix:with-account (*user-one*)
-  (cl-matrix:msg-send "hello world!" "!someRoomId:matrix.org"))
+(let ((user (cl-matrix:login "@me:myhomeserver" "******")))
+  (cl-matrix:msg-send user "hello world!" "!someRoomId:matrix.org"))
 ```
 
 ## What is supported?
-The entire client-server api is accessible from `cl-matrix.api.client` and `cl-matrix.api.media`, both of these are generated.
-The core of cl-matrix provides some nice utilities to use on top of the generated api that can help with media, pagination, room creation, accounts, sending messages etc. There's even some examples of how you can listen for events in cl-matrix.base-events
+The entire client-server api is accessible from `cl-matrix.api.client` and
+`cl-matrix.api.media`, both of these are generated.
+The name transforms go something like this
+`/_matrix/client/r0/rooms/{roomId}/joined_members` ->
+`cl-matrix.api.client:rooms/roomid/joined-memebrs` I'm sure you can figure it out.
+
+The package `cl-matrix` provides some nice utilities to use on top of the generated
+api that can help with media, pagination, room creation, accounts, sending messages etc.
+There's even some examples of how you can listen for events in cl-matrix.base-events
 
 ## Project status
 This project is still being updated and is usable, changes will be mentioned in the [changelog](https://gitlab.com/Gnuxie/cl-matrix/blob/master/CHANGELOG.md). I am also still using this for various experiments that I do hope to be able to show as examples soon.

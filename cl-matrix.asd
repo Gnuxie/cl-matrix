@@ -12,8 +12,9 @@
                  (:file "utils")
                  (:file "account")
                  (:file "main")
+                 (:file "masks")
                  (:file "events")
                  (:file "base-events")
 )))
   :description
-        "A WIP Matrix library for Common Lisp.")
+        "A WIP Matrix client library for Common Lisp.")

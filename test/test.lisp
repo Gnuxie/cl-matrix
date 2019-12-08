@@ -29,9 +29,9 @@
     (of-type string room-id)
     
     (is = 1 (length
-             (cl-matrix.api.client:post-rooms/roomid/leave *user-one* room-id "{}")))
+             (cl-matrix:room-leave *user-one* room-id)))
     (is = 1 (length
-             (cl-matrix.api.client:post-rooms/roomid/forget *user-one* room-id "{}")))))
+             (cl-matrix:room-forget *user-one* room-id)))))
 
 (define-test direct-chat
   :parent cl-matrix-test
@@ -121,9 +121,8 @@
 
   (let ((pagination-chat (setup-room-pagination-test))
         (token-before (cl-matrix:now-token *user-one*)))
-    (true (member pagination-chat
-                  (jsown:val (cl-matrix.api.client:get-joined-rooms *user-two*)
-                             "joined_rooms")
+    (true (member pagination-chat (cl-matrix:joined-rooms *user-two*)
+
                   :test #'string=))
     (format t "room: ~a~%" pagination-chat)
     (format t "collecting events before...~%")
@@ -166,11 +165,9 @@
 
 (defun leave-forget-all-rooms (&rest accounts)
   (dolist (account accounts)
-    (dolist (room
-              (jsown:val (cl-matrix.api.client:get-joined-rooms account)
-                         "joined_rooms"))
+    (dolist (room (cl-matrix:joined-rooms account))
       (format t "~a~%" room)
-      (cl-matrix.api.client:post-rooms/roomid/leave account room "{}")
-      (cl-matrix.api.client:post-rooms/roomid/forget account room "{}"))
+      (cl-matrix:room-leave account room)
+      (cl-matrix:room-forget account room))
     (cl-matrix:logout account)))
 
