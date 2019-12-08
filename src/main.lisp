@@ -10,7 +10,7 @@ sets the access-token slot of the account object to the one returned in the resp
 returns the account object.
 
 See make-account
-See with-account"
+"
 
   (let ((new-account (make-instance 'account :username username
                                     :origin origin)))
