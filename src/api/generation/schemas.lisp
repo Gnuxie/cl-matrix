@@ -1,7 +1,7 @@
 #| This file is part of cl-matrix
    Copyright (C) 2018-2019 Gnuxie <Gnuxie@protonmail.com> |#
 (in-package #:cl-matrix.api.generation)
-(defvar *spec-url* "https://matrix.org/docs/spec/client_server/r0.4.0.html")
+(defvar *spec-url* "https://matrix.org/docs/spec/client_server/r0.6.0.html")
 
 (defclass matrix-cs-schema (api-schema)
   ((spec-file-pathname :initform (asdf:system-relative-pathname :cl-matrix.api.generation "cs-api-specfile.lisp"))))
@@ -27,16 +27,12 @@
 
 (defvar *client-schema*
   (make-instance 'matrix-client
-                 :imports '((:cl-matrix.autowrap.authentication
-                             auth access-token homeserver query-param))
                  :endpoint-area "/_matrix/client/r0/"
                  :target-package :cl-matrix.api.client
                  :api-pathname (asdf:system-relative-pathname :cl-matrix.api.generation "../client/")))
 
 (defvar *media-schema* 
   (make-instance 'matrix-media
-                 :imports '((:cl-matrix.autowrap.authentication
-                             auth access-token homeserver query-param))
                  :endpoint-area "/_matrix/media/r0/"
                  :target-package :cl-matrix.api.media
                  :api-pathname (asdf:system-relative-pathname :cl-matrix.api.generation "../media/")))

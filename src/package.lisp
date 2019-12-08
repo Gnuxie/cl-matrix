@@ -1,5 +1,10 @@
 (defpackage :cl-matrix
-  (:use #:cl #:cl-matrix.api.base #:cl-matrix.api.client #:cl-matrix.api.media #:cl-matrix.autowrap.authentication #:cl-matrix.autowrap.runtime)
+  (:use #:cl
+        #:cl-matrix.api.base
+        #:cl-matrix.api.client
+        #:cl-matrix.api.media
+        #:cl-matrix.autowrap.authentication
+        #:cl-matrix.autowrap.runtime)
         (:export 
          #:login
          #:logout
@@ -9,29 +14,22 @@
          #:room-redact
          #:user-invite
          #:room-join
-         #:account-sync
-         #:account-sync-since
+         #:sync
          #:user-joined-rooms
-         #:room-joined-members
-         #:rooms-joined-members
-         #:rooms-joined-members-ids
          #:room-state
-         #:rooms-state
          #:room-power-levels
-         #:rooms-power-levels
          #:change-power-level
-         #:room-forget
-         #:room-leave
          #:room-kick
          #:room-ban
          #:room-unban
-         #:room-put-state
          #:invitations
          #:upload-filter
          #:room-messages
-         #:n-messages
-         #:all-messages
          #:now-token
+         #:room-members
+         #:joined-rooms
+         #:room-leave
+         #:room-forget
 
          ;; media
          #:download-media
@@ -52,19 +50,16 @@
 
          ;; account
          #:account
-         #:get-hostname
+         #:get-origin
          #:make-account
-         #:with-account
          #:access-token
          #:username
-         #:homeserver
-         #:protocol
+         #:origin
 
          ;; room-messages
          #:get-creation-event
          #:history-generator
 
-         #:*account*
          #:get-state-callback
          #:generate-generic-callback
 ))

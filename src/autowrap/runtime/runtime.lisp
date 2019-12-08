@@ -14,7 +14,8 @@
 
 (in-package #:cl-matrix.autowrap.runtime)
 
-(push '("application" . "json") drakma:*text-content-types*)
+(pushnew '("application" . "json") drakma:*text-content-types*
+         :test #'string= :key #'car)
 
 (defun check-parameters (drakma-parameter-list)
   "this will be used to intercept drakma when someone gives a number as a query parameter
@@ -29,24 +30,25 @@ and drakma expects only string."
   "Macro that will create a function wrapping a drakma:http-request with the name provided and of the type specified"
   `(defun ,name ,(remove-if #'null `(uri authentication ,(unless (equal type :get) 'the-json)
                                          &key
-                                        (parameters nil)
-                                        ,(unless (equal type :get)
-                                          '(content-type "application/json"))))
+                                         parameters 
+                                         ,(unless (equal type :get)
+                                            '(content-type "application/json"))))
 
-  (with-accessors ((homeserver homeserver) (access-token access-token) (protocol protocol)) authentication
-    (let ((url (concatenate 'string protocol homeserver uri)))
+     (with-accessors ((origin origin) (access-token access-token)) authentication
+       (let ((url (concatenate 'string origin uri)))
 
-      (drakma:http-request
-       ,@ (remove-if #'null
-                     (append 
-                      `(url
-                        :method ,type
-                        :additional-headers (when (not (string= "" access-token))
-                                              `(("Authorization" . ,(format nil "Bearer ~a" access-token))))
-                        :parameters parameters)
-                      (unless (equal type :get)
-                        '(:content the-json
-                          :content-type content-type)))))))))
+         (drakma:http-request
+          ,@ (remove-if #'null
+                        (append 
+                         `(url
+                           :method ,type
+                           :additional-headers
+                           (when (not (string= "" access-token))
+                             `(("Authorization" . ,(format nil "Bearer ~a" access-token))))
+                           :parameters parameters)
+                         (unless (equal type :get)
+                           '(:content the-json
+                             :content-type content-type)))))))))
 
 
 (define-request post-request :post)

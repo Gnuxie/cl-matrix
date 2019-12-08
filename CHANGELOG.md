@@ -1,5 +1,21 @@
 # v0.2.0
 
+If I've missed something or you've got something that's broke you can come talk to me in `#cl-matrix:matrix.org`.
+
+## cl-matrix
+ * removed joined-rooms in favour of just using #'cl-matrix.api.client:get-joined-rooms
+ * removed room-joined-members in favour of #'cl-matrix.api.clientget-rooms/roomid/members
+ * removed rooms-joined-members because it's unnecessary.
+ * removed rooms-state because it's unnecessary.
+ * removed room-forget and room-leave in favour of cl-matrix.api.client funs.
+ * removed room-put-state in favour of #'cl-matrix.api.client:put-rooms/roomid/state/eventtype
+ * removed n-messages in favour of the history generator.
+ 
+## cl-matrix.api.*
+ * updated to r0.6.0.
+
+# v0.1.1 2019-12-07
+
 If I've missed something or broken something of yours, you can always come talk to me in `#cl-matrix:matrix.org`.
 
 ## cl-matrix

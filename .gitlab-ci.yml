@@ -22,6 +22,9 @@ image : daewok/lisp-devel
 
 before_script:
         - ln -s "${CI_PROJECT_DIR}" ~/quicklisp/local-projects/cl-matrix
+        - apt-get update -qy
+        - apt-get install -y git
+        - git clone https://gitlab.com/Gnuxie/dunno.git ~/quicklisp/local-projects/dunno
 
 test:
     stage: test

@@ -13,6 +13,7 @@
         full-test-report))))
 
 (defun ci-run ()
+  (load-config :ci)
   (let ((test-result (run)))
     (when (not (null (results-with-status ':FAILED test-result)))
       (uiop:quit -1))))
